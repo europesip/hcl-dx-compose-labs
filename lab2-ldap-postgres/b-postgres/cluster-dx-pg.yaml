@@ -1,0 +1,80 @@
+# Lab 2B · PostgreSQL 18 para el Web Engine de DX, gestionado por CloudNativePG, en dx-shared.
+# Lo aplica 03-postgres-cluster.sh (sustituye ${SHARED_NS}).
+#
+# ⚠️ Soporte: en CF238 HCL documenta DB2, Oracle y SQL Server para el Web Engine. PostgreSQL está
+# en validación por HCL (sus pruebas funcionan con PostgreSQL 18) pero HOY NO ESTÁ SOPORTADO.
+# Este laboratorio sirve para aprender el proceso de transferencia, no para producción.
+#
+# Servicio de escritura: dx-pg-rw.${SHARED_NS}.svc.cluster.local:5432
+# Estado:  kubectl -n ${SHARED_NS} get clusters.postgresql.cnpg.io
+#          (en Rancher, "kubectl get cluster" choca con Cluster API: usa el nombre completo)
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: dx-pg
+  namespace: ${SHARED_NS}
+spec:
+  instances: 1                      # laboratorio; 3 para HA (1 primario + 2 réplicas)
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.6-standard-trixie   # versión menor fijada
+  primaryUpdateStrategy: unsupervised
+
+  enableSuperuserAccess: true
+  superuserSecret:
+    name: dx-pg-superuser
+
+  postgresql:
+    parameters:
+      max_connections: "500"
+      # DX usa transacciones XA (2PC): en PostgreSQL requiere max_prepared_transactions > 0
+      max_prepared_transactions: "500"
+      shared_buffers: "512MB"
+      timezone: "Europe/Madrid"
+
+  storage:
+    storageClass: dx-deploy-rwo
+    size: 10Gi
+
+  # Tablespaces que usa el JCR de DX. CNPG los crea de forma declarativa, cada uno en su PVC.
+  tablespaces:
+    - name: icmlfq32
+      owner: { name: wpsuser }
+      storage: { storageClass: dx-deploy-rwo, size: 2Gi }
+    - name: icmlnf32
+      owner: { name: wpsuser }
+      storage: { storageClass: dx-deploy-rwo, size: 1Gi }
+    - name: icmvfq04
+      owner: { name: wpsuser }
+      storage: { storageClass: dx-deploy-rwo, size: 1Gi }
+    - name: icmsfq04
+      owner: { name: wpsuser }
+      storage: { storageClass: dx-deploy-rwo, size: 2Gi }
+    - name: icmlsndx
+      owner: { name: wpsuser }
+      storage: { storageClass: dx-deploy-rwo, size: 1Gi }
+
+  bootstrap:
+    initdb:
+      database: dx_core
+      owner: wpsuser
+      secret:
+        name: dx-pg-wpsuser
+      encoding: UTF8
+      localeCollate: en_US.UTF-8
+      localeCType: en_US.UTF-8
+      # Esquemas, roles, permisos, extensiones y parámetros de dx_core: se ejecuta UNA vez, como
+      # postgres, dentro de dx_core. El SQL está en setup-postgres-dx.sql; 03-postgres-cluster.sh
+      # lo carga en el ConfigMap dx-pg-setup-sql (ver GUIA, Lab 2B paso 3).
+      postInitApplicationSQLRefs:
+        configMapRefs:
+          - name: dx-pg-setup-sql
+            key: setup-postgres-dx.sql
+
+  # Usuarios con login gestionados por CNPG (contraseña en un secret basic-auth)
+  managed:
+    roles:
+      # Para el apéndice del Lab 3 (sesiones de IQ en PostgreSQL). La BD iqdb se crea allí.
+      - name: dx_iq_db_user
+        ensure: present
+        login: true
+        passwordSecret:
+          name: dx-pg-iquser

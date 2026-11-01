@@ -1,0 +1,9 @@
+# ------------------------------------------------------------------------------------------
+# Lab 3 · Capa de DX: habilita IQ
+# La añade common/dx-helm.sh en cuanto existe el servicio <IQ_RELEASE>-integrator (04-iq-install.sh).
+#
+# Con este valor, HAProxy de DX enruta /dx/api/iq/v1/ y /dx/ui/iq/ al Integrator y aparece el
+# botón de IQ en la barra de DX. Debe ser "<release de IQ>-integrator".
+# ------------------------------------------------------------------------------------------
+networking:
+  dxIqService: "dx-iq-integrator"

@@ -1,0 +1,37 @@
+# Kubernetes (PLATFORM=kubernetes) · Ingress de DX con ingress-nginx. Lo aplica 03-expose.sh
+# sustituyendo las variables de env.sh.
+#
+# El TLS se termina en el Ingress con el mismo certificado dx-tls-cert y el Ingress vuelve a
+# cifrar hacia HAProxy (backend-protocol HTTPS), que es el único punto de entrada de DX.
+# Se publica "/" entero: DX usa /wps, /dx (API, DAM, IQ), /hcl, /ibm y /adminCenter.
+#
+# k3s trae Traefik por defecto; el clúster del webinar usa ingress-nginx. Con Traefik, quita las
+# anotaciones nginx, usa ingressClassName: traefik y un ServersTransport con insecureSkipVerify
+# (HAProxy sirve un certificado autofirmado) o una IngressRouteTCP con passthrough.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${DX_RELEASE}-ingress
+  namespace: ${DX_NS}
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"          # subidas grandes a DAM
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"     # respuestas largas de IQ
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+spec:
+  ingressClassName: ${INGRESS_CLASS}
+  tls:
+    - hosts:
+        - ${DX_HOST}
+      secretName: dx-tls-cert
+  rules:
+    - host: ${DX_HOST}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ${DX_RELEASE}-haproxy
+                port:
+                  number: 443

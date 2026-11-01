@@ -1,0 +1,41 @@
+# --- Configuración local con credenciales: NUNCA al repositorio -------------------------
+env.sh
+*.env
+
+# --- Material licenciado de HCL (charts e imágenes): cada asistente usa su cuenta -------
+charts/
+*.tgz
+*.tar
+*.tar.gz
+
+# --- Certificados y claves generados en los labs ----------------------------------------
+*.pem
+*.key
+*.crt
+*.csr
+*.srl
+*.p12
+*.jks
+
+# --- Ficheros generados por los scripts --------------------------------------------------
+dx_dbdomain.properties
+*.rendered.yaml
+values-*-default-*.yaml
+logs-*/
+*.dmp
+
+# --- Ruido del sistema ------------------------------------------------------------------
+*:Zone.Identifier
+*.bak
+*.bak-*
+.DS_Store
+
+# --- Lab 4: certificados de OpenSearch generados ------------------------------------------
+lab4-opensearch/certs/
+
+# --- Python ------------------------------------------------------------------------------
+__pycache__/
+*.pyc
+
+# --- Lab 2B: script de preparación de PostgreSQL (se distribuye aparte) ----------------------
+lab2-ldap-postgres/b-postgres/setup-postgres-dx.sql

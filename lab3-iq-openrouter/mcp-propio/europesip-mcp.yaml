@@ -1,0 +1,49 @@
+# Lab 3B · MCP Server propio de EUROPESIP, en dx-shared (no es software de HCL).
+# Lo aplica 01-mcp-deploy.sh sustituyendo ${SHARED_NS}. El código (server.py) va en el ConfigMap
+# europesip-mcp-code. Imagen pública python:3.12-slim; las dependencias se instalan al arrancar
+# (requiere salida a PyPI). En producción se construiría una imagen propia con el código dentro.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: europesip-mcp
+  namespace: ${SHARED_NS}
+  labels: { app: europesip-mcp }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: europesip-mcp }
+  template:
+    metadata:
+      labels: { app: europesip-mcp }
+    spec:
+      containers:
+        - name: mcp
+          image: python:3.12-slim
+          command: ["sh", "-c", "pip install --no-cache-dir -q 'mcp==1.30.0' uvicorn && exec python /app/server.py"]
+          env:
+            - { name: PORT, value: "3000" }
+            - { name: PYTHONUNBUFFERED, value: "1" }
+          ports:
+            - { name: http, containerPort: 3000 }
+          readinessProbe:
+            httpGet: { path: /probe/ready, port: 3000 }
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 50m, memory: 128Mi }
+            limits:   { cpu: 500m, memory: 256Mi }
+          volumeMounts:
+            - { name: code, mountPath: /app }
+      volumes:
+        - name: code
+          configMap: { name: europesip-mcp-code }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: europesip-mcp
+  namespace: ${SHARED_NS}
+spec:
+  selector: { app: europesip-mcp }
+  ports:
+    - { name: http, port: 3000, targetPort: 3000 }

@@ -1,0 +1,116 @@
+# Lab 2A · Usuarios y grupos de demo. 01-ldap-install.sh sustituye la variable LDAP_USERS_PASSWORD
+# por un hash {SSHA} distinto para cada usuario (nunca en claro) y lo guarda en el ConfigMap
+# openldap-demo-ldif.
+#
+# La raíz (dc=dxdemo,dc=com) TIENE que estar aquí: con un LDIF propio la imagen no crea el árbol
+# por defecto, y sin raíz el primer ldapadd falla ("No such object") y el LDAP arranca vacío.
+#
+# Los grupos son groupOfUniqueNames con uniqueMember porque es lo que busca la configuración LDAP
+# que genera el chart de DX (groupFilter objectclass=groupOfUniqueNames,
+# groupMemberIdMap groupOfUniqueNames:uniqueMember).
+
+dn: dc=dxdemo,dc=com
+objectClass: dcObject
+objectClass: organization
+dc: dxdemo
+o: DX Demo
+
+dn: ou=users,dc=dxdemo,dc=com
+objectClass: organizationalUnit
+ou: users
+
+dn: ou=groups,dc=dxdemo,dc=com
+objectClass: organizationalUnit
+ou: groups
+
+dn: uid=andres,ou=users,dc=dxdemo,dc=com
+objectClass: inetOrgPerson
+uid: andres
+cn: Andres
+givenName: Andres
+sn: Demo
+title: Portal Administrator
+mail: andres@dxdemo.com
+userPassword: ${LDAP_USERS_PASSWORD}
+
+dn: uid=eduardo,ou=users,dc=dxdemo,dc=com
+objectClass: inetOrgPerson
+uid: eduardo
+cn: Eduardo
+givenName: Eduardo
+sn: Demo
+title: Portal Administrator
+mail: eduardo@dxdemo.com
+userPassword: ${LDAP_USERS_PASSWORD}
+
+dn: uid=macarena,ou=users,dc=dxdemo,dc=com
+objectClass: inetOrgPerson
+uid: macarena
+cn: Macarena
+givenName: Macarena
+sn: Demo
+title: Content Author
+mail: macarena@dxdemo.com
+userPassword: ${LDAP_USERS_PASSWORD}
+
+dn: uid=enrique,ou=users,dc=dxdemo,dc=com
+objectClass: inetOrgPerson
+uid: enrique
+cn: Enrique
+givenName: Enrique
+sn: Demo
+title: Content Author
+mail: enrique@dxdemo.com
+userPassword: ${LDAP_USERS_PASSWORD}
+
+dn: uid=jordi,ou=users,dc=dxdemo,dc=com
+objectClass: inetOrgPerson
+uid: jordi
+cn: Jordi
+givenName: Jordi
+sn: Demo
+title: Content Author
+mail: jordi@dxdemo.com
+userPassword: ${LDAP_USERS_PASSWORD}
+
+dn: uid=patricia,ou=users,dc=dxdemo,dc=com
+objectClass: inetOrgPerson
+uid: patricia
+cn: Patricia
+givenName: Patricia
+sn: Demo
+title: Marketing
+mail: patricia@dxdemo.com
+userPassword: ${LDAP_USERS_PASSWORD}
+
+dn: uid=german,ou=users,dc=dxdemo,dc=com
+objectClass: inetOrgPerson
+uid: german
+cn: German
+givenName: German
+sn: Demo
+title: Marketing
+mail: german@dxdemo.com
+userPassword: ${LDAP_USERS_PASSWORD}
+
+dn: cn=dxadmins,ou=groups,dc=dxdemo,dc=com
+objectClass: groupOfUniqueNames
+cn: dxadmins
+description: Administradores del portal (permisos en DX: GUIA.md, Lab 2A paso 4)
+uniqueMember: uid=andres,ou=users,dc=dxdemo,dc=com
+uniqueMember: uid=eduardo,ou=users,dc=dxdemo,dc=com
+
+dn: cn=dxauthors,ou=groups,dc=dxdemo,dc=com
+objectClass: groupOfUniqueNames
+cn: dxauthors
+description: Autores de contenido
+uniqueMember: uid=macarena,ou=users,dc=dxdemo,dc=com
+uniqueMember: uid=enrique,ou=users,dc=dxdemo,dc=com
+uniqueMember: uid=jordi,ou=users,dc=dxdemo,dc=com
+
+dn: cn=dxmarketing,ou=groups,dc=dxdemo,dc=com
+objectClass: groupOfUniqueNames
+cn: dxmarketing
+description: Marketing
+uniqueMember: uid=patricia,ou=users,dc=dxdemo,dc=com
+uniqueMember: uid=german,ou=users,dc=dxdemo,dc=com

@@ -1,0 +1,19 @@
+# Solo OpenShift (PLATFORM=openshift). Lo aplica common/01-namespaces.sh sustituyendo las variables.
+# Anotaciones exigidas por HCL para el namespace de DX (rango de UID y grupos que asigna la SCC
+# restricted-v2 a los pods; los contenedores de DX corren con UID/GID 1000-1001).
+# Documentación: DX Compose CF238 > Preparation > Mandatory tasks > Preparing the namespace.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${DX_NS}
+  annotations:
+    openshift.io/sa.scc.mcs: "s0:c24,c4"
+    openshift.io/sa.scc.supplemental-groups: "1001/10000"
+    openshift.io/sa.scc.uid-range: "1000/10000"
+---
+# El namespace de terceros no necesita anotaciones: CNPG y LiteLLM funcionan con restricted-v2
+# usando el rango que OpenShift asigna. Para OpenLDAP ver lab2-ldap-postgres/a-ldap/openldap-values.yaml.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${SHARED_NS}

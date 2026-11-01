@@ -1,0 +1,18 @@
+# ------------------------------------------------------------------------------------------
+# Lab 4 · Capa de DX: Search V2 con OpenSearch
+# La añade common/dx-helm.sh en cuanto existe el servicio dx-search-search-middleware-query.
+# Documentación: DX Compose CF238 > Enabling Search V2.
+# ------------------------------------------------------------------------------------------
+networking:
+  # Servicio "query" del Search Middleware (<release de búsqueda>-search-middleware-query), en el
+  # mismo namespace. HAProxy enruta a él /dx/api/search y /dx/ui/search.
+  searchMiddlewareService: "dx-search-search-middleware-query"
+
+configuration:
+  searchMiddleware:
+    # Activa Search V2 en DX Compose (la interfaz V2 ya viene activada en el Web Engine)
+    enabled: true
+    # Release de hcl-dx-search: de ella se lee la credencial push-admin compartida (valor por defecto)
+    searchReleaseName: "dx-search"
+    # DAM envía sus activos al índice
+    damIndexing: true

@@ -1,0 +1,15 @@
+# Lab 3 · Apéndice · Capa opcional de IQ: sesiones de chat en el PostgreSQL de dx-shared (dx-pg)
+# Requiere el Lab 2B (cluster dx-pg) y ./A1-iq-database.sh. Uso:
+#   ./04-iq-install.sh -f custom-iq-values.db-external.yaml
+configuration:
+  database:
+    enabled: true
+    dbHost: "dx-pg-rw.dx-shared.svc.cluster.local"   # = PG_HOST
+    dbPort: 5432
+    dbName: "iqdb"
+    dbCustomSecret: "custom-external-db-credentials" # secret en dx-demo (username/password)
+    dbTlsEnabled: false                              # CNPG sirve TLS: se puede poner true
+
+scaling:
+  replicas:
+    integrator: 1            # con PostgreSQL ya se podría escalar a más de 1

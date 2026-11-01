@@ -1,0 +1,18 @@
+# OpenShift (PLATFORM=openshift) · Route de DX con TLS passthrough. Lo aplica 03-expose.sh.
+# El router de OpenShift no descifra el tráfico: el TLS lo termina HAProxy de DX con dx-tls-cert.
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: ${DX_RELEASE}-passthrough
+  namespace: ${DX_NS}
+spec:
+  host: ${DX_HOST}
+  port:
+    targetPort: "haproxy"
+  to:
+    kind: Service
+    name: ${DX_RELEASE}-haproxy
+    weight: 100
+  tls:
+    termination: passthrough
+    insecureEdgeTerminationPolicy: None

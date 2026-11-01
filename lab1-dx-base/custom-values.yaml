@@ -1,0 +1,81 @@
+# ------------------------------------------------------------------------------------------
+# Lab 1 · custom-values.yaml base de DX Compose · chart hcl-dx-deployment 2.49.0 (CF238)
+#
+# Es la capa base para TODAS las iteraciones. Los labs siguientes no lo modifican: añaden sus
+# propias capas con -f (ver common/dx-helm.sh). Solo contiene lo que cambia respecto a los
+# valores por defecto del chart (charts/values-dx-default-2.49.0.yaml).
+#
+# El FQDN (networking.webEngine.host) no está aquí: lo pasa common/dx-helm.sh desde DX_HOST.
+# ------------------------------------------------------------------------------------------
+
+# Imágenes: directamente del Harbor oficial de HCL. Los nombres (dx-compose/webengine, ...) y los
+# tags de CF238 ya vienen en el chart, así que solo cambiamos el registro y el pull secret.
+images:
+  repository: "hclcr.io"
+  imagePullSecrets:
+    - name: regcred          # lo crea lab1-dx-base/01-secrets.sh
+
+# Volúmenes: las dos StorageClasses de los requisitos (RWO y RWX)
+volumes:
+  digitalAssetManagement:
+    binaries:                # compartido por todos los pods de DAM -> RWX
+      storageClassName: "dx-deploy-rwx"
+      requests:
+        storage: "10Gi"
+  persistenceNode:
+    database:                # PostgreSQL interno de DX (DAM, People Service, IQ interno)
+      storageClassName: "dx-deploy-rwo"
+      requests:
+        storage: "10Gi"
+  licenseManager:
+    data:
+      storageClassName: "dx-deploy-rwo"
+      requests:
+        storage: "2Gi"
+  webEngine:
+    customization:           # perfil del servidor y Derby (mínimo 5Gi: Derby ocupa ~700Mi)
+      storageClassName: "dx-deploy-rwo"
+      requests:
+        storage: "5Gi"
+    log:
+      storageClassName: "dx-deploy-rwo"
+      requests:
+        storage: "5Gi"
+
+# Qué se despliega: DX Compose = Web Engine (no Core). Sin el OpenLDAP de DX (usaremos uno
+# externo en el Lab 2) y sin Remote Search.
+applications:
+  core: false
+  webEngine: true
+  openLdap: false            # el valor por defecto del chart es true
+  remoteSearch: false
+  persistence: true          # Persistence Node: base de datos de DAM
+
+peopleservice:
+  enabled: false
+
+networking:
+  haproxy:
+    # ClusterIP: se publica con un Ingress (Kubernetes) o una Route (OpenShift), ver 03-expose.sh
+    serviceType: "ClusterIP"
+  # Certificado TLS que sirve HAProxy (lo crea 01-secrets.sh)
+  tlsCertSecret: "dx-tls-cert"
+
+security:
+  webEngine:
+    # Credenciales de wpsadmin en un secret. Con customWebEngineSecret, usuario y contraseña
+    # en claro deben ir vacíos (si no, el chart se niega a instalar).
+    webEngineUser: null
+    webEnginePassword: null
+    customWebEngineSecret: "web-engine-secret"
+
+logging:
+  webEngine:
+    level:
+      - "*=info"
+
+configuration:
+  containerTimezone: "Europe/Madrid"
+  # Contenedor que valida los requisitos (almacenamiento, recursos) antes de arrancar cada pod
+  prereqsChecker:
+    enabled: true

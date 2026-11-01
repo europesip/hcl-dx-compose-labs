@@ -1,0 +1,26 @@
+# ------------------------------------------------------------------------------------------
+# Lab 2A · Capa de DX: autenticación contra el OpenLDAP de dx-shared
+# La añade common/dx-helm.sh en cuanto existe el secret dx-ldap-bind (03-dx-upgrade.sh).
+#
+# Usa la configuración LDAP NATIVA del chart (configuration.webEngine.ldap, type "other"),
+# documentada en DX Compose CF238 > Configuring LDAP. El chart genera el <ldapRegistry> y el
+# <federatedRepository> de Open Liberty; solo para filtros o atributos especiales haría falta
+# un configOverrideFiles con XML propio.
+#
+# Se mantiene el registro básico (security.webEngine.basicRegistry.enabled: true, valor por
+# defecto): el repositorio federado incluye a la vez el registro básico (wpsadmin) y el LDAP, así
+# que wpsadmin sigue entrando y los usuarios del LDAP también. Si se desactivase, el administrador
+# tendría que existir en el LDAP y webEngineUser debería ser su DN completo.
+# ------------------------------------------------------------------------------------------
+configuration:
+  webEngine:
+    ldap:
+      type: "other"                 # none | dx (OpenLDAP de DX) | other (LDAP externo)
+      host: "openldap.dx-shared.svc.cluster.local"   # = ${LDAP_HOST} de env.sh
+      port: 389
+      sslEnabled: false             # laboratorio; en producción 636 + truststore (ver GUIA)
+      suffix: "dc=dxdemo,dc=com"    # baseDN de las búsquedas
+      serverType: "Custom"
+      id: "dx_ldap"
+      # Usuario (DN completo) y contraseña de bind en un secret con claves bindUser/bindPassword
+      customLdapSecret: "dx-ldap-bind"

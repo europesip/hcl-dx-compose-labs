@@ -1,0 +1,22 @@
+# Solo OpenShift, y solo si la instalación la hace un usuario sin cluster-admin (p. ej. "dxadmin").
+# En el webinar (k3s) trabajamos con el kubeconfig de administrador y este fichero no se usa.
+#
+# Como cluster-admin:
+#   oc adm policy add-role-to-user admin dxadmin -n dx-demo
+#   oc adm policy add-role-to-user admin dxadmin -n dx-shared
+#   oc apply -f common/openshift/rbac-dx-installer.yaml
+#   oc adm policy add-role-to-user dx-installer-extra-perms dxadmin -n dx-demo
+#
+# El rol "admin" de OpenShift no incluye EndpointSlices ni endpoints/restricted, que el chart de DX
+# necesita gestionar. Este ClusterRole (asignado solo en el namespace) añade esos permisos.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: dx-installer-extra-perms
+rules:
+  - apiGroups: ["discovery.k8s.io"]
+    resources: ["endpointslices"]
+    verbs: ["create", "update", "delete", "get", "list", "watch", "patch"]
+  - apiGroups: [""]
+    resources: ["endpoints/restricted"]
+    verbs: ["create"]

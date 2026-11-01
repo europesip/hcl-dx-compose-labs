@@ -1,0 +1,57 @@
+# ------------------------------------------------------------------------------------------
+# Lab 4 · custom-search-values.yaml · chart hcl-dx-search 2.36.0 (CF238) · release dx-search
+# Solo lo que cambia respecto a los valores por defecto (charts/values-search-default-2.36.0.yaml).
+# El adminDN no está aquí: lo genera 01-certs.sh en admin-dn.rendered.yaml.
+#
+# hcl-dx-search es software de HCL: va en dx-demo, en el MISMO namespace que DX. Así:
+#   - HAProxy de DX enruta /dx/api/search y /dx/ui/search a <release>-search-middleware-query
+#   - la búsqueda detecta sola el HAProxy de DX para las consultas de permisos (ACL)
+#   - los dos charts comparten la credencial push-admin (DAM empuja sus activos al índice)
+# ------------------------------------------------------------------------------------------
+images:
+  repository: "hclcr.io"
+  imagePullSecrets:
+    - name: regcred
+  # nombres (dx-compose/dx-opensearch, ...) y tags de CF238: los del chart
+
+volumes:
+  openSearchManager:
+    data:
+      storageClassName: "dx-deploy-rwo"   # el chart trae "manual" por defecto
+      requests:
+        storage: "5Gi"
+
+applications:
+  openSearch: true
+  searchMiddleware: true
+  # Extrae el texto de documentos (Office, PDF...) de DAM para indexarlo (1 CPU / 2 GiB).
+  # El chart lo trae desactivado, pero el Search Middleware de CF238 lo busca igualmente y, sin él,
+  # registra "Could not connect to file processor" cada 3 segundos: lo activamos.
+  fileProcessor: true
+
+security:
+  # searchadmin y pushadmin: contraseñas vacías -> el chart las genera y las guarda en secrets.
+  # pushadmin debe coincidir con la de DX: con las releases dx-deployment / dx-search en el mismo
+  # namespace, los dos charts convergen solos en el mismo secret (por eso no se crean a mano).
+  pushAdministration:
+    deploymentReleaseName: "dx-deployment"   # = DX_RELEASE
+
+configuration:
+  containerTimezone: "Europe/Madrid"
+  automatedSetup:
+    # Release de DX en el mismo namespace: crea las fuentes de contenido y los rastreadores
+    dxDeploymentName: "dx-deployment"        # = DX_RELEASE
+    # Protocolo con el que los rastreadores y las consultas de permisos (ACL) llaman al HAProxy de
+    # DX. Por defecto "http" (puerto 80), pero el HAProxy de DX solo escucha en 443 con TLS
+    # (networking.haproxy.ssl: true, el valor por defecto): sin esto, timeout y 0 documentos.
+    haproxyProtocol: "https"
+    digitalAssetManagement:
+      enabled: true
+    wcm:
+      enabled: true          # rastreo cada 15 minutos (crawlerSchedule)
+    jcr:
+      enabled: true
+    portal:
+      enabled: true
+    people:
+      enabled: false         # People Service no está instalado en el webinar

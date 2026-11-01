@@ -1,0 +1,19 @@
+# ------------------------------------------------------------------------------------------
+# Lab 2 · Rama empresarial · Capa de DX: Web Engine sobre Oracle (transferencia desde Derby)
+# La añade common/dx-helm.sh EN LUGAR de la capa PostgreSQL cuando existe el secret dx-oracle-ca
+# (conexión TCPS). Sin TLS no hace falta: la capa PostgreSQL es idéntica salvo el truststore.
+#
+# Oracle SÍ está soportado por HCL para el Web Engine en CF238 (19c y 21c, AL32UTF8/AL16UTF16).
+# Documentación: DX Compose CF238 > Configuring an external database and database transfer.
+# ------------------------------------------------------------------------------------------
+configuration:
+  webEngine:
+    useExternalDatabase: true
+    customDbTypePropertiesSecret: custom-credentials-webengine-dbtype-secret
+    customDbDomainPropertiesSecret: custom-credentials-webengine-dbdomain-secret
+    # false con la PDB recién creada por setup-oracle-dx.sql. true SOLO para rehacer la
+    # transferencia sobre esquemas con tablas (las BORRA); después, de nuevo false.
+    dropDatabaseTables: false
+    # CA del listener TCPS en el truststore del Web Engine (requiere reinicio del pod)
+    customTruststoreSecrets:
+      oracle-ca: "dx-oracle-ca"
