@@ -111,65 +111,88 @@ Namespace and release names, StorageClasses, host name and passwords are all var
 
 ## How to use this repository
 
+### Step 1 · Clone the repository
+
+To use these labs, first clone the repository and work from its root folder:
+
 ```bash
 git clone https://github.com/europesip/hcl-dx-compose-labs.git
 cd hcl-dx-compose-labs
 ```
 
-Then create your `env.sh` (it is **never** committed: it is in `.gitignore`) in one of two ways.
-Both produce the same result and the scripts work the same way:
+### Step 2 · Choose how to do the labs
 
-**A. By hand** (what the guides describe; **the recommended path**):
+There are two ways. Both install exactly the same thing.
 
-```bash
-cp env.example.sh env.sh        # your configuration
-vi env.sh                       # fill in the variables marked with  # <<<
-                                # (by default every lab password is EuropeS1P)
-source ./env.sh
-```
+#### Way 1 · By hand, following the guides (recommended)
 
-**B. With the optional [configuration wizard](https://europesip.github.io/hcl-dx-compose-labs/about.html)**
-(*experimental, work in progress*). A static web page (English / Spanish) that asks for your
-platform, host name, StorageClasses, namespaces and the labs you want (pre-filled with the values of the reference
-lab environment; only the Harbor and OpenRouter credentials are empty), and gives you three options:
+This is the main path of the labs and the best one to learn.
 
-- **Option A · only `env.sh`**: just the configuration file; then you follow the labs manually with
-  the guides.
-- **Option B · `env.sh` + `RUNBOOK.md`** (ZIP): also a personalised, read-only `RUNBOOK.md` with the
-  instructions to build, one after the other, the labs you selected: the scripts to run and the
-  equivalent `kubectl` / `helm` commands with your values.
-- **Option C · direct installation** (ZIP with a `dx-install/` folder): a **self-contained,
-  tailor-made installation**. Every file (values, properties, LDIF, secrets) is already filled in
-  with your values, credentials included in plain text; `RUNBOOK.md` has short, easy-to-follow
-  commands (checks marked as optional) and `install.sh` runs them one after the other showing the
-  lab and step. It does not need this repository, so it can be sent to someone who has nothing
-  else; only `setup-postgres-dx.sql` (Lab 2B) has to be copied into it by hand.
-  ```bash
-  unzip dx-compose-labs-install.zip && cd dx-install && ./install.sh   # --list, --verify, --from <step>
-  ```
+1. **Create your configuration** `env.sh` (it is **never** committed: it is in `.gitignore`) and load it:
 
-> ⚠️ **The wizard is a work in progress and must be treated as experimental.** It aims to make the
-> installation easier and clearer, but **the recommended path today is A, without the wizard**.
-> It is a simplified, functional option specific to these labs; EUROPESIP has another wizard
-> developed internally, with advanced features and more customisation options, available on demand.
+   ```bash
+   cp env.example.sh env.sh        # your configuration
+   vi env.sh                       # fill in the variables marked with  # <<<
+                                   # (by default every lab password is EuropeS1P)
+   source ./env.sh
+   ```
 
-**Your credentials stay yours, and you can check it.** The wizard is **one single `index.html`** (plus an `about.html` page with the explanations)
-with plain HTML, CSS and JavaScript (**no React, no frameworks, no build, no dependencies**), so it
-is easy to review and it runs on GitHub Pages as is:
+2. **Do each lab in order** ([Lab 1](lab1-dx-base/GUIDE.md), then [Lab 2](lab2-ldap-postgres/GUIDE.md),
+   [Lab 3](lab3-iq-openrouter/GUIDE.md) and [Lab 4](lab4-opensearch/GUIDE.md)). Open its guide and run its
+   numbered scripts one by one, always from the root of the repository. For example, Lab 1:
 
-- **Source code**: [europesip/hcl-dx-compose-labs-wizard](https://github.com/europesip/hcl-dx-compose-labs-wizard)
-  (its own repository) and the published copy in this repository, [docs/index.html](docs/index.html).
-- **Use it online** on GitHub Pages, without installing anything: start at the
-  [about page](https://europesip.github.io/hcl-dx-compose-labs/about.html) (what it does, privacy,
-  source code), or go straight to the [wizard](https://europesip.github.io/hcl-dx-compose-labs/).
-- **Or run it locally**: download `index.html` (and `about.html`) and open it in your browser (it works offline).
-- It runs **entirely in your browser** and a Content-Security-Policy (`connect-src 'none'`) stops
-  the browser from sending anything anywhere. Secrets (Harbor token, OpenRouter key, passwords) can
-  be left empty and filled in later in `env.sh`. The scripts are still what installs everything;
-  the wizard never talks to your cluster.
+   ```bash
+   common/00-check-prereqs.sh       # check the requirements (read-only)
+   common/01-namespaces.sh          # namespaces
+   common/02-pull-hcl-charts.sh     # HCL charts from hclcr.io
+   lab1-dx-base/01-secrets.sh       # secrets
+   lab1-dx-base/02-install-dx.sh    # install DX
+   lab1-dx-base/03-expose.sh        # external access
+   lab1-dx-base/99-verify.sh        # check
+   ```
 
-After that, follow the guides in order. Every step is a numbered script you can read before
-running it; the guides explain what each one does and the equivalent command by hand.
+   Every script can be read before running it, and the guide explains what it does and the
+   equivalent command by hand. The scripts load `env.sh` by themselves.
+
+#### Way 2 · With the configuration wizard (optional, experimental)
+
+The [configuration wizard](https://europesip.github.io/hcl-dx-compose-labs/about.html) is an
+**optional** web page (English / Spanish) that asks for your platform, host name, StorageClasses,
+namespaces and the labs you want (pre-filled with the values of the reference lab environment) and
+makes things easier in one of two ways:
+
+- **It prepares the configuration for the manual path**:
+  - **Option A · only `env.sh`**: you skip step 1 of Way 1 and continue with the labs.
+  - **Option B · `env.sh` + `RUNBOOK.md`**: the same, plus a personalised guide with the scripts to
+    run in order and the equivalent commands with your values.
+- **Or it automates much more of the installation**:
+  - **Option C · direct installation** (`dx-install/` folder): every file already filled in with
+    your values and an `install.sh` that runs all the steps of the labs you chose, showing the lab
+    and step it is in. It does not even need this repository, so it can be sent to someone who
+    has nothing else (only `setup-postgres-dx.sql`, for Lab 2B, is copied in by hand). It carries
+    credentials in plain text: keep it private.
+
+    ```bash
+    unzip dx-compose-labs-install.zip && cd dx-install && ./install.sh   # --list, --verify, --from <step>
+    ```
+
+The [about page](https://europesip.github.io/hcl-dx-compose-labs/about.html#options) compares the
+three options side by side.
+
+> ⚠️ **The wizard is a work in progress and must be treated as experimental.** The recommended path
+> today is **Way 1, by hand**. It is a simplified option specific to these labs; EUROPESIP has
+> another wizard developed internally, with advanced features and more customisation options,
+> available on demand.
+
+**Your credentials stay yours, and you can check it.** The wizard is a single `index.html` (plus
+`about.html` with the explanations) in plain HTML, CSS and JavaScript (**no frameworks, no build,
+no dependencies**). It runs **entirely in your browser**: a Content-Security-Policy
+(`connect-src 'none'`) stops it from sending anything anywhere, and it never talks to your cluster.
+Use it online on [GitHub Pages](https://europesip.github.io/hcl-dx-compose-labs/), or download it
+and open it locally (it works offline). Source code: [docs/](docs/) and its own repository,
+[europesip/hcl-dx-compose-labs-wizard](https://github.com/europesip/hcl-dx-compose-labs-wizard).
+
+### What is in the repository
 
 ```
 lab0-poc-wsl/              Lab 0 (optional): single-node PoC with k3s on WSL2
@@ -185,7 +208,8 @@ lab2-ldap-postgres/        Lab 2 (a-ldap/ and b-postgres/; enterprise/ = Active 
 lab3-iq-openrouter/        Lab 3 (06-iq-chat-test.sh: ask IQ from the terminal; custom-mcp/ = 3B)
 lab4-opensearch/           Lab 4 (Search V2 with OpenSearch)
 docs/                      requirements, Kubernetes vs OpenShift, troubleshooting, cleanup
-                           (and docs/index.html: the configuration wizard, served by GitHub Pages)
+                           (and the configuration wizard, served by GitHub Pages)
+tools/                     maintenance (keeps the wizard in sync with the labs, see CONTRIBUTING.md)
 ```
 
 Every guide exists in English (`GUIDE.md`) and Spanish (`GUIDE.es.md`).
