@@ -2,6 +2,22 @@
 
 **Punto de partida:** el Lab 1 terminado (DX en `dx-demo`, accesible por `https://$DX_HOST`).
 
+**⏱ Tiempo estimado: ~27 minutos** (2A ~10 min · 2B ~17 min).
+
+| Iteración · paso | Tiempo |
+|---|---|
+| 2A-1/2 · OpenLDAP y su prueba | ~1 min |
+| 2A-3 · `helm upgrade` de DX con LDAP (reinicia el Web Engine) | ~5 min |
+| 2A-4 · Rol de administrador para `dxadmins` en la consola del portal | ~3 min |
+| 2B-1/2/3 · Operador CNPG, usuarios y cluster PostgreSQL | ~2 min |
+| 2B-4 · Secrets de propiedades | segundos |
+| 2B-5 · Transferencia de Derby a PostgreSQL (`helm upgrade`) | **~14 min** |
+| Comprobaciones | ~1 min |
+
+> Tiempos de ejecución medidos en el clúster del webinar (k3s, 3 workers de 14 CPU / 20 GiB), sin
+> contar las explicaciones. La primera vez en un clúster nuevo hay que sumar la descarga de las
+> imágenes de HCL desde `hclcr.io`, que depende de la red.
+
 **Objetivo:** dos iteraciones sobre la instalación existente, cada una con un `helm upgrade`:
 
 | Iteración | Qué cambia | En `dx-shared` | Capa de DX |

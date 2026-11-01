@@ -6,6 +6,10 @@
 > ya existentes y gestionados por otros equipos. Esta rama muestra cómo se conecta DX Compose a
 > ellos, como referencia para llevar el laboratorio a un entorno real.
 
+**⏱ Tiempo estimado:** en DX, el mismo que en la rama demo (~5 min el `helm upgrade` del AD y
+~14 min la transferencia a Oracle). A eso se suma la preparación del lado corporativo (cuenta de
+servicio y CA del AD; PDB, script SQL y listener TCPS de Oracle), que depende de cada empresa.
+
 Las dos iteraciones son las mismas que en la rama demo; solo cambia contra qué se conecta DX:
 
 | Iteración | Rama demo | Rama empresarial | Qué cambia en DX |

@@ -3,19 +3,35 @@
 Laboratorios del webinar **"Instalar HCL Digital Experience Compose paso a paso"**. Se parte de un
 clúster vacío y se construye la plataforma en tres laboratorios, cada uno sobre el anterior:
 
-| Lab | Qué se hace | Duración aprox. |
+| Lab | Qué se hace | ⏱ Ejecución |
 |---|---|---|
-| [Lab 1 · DX base](lab1-dx-base/GUIA.md) | Requisitos, namespaces, secrets, Helm chart desde el Harbor de HCL, instalación y acceso externo | 40 min (25 de espera) |
-| [Lab 2 · LDAP y PostgreSQL](lab2-ldap-postgres/GUIA.md) | **2A**: autenticación contra un OpenLDAP. **2B**: transferencia de la base de datos del Web Engine de Derby a PostgreSQL | 30 min |
+| [Lab 1 · DX base](lab1-dx-base/GUIA.md) | Requisitos, namespaces, secrets, Helm chart desde el Harbor de HCL, instalación y acceso externo | ~10 min |
+| [Lab 2 · LDAP y PostgreSQL](lab2-ldap-postgres/GUIA.md) | **2A**: autenticación contra un OpenLDAP. **2B**: transferencia de la base de datos del Web Engine de Derby a PostgreSQL | ~27 min (2A ~10 · 2B ~17) |
 | ↳ [Lab 2 · rama empresarial](lab2-ldap-postgres/GUIA-empresa.md) *(opcional)* | Las mismas iteraciones contra **Active Directory** (con `configOverrideFiles`) y **Oracle** (TCPS), habituales en empresas corporativas | referencia |
-| [Lab 3 · IQ con OpenRouter](lab3-iq-openrouter/GUIA.md) | **3A**: asistente de IA de DX (IQ) usando LiteLLM como proxy hacia OpenRouter (Claude). **3B**: añadir un MCP Server propio (horario de soporte de EUROPESIP) | 35 min |
-| [Lab 4 · Búsqueda con OpenSearch](lab4-opensearch/GUIA.md) | Search V2: OpenSearch + Search Middleware (`hcl-dx-search` 2.36.0), certificados y `adminDN`, rastreo de WCM, portal y JCR y búsqueda por API | 25 min |
+| [Lab 3 · IQ con OpenRouter](lab3-iq-openrouter/GUIA.md) | **3A**: asistente de IA de DX (IQ) usando LiteLLM como proxy hacia OpenRouter (Claude). **3B**: MCP Server propio de EUROPESIP (servicios, soporte, laboratorios y la herramienta figma&web-to-dx) | ~13 min (3A ~10 · 3B ~3) |
+| [Lab 4 · Búsqueda con OpenSearch](lab4-opensearch/GUIA.md) | Search V2: OpenSearch + Search Middleware (`hcl-dx-search` 2.36.0), certificados y `adminDN`, rastreo de WCM, portal y JCR y búsqueda por API | ~10 min |
+| | **Total de ejecución** | **~60 min** |
 
 Versiones: **HCL DX Compose 9.5 CF238**, charts `hcl-dx-deployment` **2.49.0**, `hcl-dx-iq`
 **1.0.2** y `hcl-dx-search` **2.36.0**. Documentación oficial:
 [Installing DX Compose (CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/install/kubernetes_deployment/install/).
 
 ---
+
+### Planificar el webinar
+
+Los tiempos son de **ejecución**, medidos en tres instalaciones completas desde cero en el clúster
+del webinar. Tenlos en cuenta al preparar la sesión:
+
+- **Casi todo el tiempo es espera de Helm**: cada `helm upgrade` de DX reinicia el Web Engine
+  (~5 min) y la transferencia del Lab 2B tarda ~14 min. Es el momento de explicar la teoría de la
+  siguiente iteración.
+- **Primera instalación en un clúster nuevo**: hay que sumar la descarga de las imágenes de HCL
+  desde `hclcr.io`, que depende de la red. Para la sesión en directo conviene haber hecho antes una
+  instalación de prueba (o una descarga previa) para que los nodos ya tengan las imágenes.
+- **Labs independientes**: el 3 y el 4 solo necesitan el Lab 1. Si hay poco tiempo, el Lab 2B
+  (el más largo) puede quedar como ejercicio para después.
+- Con explicaciones y preguntas, calcula aproximadamente el doble del tiempo de ejecución.
 
 ## Entorno del webinar
 

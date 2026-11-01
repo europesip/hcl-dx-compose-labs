@@ -3,7 +3,17 @@
 **Objetivo:** instalar HCL DX Compose CF238 en el namespace `dx-demo` desde el Harbor oficial de
 HCL y acceder al portal en `https://$DX_HOST/wps/portal`.
 
-**Duración:** ~40 minutos, de los que ~25 son de espera mientras arrancan los pods.
+**⏱ Tiempo estimado: ~10 minutos** (+ la descarga de imágenes la primera vez).
+
+| Paso | Tiempo |
+|---|---|
+| 0-3 · Requisitos, namespaces, charts y secrets | ~2 min |
+| 4 · `helm install` de DX (casi todo es espera mientras arrancan los pods) | ~5 min |
+| 5-6 · Acceso externo y comprobación | ~1 min |
+
+> Tiempos de ejecución medidos en el clúster del webinar (k3s, 3 workers de 14 CPU / 20 GiB), sin
+> contar las explicaciones. La primera vez en un clúster nuevo hay que sumar la descarga de las
+> imágenes de HCL desde `hclcr.io`, que depende de la red.
 
 Documentación de HCL:
 [Installing DX Compose (CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/install/kubernetes_deployment/install/) ·

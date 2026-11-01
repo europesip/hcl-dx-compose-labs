@@ -2,6 +2,20 @@
 
 **Punto de partida:** Lab 1 terminado (el Lab 2 es opcional para este lab, salvo el apéndice).
 
+**⏱ Tiempo estimado: ~13 minutos** (3A ~10 min · 3B ~3 min).
+
+| Paso | Tiempo |
+|---|---|
+| 1-3 · Secrets, LiteLLM y su prueba con OpenRouter | ~1 min |
+| 4 · Instalar IQ (Integrator y MCP Server) | ~2 min |
+| 5 · `helm upgrade` de DX con IQ (reinicia HAProxy, Web Engine y Persistence Node) | ~5 min |
+| Comprobar · `99-verify.sh` y `06-iq-chat-test.sh` (cada pregunta, 5-11 s) | ~1 min |
+| 3B · MCP propio: desplegar, probar y registrar | ~3 min |
+
+> Tiempos de ejecución medidos en el clúster del webinar (k3s, 3 workers de 14 CPU / 20 GiB), sin
+> contar las explicaciones. La primera vez en un clúster nuevo hay que sumar la descarga de las
+> imágenes de HCL desde `hclcr.io`, que depende de la red.
+
 **Objetivo:** activar **IQ**, el asistente de IA de DX, usando **Claude** a través de
 **OpenRouter**, con un proxy **LiteLLM** en `dx-shared`.
 
@@ -175,13 +189,14 @@ Practitioner Studio habilitado, que es lo normal en DX Compose) y prueba:
 IQ no está limitado a las herramientas de HCL. Un **MCP Server** (*Model Context Protocol*) es un
 servicio que publica **herramientas**: funciones con nombre, descripción y parámetros que el LLM
 puede decidir llamar. El MCP Server de HCL publica 53 (WCM y DAM). Aquí añadimos uno propio con
-información que el modelo no puede saber: la base de conocimiento de EUROPESIP, por ejemplo **el
-horario de soporte**.
+información que el modelo no puede saber: **quién es EUROPESIP y qué servicios ofrece**, su horario
+de soporte, dónde están estos laboratorios... y una herramienta, **figma&web-to-dx**, que presenta
+la solución de EUROPESIP para generar componentes de DX a partir de diseños.
 
 ```
                                 ┌─► dx-iq-mcp-server:3000            (HCL, dx-demo)    53 herramientas
  IQ Integrator ── tools/list ───┤
-   (dx-demo)                    └─► europesip-mcp.dx-shared:3000     (propio, dx-shared) 2 herramientas
+   (dx-demo)                    └─► europesip-mcp.dx-shared:3000     (propio, dx-shared) 4 herramientas
 ```
 
 Es software propio, no de HCL, así que va en **`dx-shared`**.
@@ -191,19 +206,36 @@ Es software propio, no de HCL, así que va en **`dx-shared`**.
 
 ### El servidor
 
-[mcp-propio/server.py](mcp-propio/server.py): unas 80 líneas de Python con el SDK oficial de MCP
-(`FastMCP`). Lo esencial:
+[mcp-propio/server.py](mcp-propio/server.py): unas 170 líneas de Python con el SDK oficial de MCP
+(`FastMCP`). Publica cuatro herramientas:
+
+| Herramienta | IQ la usa cuando el usuario... | Devuelve |
+|---|---|---|
+| `consultar_servicios_europesip()` | pregunta quién es EUROPESIP o qué servicios ofrece | Empresa especializada en productos de HCL e IBM, con amplia experiencia en portales y Domino, fuertes conocimientos en IA (herramientas propias que facilitan su uso y aceleran el desarrollo) y énfasis en la soberanía digital. Remite a https://www.europesip.com |
+| `consultar_faq_europesip(tema)` | pregunta por el soporte, la IA, la soberanía digital, los laboratorios, la web o el contacto | El tema pedido. Para "laboratorios", el enlace a este repositorio (https://github.com/europesip/hcl-dx-compose-labs) |
+| `figma_web_to_dx(origen)`, mostrada como **figma&web-to-dx** | quiere crear una página o un componente de WCM / Blueprint a partir de Figma, un pantallazo o la URL de un sitio | Que EUROPESIP tiene una herramienta MCP integrada con HCL DX IQ para acelerar el desarrollo de componentes Blueprint desde URLs de Figma, pantallazos o URLs de sitios, y que contacten con EUROPESIP |
+| `eco_europesip(texto)` | pide expresamente probar el eco | Diagnóstico |
 
 ```python
 mcp = FastMCP("europesip-kb", stateless_http=True, json_response=True, ...)
 
-@mcp.tool()
-def consultar_faq_europesip(tema: str) -> str:
-    """Consulta la base de conocimiento interna de EUROPESIP (empresa partner de HCL).
-    Úsala cuando el usuario pregunte por el soporte de EUROPESIP, su laboratorio o cómo
-    tiene configurado IQ. Temas disponibles: soporte, laboratorio, iq."""
+@mcp.tool(name="figma_web_to_dx", title="figma&web-to-dx")
+def figma_web_to_dx(origen: str = "") -> str:
+    """figma&web-to-dx: diseña páginas web o componentes de WCM / Blueprint de HCL DX a partir de un
+    diseño de Figma, un pantallazo o la URL de un sitio externo. Úsala cuando el usuario quiera
+    crear un componente, una plantilla o una página de DX desde un diseño, una imagen o una web."""
     ...
 ```
+
+Dos detalles que conviene explicar:
+
+- **Nombre técnico frente a nombre visible.** IQ (y Claude) solo aceptan nombres de herramienta con
+  `[a-zA-Z0-9_-]`, así que `figma&web-to-dx` no puede ser el nombre: la herramienta se llama
+  `figma_web_to_dx` y su nombre visible (`title`) y su descripción dicen `figma&web-to-dx`.
+- **Que el modelo no se invente nada.** Con datos de empresa, el modelo tiende a "adornar" (en las
+  pruebas llegó a escribir "partner oficial" o servicios que no le habíamos dado). Cada respuesta
+  del servidor termina con una instrucción para que se ciña a esa información y remita a la web
+  para el resto. Las respuestas que da IQ pasan a ceñirse a los datos.
 
 Lo que tiene que cumplir para que IQ lo use:
 
@@ -211,7 +243,7 @@ Lo que tiene que cumplir para que IQ lo use:
 |---|---|
 | MCP sobre HTTP *streamable* en `POST /mcp`, sin sesiones | `stateless_http=True`, `json_response=True` (como el MCP de HCL) |
 | `GET /probe/ready` → 200 | El Integrator lo consulta antes de pedir las herramientas |
-| Nombres de herramienta `[a-zA-Z0-9_-]` | `consultar_faq_europesip` (el Integrator le antepone un prefijo por servidor: `562b68ed_...`) |
+| Nombres de herramienta `[a-zA-Z0-9_-]` | `figma_web_to_dx`, con el nombre visible en `title` (el Integrator antepone un prefijo por servidor: `562b68ed_...`) |
 | **Una buena descripción** | Es lo único que lee el modelo para decidir si la usa. Corta y precisa: viaja en cada petición |
 
 ### Paso 3B-1 · Desplegar
@@ -229,7 +261,7 @@ ConfigMap con `server.py` + Deployment `python:3.12-slim` (instala `mcp` al arra
 lab3-iq-openrouter/mcp-propio/02-mcp-test.sh
 ```
 
-Desde un pod de `dx-demo` habla MCP como lo hará el Integrator: `initialize`, `tools/list` (las 2
+Desde un pod de `dx-demo` habla MCP como lo hará el Integrator: `initialize`, `tools/list` (las 4
 herramientas) y `tools/call` de `consultar_faq_europesip(tema="soporte")`, que devuelve el horario.
 
 ### Paso 3B-3 · Registrarlo en IQ
@@ -251,8 +283,8 @@ En el log del Integrator:
 
 ```
 Fetched 53 tools from http://dx-iq-mcp-server:3000
-Fetched 2 tools from http://europesip-mcp.dx-shared.svc.cluster.local:3000
-Total tools: 55
+Fetched 4 tools from http://europesip-mcp.dx-shared.svc.cluster.local:3000
+Total tools: 57
 ```
 
 > Cada `helm upgrade` de IQ regenera el ConfigMap. `04-iq-install.sh` vuelve a añadir el servidor
@@ -262,7 +294,22 @@ Total tools: 55
 
 ```bash
 lab3-iq-openrouter/06-iq-chat-test.sh "¿Cuál es el horario de soporte de EUROPESIP?"
+lab3-iq-openrouter/06-iq-chat-test.sh "¿Qué servicios ofrece EUROPESIP?"
+lab3-iq-openrouter/06-iq-chat-test.sh "¿Hay algún laboratorio para instalar HCL DX Compose desde cero?"
+lab3-iq-openrouter/06-iq-chat-test.sh "Quiero crear un componente Blueprint a partir de este diseño de Figma: https://www.figma.com/file/abc123/landing"
 ```
+
+Resultado real (herramienta elegida por IQ y tiempo total):
+
+| Pregunta | Herramienta | Tiempo |
+|---|---|---|
+| Horario de soporte | `consultar_faq_europesip` (tema soporte) | ~6 s |
+| Servicios de EUROPESIP | `consultar_servicios_europesip` | ~9 s |
+| Soberanía digital | `consultar_faq_europesip` (tema soberanía) | ~10 s |
+| Laboratorios de DX Compose | `consultar_faq_europesip` (tema laboratorios) → enlace al repositorio | ~11 s |
+| Componente desde Figma | `figma_web_to_dx` (figma&web-to-dx) | ~10 s |
+
+Ejemplo:
 
 ```
   [  3.0s] tool_call: 562b68ed_consultar_faq_europesip  Consultando la base de conocimiento de EUROPESIP...
@@ -287,7 +334,7 @@ TOOL consultar_faq_europesip tema='soporte'
 > usuario**, pero también significa que un MCP propio es código de confianza: revisa qué hace, no
 > registres sus valores (este solo registra los nombres) y protege su acceso.
 
-> **Coste.** Las herramientas añadidas viajan en todas las peticiones (estas dos, unos 250 tokens)
+> **Coste.** Las herramientas añadidas viajan en todas las peticiones (estas cuatro, unos 2.600 caracteres ≈ 800-900 tokens)
 > y cambiar la lista invalida la caché de prompts hasta la siguiente petición.
 
 Para quitarlo: `kubectl -n dx-shared delete deploy/europesip-mcp svc/europesip-mcp cm/europesip-mcp-code`

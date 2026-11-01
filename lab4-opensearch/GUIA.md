@@ -2,6 +2,19 @@
 
 **Punto de partida:** Lab 1 terminado (los Labs 2 y 3 son independientes de este).
 
+**⏱ Tiempo estimado: ~10 minutos.**
+
+| Paso | Tiempo |
+|---|---|
+| 1 · Certificados y secrets | segundos |
+| 2 · Instalar `hcl-dx-search` (OpenSearch, Search Middleware, File Processor) | ~2 min |
+| 3 · `helm upgrade` de DX con Search V2 (reinicia el Web Engine) | ~5 min |
+| Comprobar · `99-verify.sh --crawl` (lanza los rastreadores y espera 90 s) | ~3 min |
+
+> Tiempos de ejecución medidos en el clúster del webinar (k3s, 3 workers de 14 CPU / 20 GiB), sin
+> contar las explicaciones. La primera vez en un clúster nuevo hay que sumar la descarga de las
+> imágenes de HCL desde `hclcr.io`, que depende de la red.
+
 **Objetivo:** instalar el backend de búsqueda de HCL (**OpenSearch** + **Search Middleware**) y
 activar **Search V2** en DX Compose: el Search Center de Practitioner Studio, la búsqueda de WCM,
 DAM y portal, y su API REST.
