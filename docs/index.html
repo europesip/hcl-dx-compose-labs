@@ -52,6 +52,15 @@ table.cmp th,table.cmp td{border:1px solid var(--line);padding:7px 9px;text-alig
 table.cmp tr:first-child th{background:var(--accent-soft)}
 table.cmp th:first-child{background:var(--bg);white-space:nowrap}
 .tw{overflow-x:auto}
+dialog#done{border:1px solid var(--line);border-radius:14px;padding:0;max-width:720px;width:calc(100% - 32px);background:var(--panel);color:var(--text);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog#done::backdrop{background:rgba(10,15,25,.55)}
+dialog#done .dh{padding:18px 22px 6px}
+dialog#done .dh h2{font-size:20px;margin:0 0 4px}
+dialog#done .db{padding:4px 22px 8px;max-height:65vh;overflow:auto}
+dialog#done ol{padding-left:22px;margin:8px 0}
+dialog#done li{margin:10px 0}
+dialog#done pre{max-height:none;margin:6px 0 0}
+dialog#done .df{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding:12px 22px 18px;border-top:1px solid var(--line)}
 .opts3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 .opt{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg);display:flex;flex-direction:column;gap:8px}
 .opt h3{margin:0;font-size:15px}
@@ -300,6 +309,12 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
   </section>
   </form>
 </main>
+
+<dialog id="done" aria-labelledby="doneTitle">
+  <div class="dh"><h2 id="doneTitle"></h2><p class="hint" id="doneSub"></p></div>
+  <div class="db" id="doneBody"></div>
+  <div class="df"><a class="btn" id="doneGuide" target="_blank" rel="noopener"></a><button type="button" class="btn primary" id="doneClose"></button></div>
+</dialog>
 
 <footer>
   <div class="wrap" data-i18n-html="foot">Labs for learning (PoC), not for production. For a real project we recommend an
@@ -1392,6 +1407,75 @@ function download(name, blob){
 }
 
 // ---------------------------------------------------------------------------------------------
+// After a download: a dialog with the next steps for that option
+// ---------------------------------------------------------------------------------------------
+const esc = v => String(v).replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+const pre = t => "<pre>" + esc(t) + "</pre>";
+const NEXT = {
+  en: {
+    title: {A: "Your env.sh is ready ✔", B: "Your env.sh and RUNBOOK.md are ready ✔", C: "Your direct installation is ready ✔"},
+    sub: "Thank you for using the wizard. This is how to use what you have just downloaded:",
+    clone: "Clone the labs repository (skip it if you already have it):",
+    moveEnv: "Put <code>env.sh</code> in the root of the clone, next to <code>env.example.sh</code>:",
+    unzipB: "Unzip the ZIP in the root of the clone (it adds <code>env.sh</code> and <code>RUNBOOK.md</code>; if you already had an <code>env.sh</code>, back it up first):",
+    fillEnv: "Fill in the lines of <code>env.sh</code> still marked with <code># &lt;&lt;&lt;</code> (the credentials you left empty).",
+    goA: "Load it and follow the labs with their guides, starting with Lab 1:",
+    goB: "Load it and follow <code>RUNBOOK.md</code> step by step:",
+    noClone: "<b>No need to clone anything</b>: the folder is self-contained. Unzip it anywhere:",
+    sql: "Lab 2B: copy <code>setup-postgres-dx.sql</code> into <code>dx-install/2b-postgres/</code> (see the Lab 2 guide, 2B step 3).",
+    ph: "Replace the values you left empty (<code>PUT-YOUR-…-HERE</code>); this lists where they are:",
+    need: "Check you have <code>kubectl</code> (pointing to your cluster), <code>helm</code>, <code>openssl</code>, <code>curl</code> and <code>python3</code>.",
+    run: "Run everything (it shows the lab and step, and asks for confirmation first), or follow <code>RUNBOOK.md</code> command by command:",
+    priv: "⚠ The folder contains credentials in plain text: keep it private and rotate them afterwards.",
+    guide: "Lab guides", close: "Back to the wizard",
+    guideUrl: "https://github.com/europesip/hcl-dx-compose-labs#how-to-use-this-repository",
+  },
+  es: {
+    title: {A: "Tu env.sh está listo ✔", B: "Tu env.sh y tu RUNBOOK.md están listos ✔", C: "Tu instalación directa está lista ✔"},
+    sub: "Gracias por usar el asistente. Así se usa lo que acabas de descargar:",
+    clone: "Clona el repositorio de los labs (sáltatelo si ya lo tienes):",
+    moveEnv: "Deja <code>env.sh</code> en la raíz de la copia, junto a <code>env.example.sh</code>:",
+    unzipB: "Descomprime el ZIP en la raíz de la copia (añade <code>env.sh</code> y <code>RUNBOOK.md</code>; si ya tenías un <code>env.sh</code>, guárdalo antes):",
+    fillEnv: "Rellena las líneas de <code>env.sh</code> que sigan marcadas con <code># &lt;&lt;&lt;</code> (las credenciales que dejaste vacías).",
+    goA: "Cárgalo y sigue los labs con sus guías, empezando por el Lab 1:",
+    goB: "Cárgalo y sigue <code>RUNBOOK.md</code> paso a paso:",
+    noClone: "<b>No hace falta clonar nada</b>: la carpeta es autónoma. Descomprímela donde quieras:",
+    sql: "Lab 2B: copia <code>setup-postgres-dx.sql</code> en <code>dx-install/2b-postgres/</code> (ver la guía del Lab 2, 2B paso 3).",
+    ph: "Sustituye los valores que dejaste vacíos (<code>PUT-YOUR-…-HERE</code>); esto lista dónde están:",
+    need: "Comprueba que tienes <code>kubectl</code> (apuntando a tu clúster), <code>helm</code>, <code>openssl</code>, <code>curl</code> y <code>python3</code>.",
+    run: "Ejecútalo todo (muestra el lab y el paso, y pide confirmación al empezar), o sigue <code>RUNBOOK.md</code> comando a comando:",
+    priv: "⚠ La carpeta lleva credenciales en claro: guárdala en privado y rótalas después.",
+    guide: "Guías de los labs", close: "Volver al asistente",
+    guideUrl: "https://github.com/europesip/hcl-dx-compose-labs/blob/main/README.es.md#cómo-usar-este-repositorio",
+  }
+};
+function showDone(opt){
+  const n = NEXT[lang], s = state(), steps = [];
+  const missing = !s.HCL_HARBOR_USER || !s.HCL_HARBOR_TOKEN || (s.lab3 && !s.OPENROUTER_API_KEY)
+    || (s.dir === "ad" && !s.AD_BIND_PASSWORD) || (s.db === "oracle" && !s.ORACLE_DX_PASSWORD);
+  const clone = "git clone https://github.com/europesip/hcl-dx-compose-labs.git\ncd hcl-dx-compose-labs";
+  if (opt === "A" || opt === "B") {
+    steps.push(n.clone + pre(clone));
+    steps.push(opt === "A" ? n.moveEnv + pre("mv ~/Downloads/env.sh .") : n.unzipB + pre("unzip ~/Downloads/dx-compose-labs-config.zip -d ."));
+    if (missing) steps.push(n.fillEnv);
+    steps.push((opt === "A" ? n.goA : n.goB) + pre(opt === "A" ? "source ./env.sh\nless lab1-dx-base/" + (lang === "es" ? "GUIDE.es.md" : "GUIDE.md") : "source ./env.sh\nless RUNBOOK.md"));
+  } else {
+    steps.push(n.noClone + pre("unzip ~/Downloads/dx-compose-labs-install.zip\ncd dx-install"));
+    if (s.db === "postgres") steps.push(n.sql + pre("cp /path/to/setup-postgres-dx.sql 2b-postgres/"));
+    if (missing) steps.push(n.ph + pre("grep -rn PUT-YOUR- . --exclude=RUNBOOK.md"));
+    steps.push(n.need);
+    steps.push(n.run + pre("./install.sh --list      # " + (lang === "es" ? "los pasos" : "the steps") + "\n./install.sh             # " +
+      (lang === "es" ? "instalarlo todo" : "install everything") + "\n./install.sh --verify    # " + (lang === "es" ? "con las comprobaciones opcionales" : "with the optional checks")));
+  }
+  $("doneTitle").textContent = n.title[opt];
+  $("doneSub").textContent = n.sub;
+  $("doneBody").innerHTML = "<ol>" + steps.map(x => "<li>" + x + "</li>").join("") + "</ol>" + (opt === "C" ? '<p class="warn">' + n.priv + "</p>" : "");
+  $("doneGuide").textContent = n.guide; $("doneGuide").href = n.guideUrl;
+  $("doneClose").textContent = n.close;
+  $("done").showModal();
+}
+
+// ---------------------------------------------------------------------------------------------
 // UI
 // ---------------------------------------------------------------------------------------------
 let tab = "env", lastEnv = "", lastRun = "", lastDirect = [], ok = false, lastPlatform = "kubernetes";
@@ -1437,9 +1521,10 @@ function init(){
   $("copy").addEventListener("click", async () => {
     try { await navigator.clipboard.writeText(previewText()); $("copy").textContent = lang === "es" ? T.es.copied : "Copied"; setTimeout(() => $("copy").textContent = tr("copy"), 1500); } catch (e) {}
   });
-  $("dlZip").addEventListener("click", () => ok && download("dx-compose-labs-config.zip", zip([{name: "env.sh", text: lastEnv, mode: 0o100644}, {name: "RUNBOOK.md", text: lastRun}])));
-  $("dlDirect").addEventListener("click", () => ok && download("dx-compose-labs-install.zip", zip(lastDirect)));
-  $("dlEnv").addEventListener("click", () => ok && download("env.sh", new Blob([lastEnv], {type: "text/x-shellscript"})));
+  $("dlZip").addEventListener("click", () => { if (!ok) return; download("dx-compose-labs-config.zip", zip([{name: "env.sh", text: lastEnv, mode: 0o100644}, {name: "RUNBOOK.md", text: lastRun}])); showDone("B"); });
+  $("dlDirect").addEventListener("click", () => { if (!ok) return; download("dx-compose-labs-install.zip", zip(lastDirect)); showDone("C"); });
+  $("doneClose").addEventListener("click", () => $("done").close());
+  $("dlEnv").addEventListener("click", () => { if (!ok) return; download("env.sh", new Blob([lastEnv], {type: "text/x-shellscript"})); showDone("A"); });
   let l = null;
   try { l = new URL(location.href).searchParams.get("lang"); } catch (e) {}
   if (!l) { try { l = localStorage.getItem("dxlabs-lang"); } catch (e) {} }
