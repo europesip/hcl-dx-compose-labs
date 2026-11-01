@@ -120,14 +120,24 @@ source ./env.sh
 
 **B. Con el [asistente de configuración](https://europesip.github.io/hcl-dx-compose-labs/about.html?lang=es) opcional**
 (*experimental, en desarrollo*). Una página web estática (inglés / español) que pregunta tu
-plataforma, nombre de host, StorageClasses, namespaces y los labs que quieres hacer, y te da dos
-opciones:
+plataforma, nombre de host, StorageClasses, namespaces y los labs que quieres hacer (rellenos con los
+valores del entorno de referencia de los labs; solo las credenciales de Harbor y OpenRouter están
+vacías), y te da tres opciones:
 
 - **Opción A · solo `env.sh`**: solo el fichero de configuración; después sigues los labs a mano con
   las guías.
 - **Opción B · `env.sh` + `RUNBOOK.md`** (ZIP): además un `RUNBOOK.md` personalizado, de solo
   lectura, con las instrucciones para montar, uno tras otro, los labs que has elegido: los scripts
   que hay que ejecutar y los comandos `kubectl` / `helm` equivalentes con tus valores.
+- **Opción C · instalación directa** (ZIP con una carpeta `runbook/`): un `RUNBOOK.md` optimizado
+  con **comandos directos** (tus valores escritos en cada comando, las comprobaciones marcadas como
+  opcionales), un `install.sh` que ejecuta esos mismos comandos uno tras otro mostrando el lab y la
+  fase en la que está, `secrets.env` (los únicos valores que no van escritos en los comandos) y los
+  values generados para tu instalación. Se descomprime en la raíz de la copia: crea `runbook/` y no
+  sobrescribe nada.
+  ```bash
+  cd runbook && vi secrets.env && ./install.sh      # --list, --verify, --from <paso>
+  ```
 
 > ⚠️ **El asistente está en desarrollo (WIP) y debe tratarse como algo experimental.** Busca
 > facilitar y aclarar la instalación, pero **hoy la vía recomendada es la A, sin asistente**.

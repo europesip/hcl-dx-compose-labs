@@ -119,13 +119,22 @@ source ./env.sh
 
 **B. With the optional [configuration wizard](https://europesip.github.io/hcl-dx-compose-labs/about.html)**
 (*experimental, work in progress*). A static web page (English / Spanish) that asks for your
-platform, host name, StorageClasses, namespaces and the labs you want, and gives you two options:
+platform, host name, StorageClasses, namespaces and the labs you want (pre-filled with the values of the reference
+lab environment; only the Harbor and OpenRouter credentials are empty), and gives you three options:
 
 - **Option A · only `env.sh`**: just the configuration file; then you follow the labs manually with
   the guides.
 - **Option B · `env.sh` + `RUNBOOK.md`** (ZIP): also a personalised, read-only `RUNBOOK.md` with the
   instructions to build, one after the other, the labs you selected: the scripts to run and the
   equivalent `kubectl` / `helm` commands with your values.
+- **Option C · direct installation** (ZIP with a `runbook/` folder): an optimised `RUNBOOK.md` with
+  **direct commands** (your values written in each command, checks marked as optional), an
+  `install.sh` that runs those same commands one after the other showing the lab and step it is in,
+  `secrets.env` (the only values not written in the commands) and the values files generated for
+  your installation. Unzip it in the root of the clone: it creates `runbook/` and overwrites nothing.
+  ```bash
+  cd runbook && vi secrets.env && ./install.sh      # --list, --verify, --from <step>
+  ```
 
 > ⚠️ **The wizard is a work in progress and must be treated as experimental.** It aims to make the
 > installation easier and clearer, but **the recommended path today is A, without the wizard**.

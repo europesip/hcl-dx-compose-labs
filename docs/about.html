@@ -100,17 +100,24 @@ html[lang="en"] .brand small[data-l="en"], html[lang="es"] .brand small[data-l="
   <section class="card">
     <h2>What you get</h2>
     <p>The wizard asks for your platform (Kubernetes, OpenShift or the WSL2 PoC), the DX host name, the StorageClasses,
-      namespaces and release names and the labs you want. At the end you choose one of two options:</p>
+      namespaces and release names and the labs you want. Every field comes pre-filled with the values of the reference lab
+      environment; only the Harbor and OpenRouter credentials are empty. At the end you choose one of three options:</p>
     <div class="tw"><table>
       <tr><th>Option</th><th>You download</th><th>Then</th></tr>
       <tr><td><b>A · Only <code>env.sh</code></b></td><td>The configuration file the labs need, with your values</td>
         <td>Follow the labs <b>manually</b> with the guide of each lab</td></tr>
       <tr><td><b>B · <code>env.sh</code> + <code>RUNBOOK.md</code></b> (ZIP)</td><td>Also a personalised, <b>read-only</b>
         <code>RUNBOOK.md</code>: the instructions to build, one after the other, the labs you selected, with the scripts to
-        run and the equivalent <code>kubectl</code> / <code>helm</code> commands using your values</td><td>Follow the runbook</td></tr>
+        run and the equivalent <code>kubectl</code> / <code>helm</code> commands using your values</td><td>Follow the runbook, which calls the lab scripts</td></tr>
+      <tr><td><b>C · Direct installation</b> (ZIP with a <code>runbook/</code> folder)</td><td>An optimised <code>RUNBOOK.md</code> with
+        <b>direct commands</b>: your values written in each command, so you see exactly what every step does, and the checks
+        marked as optional. Plus <code>install.sh</code>, which runs those same commands one after the other showing the
+        lab and step it is in, <code>secrets.env</code> (the only values not written in the commands) and the values files
+        generated for your installation</td><td>Unzip it in the root of the clone (it creates <code>runbook/</code> and
+        overwrites nothing), fill in <code>secrets.env</code>, then follow <code>RUNBOOK.md</code> or run <code>./install.sh</code></td></tr>
     </table></div>
-    <p>The files go in the root of your clone of the labs repository. The lab scripts are what installs everything: the
-      wizard never talks to your cluster.</p>
+    <p>A and B go in the root of your clone of the labs repository and use the lab scripts; C works from its own
+      <code>runbook/</code> folder and only reads the lab files. In every case the wizard itself never talks to your cluster.</p>
   </section>
 
   <section class="card">
@@ -150,7 +157,7 @@ html[lang="en"] .brand small[data-l="en"], html[lang="es"] .brand small[data-l="
 
   <h2 style="margin-top:22px">How do you want to continue?</h2>
   <div class="choose">
-    <a class="go primary" href="index.html"><b>Continue to the wizard →</b><small>Generate your env.sh (and, optionally, your RUNBOOK.md)</small></a>
+    <a class="go primary" href="index.html"><b>Continue to the wizard →</b><small>Generate your env.sh, your RUNBOOK.md or a direct installation</small></a>
     <a class="go" href="https://github.com/europesip/hcl-dx-compose-labs#how-to-use-this-repository"><b>No, I'll follow the labs manually</b><small>Recommended path: back to the labs repository and its guides</small></a>
   </div>
 </div>
@@ -170,8 +177,9 @@ html[lang="en"] .brand small[data-l="en"], html[lang="es"] .brand small[data-l="
   <section class="card">
     <h2>Qué obtienes</h2>
     <p>El asistente pregunta tu plataforma (Kubernetes, OpenShift o la PoC en WSL2), el nombre de host de DX, las
-      StorageClasses, los namespaces y nombres de releases y los labs que quieres hacer. Al final eliges una de estas dos
-      opciones:</p>
+      StorageClasses, los namespaces y nombres de releases y los labs que quieres hacer. Todos los campos vienen rellenos
+      con los valores del entorno de referencia de los labs; solo las credenciales de Harbor y OpenRouter están vacías. Al
+      final eliges una de estas tres opciones:</p>
     <div class="tw"><table>
       <tr><th>Opción</th><th>Descargas</th><th>Después</th></tr>
       <tr><td><b>A · Solo <code>env.sh</code></b></td><td>El fichero de configuración que necesitan los labs, con tus valores</td>
@@ -179,10 +187,18 @@ html[lang="en"] .brand small[data-l="en"], html[lang="es"] .brand small[data-l="
       <tr><td><b>B · <code>env.sh</code> + <code>RUNBOOK.md</code></b> (ZIP)</td><td>Además un <code>RUNBOOK.md</code>
         personalizado y <b>de solo lectura</b>: las instrucciones para montar, uno tras otro, los labs que has elegido, con
         los scripts que hay que ejecutar y los comandos <code>kubectl</code> / <code>helm</code> equivalentes con tus valores</td>
-        <td>Sigues el runbook</td></tr>
+        <td>Sigues el runbook, que llama a los scripts de los labs</td></tr>
+      <tr><td><b>C · Instalación directa</b> (ZIP con una carpeta <code>runbook/</code>)</td><td>Un <code>RUNBOOK.md</code>
+        optimizado con <b>comandos directos</b>: tus valores escritos en cada comando, para ver exactamente qué hace cada paso,
+        y las comprobaciones marcadas como opcionales. Además <code>install.sh</code>, que ejecuta esos mismos comandos uno
+        tras otro mostrando el lab y la fase en la que está, <code>secrets.env</code> (los únicos valores que no van escritos
+        en los comandos) y los values generados para tu instalación</td><td>Descomprímelo en la raíz de la copia (crea
+        <code>runbook/</code> y no sobrescribe nada), rellena <code>secrets.env</code> y sigue <code>RUNBOOK.md</code> o
+        ejecuta <code>./install.sh</code></td></tr>
     </table></div>
-    <p>Los ficheros van en la raíz de tu copia del repositorio de los labs. Quien instala son los scripts de los labs: el
-      asistente nunca habla con tu clúster.</p>
+    <p>A y B van en la raíz de tu copia del repositorio de los labs y usan los scripts de los labs; C trabaja desde su
+      propia carpeta <code>runbook/</code> y solo lee los ficheros de los labs. En todos los casos, el asistente en sí
+      nunca habla con tu clúster.</p>
   </section>
 
   <section class="card">
@@ -224,7 +240,7 @@ html[lang="en"] .brand small[data-l="en"], html[lang="es"] .brand small[data-l="
 
   <h2 style="margin-top:22px">¿Cómo quieres continuar?</h2>
   <div class="choose">
-    <a class="go primary" href="index.html?lang=es"><b>Continuar al asistente →</b><small>Genera tu env.sh (y, si quieres, tu RUNBOOK.md)</small></a>
+    <a class="go primary" href="index.html?lang=es"><b>Continuar al asistente →</b><small>Genera tu env.sh, tu RUNBOOK.md o una instalación directa</small></a>
     <a class="go" href="https://github.com/europesip/hcl-dx-compose-labs/blob/main/README.es.md#cómo-usar-este-repositorio"><b>No, prefiero seguir los labs a mano</b><small>Vía recomendada: vuelve al repositorio de los labs y sus guías</small></a>
   </div>
 </div>
