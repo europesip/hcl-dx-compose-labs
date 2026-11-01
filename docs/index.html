@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Security: the browser forbids this page any network connection (connect-src 'none') and any
+     external script, style, image or font. Only the inline code of this file runs. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <title>DX Compose Labs Wizard</title>
 <meta name="description" content="Optional configuration wizard for the HCL DX Compose CF238 labs: generates env.sh and a personalised RUNBOOK.md in your browser. Nothing is sent anywhere.">
 <style>
@@ -42,6 +45,14 @@ p{margin:6px 0}
 .lead{color:var(--muted);max-width:760px}
 .note{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:8px;padding:10px 14px;margin:14px 0}
 .warn{border:1px solid var(--warn-line);background:var(--warn-bg);border-radius:8px;padding:8px 12px;margin:8px 0;font-size:14px}
+.wip{border:1px solid var(--warn-line);border-left:4px solid var(--warn-line);background:var(--warn-bg);border-radius:8px;padding:10px 14px;margin:14px 0}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:10px}
+.opt{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg);display:flex;flex-direction:column;gap:8px}
+.opt h3{margin:0;font-size:15px}
+.opt p{margin:0;font-size:14px;color:var(--muted)}
+.opt .btn{align-self:flex-start;margin-top:auto}
+ul.tight{margin:6px 0;padding-left:20px}
+ul.tight li{margin:3px 0}
 .okbox{border:1px solid var(--ok-line);background:var(--ok-bg);border-radius:8px;padding:8px 12px;margin:8px 0;font-size:14px}
 section.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0}
 .hint{color:var(--muted);font-size:13.5px}
@@ -92,6 +103,10 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
     <code>env.sh</code> (your values) and <code>RUNBOOK.md</code> (the steps to follow, with the
     equivalent commands using your values). The lab scripts are still what installs everything.</p>
 
+  <div class="wip" data-i18n-html="wip"><b>Experimental · work in progress.</b> This wizard is evolving constantly and
+    must be treated as experimental: it aims to make the installation easier and clearer, but <b>the recommended
+    path today is the one without the wizard</b> (by hand, following the guides).</div>
+
   <div class="note" data-i18n-html="optional"><b>Using this wizard is optional.</b> You can do exactly the
     same by hand: <code>cp env.example.sh env.sh</code>, edit the variables marked with <code># &lt;&lt;&lt;</code>
     and follow the guides. Both ways give the same result.</div>
@@ -99,6 +114,33 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
     nothing you type is sent anywhere, there are no analytics and no external scripts. Secrets
     (Harbor token, OpenRouter key, passwords) are optional: leave them empty and fill them in later in
     <code>env.sh</code>.</div>
+
+  <section class="card">
+    <h2 data-i18n="srcT">Check it yourself: the source code is public</h2>
+    <div data-i18n-html="srcB">
+    <p>So that you can verify that your credentials stay secret and are not stored anywhere, the whole wizard is
+      <b>one single file, <code>index.html</code></b>, with plain HTML, CSS and JavaScript: <b>no React, no frameworks, no
+      build step and no dependencies</b>. That keeps it easy to review and makes it compatible with GitHub Pages,
+      where it is hosted.</p>
+    <ul class="tight">
+      <li><b>Source code:</b> the dedicated repository
+        <a href="https://github.com/europesip/hcl-dx-compose-labs-wizard">github.com/europesip/hcl-dx-compose-labs-wizard</a>,
+        and the published copy in the labs repository
+        (<a href="https://github.com/europesip/hcl-dx-compose-labs/blob/main/docs/index.html">docs/index.html</a>).</li>
+      <li><b>Use it online</b>, without installing anything:
+        <a href="https://europesip.github.io/hcl-dx-compose-labs/">europesip.github.io/hcl-dx-compose-labs</a> (this page).</li>
+      <li><b>Run it locally</b>: download <code>index.html</code> and open it in your browser. It works offline.</li>
+      <li><b>No network, enforced by the browser:</b> the page declares a Content-Security-Policy with
+        <code>connect-src 'none'</code>, so it cannot send data anywhere even if it tried. You can also check the
+        <i>Network</i> tab of your browser's developer tools: after loading, there are no requests.</li>
+      <li>The only thing stored in your browser is the language you choose (<code>localStorage</code>).</li>
+    </ul>
+    </div>
+  </section>
+
+  <div class="note" data-i18n-html="adv"><b>A simplified wizard, specific to these labs.</b> It is a functional, simplified
+    option designed only for this PoC. EUROPESIP has another wizard developed internally, with advanced features and
+    more customisation options, available on demand: <a href="https://www.europesip.com">www.europesip.com</a>.</div>
 
   <form id="wiz" autocomplete="off" onsubmit="return false">
 
@@ -234,14 +276,24 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
   <section class="card">
     <h2 data-i18n="s7">7 · Your files</h2>
     <div id="errors" class="warn hidden"></div>
-    <div class="actions">
-      <button type="button" class="btn primary" id="dlZip" data-i18n="dlzip">Download ZIP (env.sh + RUNBOOK.md)</button>
-      <button type="button" class="btn" id="dlEnv" data-i18n="dlenv">Download env.sh</button>
-      <button type="button" class="btn" id="dlRun" data-i18n="dlrun">Download RUNBOOK.md</button>
+    <p class="hint" data-i18n="optsH">Choose what you need:</p>
+    <div class="opts">
+      <div class="opt">
+        <h3 data-i18n="oAT">Option A · Only env.sh</h3>
+        <p data-i18n-html="oAB">Just the configuration file the labs need. Then follow the labs <b>manually</b>, with the
+          guide of each lab (<code>GUIDE.md</code> / <code>GUIDE.es.md</code>).</p>
+        <button type="button" class="btn" id="dlEnv" data-i18n="dlenv">Download env.sh</button>
+      </div>
+      <div class="opt">
+        <h3 data-i18n="oBT">Option B · env.sh + RUNBOOK.md</h3>
+        <p data-i18n-html="oBB">A ZIP with <code>env.sh</code> and <code>RUNBOOK.md</code>: the instructions to build, one
+          after the other, the labs you selected, with the scripts to run and the equivalent commands using your values.</p>
+        <button type="button" class="btn primary" id="dlZip" data-i18n="dlzip">Download ZIP</button>
+      </div>
     </div>
-    <p class="hint" data-i18n-html="where">Unzip both files into the root of your clone of the repository (next to
-      <code>env.example.sh</code>), then <code>source ./env.sh</code> and follow <code>RUNBOOK.md</code>.
-      <code>env.sh</code> is in <code>.gitignore</code>: it is never committed.</p>
+    <p class="hint" data-i18n-html="where">Put the files in the root of your clone of the repository (next to
+      <code>env.example.sh</code>), then <code>source ./env.sh</code>. <code>RUNBOOK.md</code> is read-only
+      documentation: the scripts are what installs everything. <code>env.sh</code> is in <code>.gitignore</code>: it is never committed.</p>
     <div class="tabs" role="tablist">
       <button type="button" class="btn small" role="tab" aria-selected="true" data-tab="env">env.sh</button>
       <button type="button" class="btn small" role="tab" aria-selected="false" data-tab="run">RUNBOOK.md</button>
@@ -254,7 +306,8 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
 
 <footer>
   <div class="wrap" data-i18n-html="foot">Labs for learning (PoC), not for production. For a real project we recommend an
-    HCL partner or HCL specialised services. · <a href="https://github.com/europesip/hcl-dx-compose-labs">GitHub repository</a> ·
+    HCL partner or HCL specialised services. · <a href="https://github.com/europesip/hcl-dx-compose-labs">Labs repository</a> ·
+    <a href="https://github.com/europesip/hcl-dx-compose-labs-wizard">Wizard source code</a> ·
     <a href="https://www.europesip.com">EUROPESIP</a></div>
 </footer>
 
@@ -269,6 +322,15 @@ const T = {
     subtitle: "Asistente de configuración opcional",
     title: "Genera tu env.sh y un runbook personalizado",
     lead: 'Esta página hace unas pocas preguntas y genera dos ficheros para el repositorio <a href="https://github.com/europesip/hcl-dx-compose-labs">hcl-dx-compose-labs</a>: <code>env.sh</code> (tus valores) y <code>RUNBOOK.md</code> (los pasos a seguir, con los comandos equivalentes usando tus valores). Quien instala sigue siendo los scripts de los labs.',
+    wip: '<b>Experimental · en desarrollo (WIP).</b> Este asistente evoluciona constantemente y debe tratarse como algo experimental: busca facilitar y aclarar la instalación, pero <b>hoy la vía recomendada es la que no usa el asistente</b> (a mano, siguiendo las guías).',
+    srcT: "Compruébalo tú mismo: el código fuente es público",
+    srcB: '<p>Para que puedas comprobar que tus credenciales siguen siendo secretas y no se guardan en ningún sitio, todo el asistente es <b>un único fichero, <code>index.html</code></b>, con HTML, CSS y JavaScript sencillos: <b>sin React, sin frameworks, sin compilación y sin dependencias</b>. Así es fácil de revisar y es compatible con GitHub Pages, donde está alojado.</p><ul class="tight"><li><b>Código fuente:</b> el repositorio propio <a href="https://github.com/europesip/hcl-dx-compose-labs-wizard">github.com/europesip/hcl-dx-compose-labs-wizard</a>, y la copia publicada en el repositorio de los labs (<a href="https://github.com/europesip/hcl-dx-compose-labs/blob/main/docs/index.html">docs/index.html</a>).</li><li><b>Úsalo en línea</b>, sin instalar nada: <a href="https://europesip.github.io/hcl-dx-compose-labs/?lang=es">europesip.github.io/hcl-dx-compose-labs</a> (esta página).</li><li><b>Ejecútalo en local</b>: descarga <code>index.html</code> y ábrelo en tu navegador. Funciona sin conexión.</li><li><b>Sin red, garantizado por el navegador:</b> la página declara una Content-Security-Policy con <code>connect-src \'none\'</code>, así que no puede enviar datos a ningún sitio aunque lo intentara. También puedes mirar la pestaña <i>Red</i> de las herramientas de desarrollo del navegador: tras cargar, no hay peticiones.</li><li>Lo único que se guarda en tu navegador es el idioma elegido (<code>localStorage</code>).</li></ul>',
+    adv: '<b>Un asistente simplificado y específico de estos labs.</b> Es una opción funcional y simplificada, pensada solo para esta PoC. EUROPESIP tiene otro asistente desarrollado internamente, con funciones avanzadas y más opciones de personalización, disponible bajo demanda: <a href="https://www.europesip.com">www.europesip.com</a>.',
+    optsH: "Elige lo que necesitas:",
+    oAT: "Opción A · Solo env.sh",
+    oAB: 'Solo el fichero de configuración que necesitan los labs. Después sigue los labs <b>a mano</b>, con la guía de cada uno (<code>GUIDE.es.md</code>).',
+    oBT: "Opción B · env.sh + RUNBOOK.md",
+    oBB: 'Un ZIP con <code>env.sh</code> y <code>RUNBOOK.md</code>: las instrucciones para montar, uno tras otro, los labs que has elegido, con los scripts que hay que ejecutar y los comandos equivalentes con tus valores.',
     optional: '<b>Usar este asistente es opcional.</b> Puedes hacer exactamente lo mismo a mano: <code>cp env.example.sh env.sh</code>, edita las variables marcadas con <code># &lt;&lt;&lt;</code> y sigue las guías. Las dos formas dan el mismo resultado.',
     privacy: '<b>Privado por diseño.</b> Todo funciona en tu navegador: nada de lo que escribes se envía a ningún sitio, no hay analítica ni scripts externos. Los secretos (token de Harbor, clave de OpenRouter, contraseñas) son opcionales: déjalos vacíos y rellénalos después en <code>env.sh</code>.',
     s1: "1 · Plataforma", s1h: "¿Dónde se va a ejecutar DX Compose?",
@@ -300,10 +362,10 @@ const T = {
     s6: "6 · Nombres (avanzado)", s6s: "Namespaces, releases de Helm y cluster PostgreSQL (los valores por defecto sirven)",
     nsdx: "Namespace del software de HCL", nssh: "Namespace de herramientas de terceros", srel: "Release de búsqueda", pgc: "Cluster PostgreSQL",
     namesh: "Nombres de Kubernetes: minúsculas, dígitos y guiones. Mantén la release de búsqueda como dx-search salvo que sepas por qué (el chart de DX la espera para la credencial push-admin compartida).",
-    s7: "7 · Tus ficheros", dlzip: "Descargar ZIP (env.sh + RUNBOOK.md)", dlenv: "Descargar env.sh", dlrun: "Descargar RUNBOOK.md",
-    where: 'Descomprime los dos ficheros en la raíz de tu copia del repositorio (junto a <code>env.example.sh</code>), haz <code>source ./env.sh</code> y sigue <code>RUNBOOK.md</code>. <code>env.sh</code> está en <code>.gitignore</code>: nunca se sube a git.',
+    s7: "7 · Tus ficheros", dlzip: "Descargar ZIP", dlenv: "Descargar env.sh",
+    where: 'Deja los ficheros en la raíz de tu copia del repositorio (junto a <code>env.example.sh</code>) y haz <code>source ./env.sh</code>. <code>RUNBOOK.md</code> es documentación de solo lectura: quien instala son los scripts. <code>env.sh</code> está en <code>.gitignore</code>: nunca se sube a git.',
     copy: "Copiar", copied: "Copiado",
-    foot: 'Laboratorios para aprender (PoC), no para producción. Para un proyecto real recomendamos un partner de HCL o los servicios especializados de HCL. · <a href="https://github.com/europesip/hcl-dx-compose-labs">Repositorio en GitHub</a> · <a href="https://www.europesip.com">EUROPESIP</a>'
+    foot: 'Laboratorios para aprender (PoC), no para producción. Para un proyecto real recomendamos un partner de HCL o los servicios especializados de HCL. · <a href="https://github.com/europesip/hcl-dx-compose-labs">Repositorio de los labs</a> · <a href="https://github.com/europesip/hcl-dx-compose-labs-wizard">Código fuente del asistente</a> · <a href="https://www.europesip.com">EUROPESIP</a>'
   }
 };
 // Messages generated by the script (validation and files)
@@ -753,7 +815,7 @@ function update(){
   box.innerHTML = "";
   [...err, ...warn].forEach(t => { const p = document.createElement("p"); p.textContent = (err.includes(t) ? "✖ " : "⚠ ") + t; box.appendChild(p); });
   ok = err.length === 0;
-  ["dlZip","dlEnv","dlRun"].forEach(id => $(id).disabled = !ok);
+  ["dlZip","dlEnv"].forEach(id => $(id).disabled = !ok);
   lastEnv = buildEnv(s); lastRun = buildRunbook(s);
   $("preview").textContent = tab === "env" ? lastEnv : lastRun;
 }
@@ -773,7 +835,6 @@ function init(){
   });
   $("dlZip").addEventListener("click", () => ok && download("dx-compose-labs-config.zip", zip([{name: "env.sh", text: lastEnv, mode: 0o100644}, {name: "RUNBOOK.md", text: lastRun}])));
   $("dlEnv").addEventListener("click", () => ok && download("env.sh", new Blob([lastEnv], {type: "text/x-shellscript"})));
-  $("dlRun").addEventListener("click", () => ok && download("RUNBOOK.md", new Blob([lastRun], {type: "text/markdown"})));
   let l = null;
   try { l = new URL(location.href).searchParams.get("lang"); } catch (e) {}
   if (!l) { try { l = localStorage.getItem("dxlabs-lang"); } catch (e) {} }

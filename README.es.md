@@ -1,6 +1,6 @@
 # HCL DX Compose desde cero en Kubernetes (CF238)
 
-[English](README.md) · **Español** · [Asistente de configuración (opcional)](https://europesip.github.io/hcl-dx-compose-labs/?lang=es)
+[English](README.md) · **Español** · [Asistente de configuración (opcional, experimental)](https://europesip.github.io/hcl-dx-compose-labs/?lang=es)
 
 Laboratorios prácticos para **instalar HCL Digital Experience Compose paso a paso**, a modo de
 prueba de concepto (PoC). Se parte de un clúster vacío y se construye la plataforma en cuatro
@@ -109,7 +109,7 @@ cd hcl-dx-compose-labs
 Después crea tu `env.sh` (**nunca** se sube a git: está en `.gitignore`) de una de estas dos
 formas. Las dos dan el mismo resultado y los scripts funcionan igual:
 
-**A. A mano** (lo que describen las guías):
+**A. A mano** (lo que describen las guías; **la vía recomendada**):
 
 ```bash
 cp env.example.sh env.sh        # tu configuración
@@ -118,18 +118,36 @@ vi env.sh                       # rellena las variables marcadas con  # <<<
 source ./env.sh
 ```
 
-**B. Con el [asistente de configuración](https://europesip.github.io/hcl-dx-compose-labs/?lang=es) opcional**:
-una página web estática (inglés / español) que pregunta tu plataforma, nombre de host,
-StorageClasses, namespaces y los labs que quieres hacer, y descarga un ZIP con:
+**B. Con el [asistente de configuración](https://europesip.github.io/hcl-dx-compose-labs/?lang=es) opcional**
+(*experimental, en desarrollo*). Una página web estática (inglés / español) que pregunta tu
+plataforma, nombre de host, StorageClasses, namespaces y los labs que quieres hacer, y te da dos
+opciones:
 
-- `env.sh`: solo tus valores; después carga `env.example.sh` para el resto de valores por defecto.
-- `RUNBOOK.md`: tu lista personalizada de pasos, de solo lectura, con los scripts que hay que
-  ejecutar y los comandos `kubectl` / `helm` equivalentes con tus valores.
+- **Opción A · solo `env.sh`**: solo el fichero de configuración; después sigues los labs a mano con
+  las guías.
+- **Opción B · `env.sh` + `RUNBOOK.md`** (ZIP): además un `RUNBOOK.md` personalizado, de solo
+  lectura, con las instrucciones para montar, uno tras otro, los labs que has elegido: los scripts
+  que hay que ejecutar y los comandos `kubectl` / `helm` equivalentes con tus valores.
 
-El asistente funciona **por completo en tu navegador**: nada de lo que escribes se envía a ningún
-sitio, y los secretos (token de Harbor, clave de OpenRouter, contraseñas) se pueden dejar vacíos y
-rellenarlos después en `env.sh`. Quien instala sigue siendo los scripts; el asistente nunca habla
-con tu clúster.
+> ⚠️ **El asistente está en desarrollo (WIP) y debe tratarse como algo experimental.** Busca
+> facilitar y aclarar la instalación, pero **hoy la vía recomendada es la A, sin asistente**.
+> Es una opción simplificada y funcional, específica de estos labs; EUROPESIP tiene otro asistente
+> desarrollado internamente, con funciones avanzadas y más opciones de personalización, disponible
+> bajo demanda.
+
+**Tus credenciales siguen siendo tuyas, y puedes comprobarlo.** El asistente es **un único
+`index.html`** con HTML, CSS y JavaScript sencillos (**sin React, sin frameworks, sin compilación y
+sin dependencias**), así que es fácil de revisar y funciona tal cual en GitHub Pages:
+
+- **Código fuente**: [europesip/hcl-dx-compose-labs-wizard](https://github.com/europesip/hcl-dx-compose-labs-wizard)
+  (su propio repositorio) y la copia publicada en este repositorio, [docs/index.html](docs/index.html).
+- **Úsalo en línea** en GitHub Pages, sin instalar nada:
+  https://europesip.github.io/hcl-dx-compose-labs/?lang=es
+- **O ejecútalo en local**: descarga `index.html` y ábrelo en tu navegador (funciona sin conexión).
+- Funciona **por completo en tu navegador** y una Content-Security-Policy (`connect-src 'none'`)
+  impide que el navegador envíe nada a ningún sitio. Los secretos (token de Harbor, clave de
+  OpenRouter, contraseñas) se pueden dejar vacíos y rellenarlos después en `env.sh`. Quien instala
+  siguen siendo los scripts; el asistente nunca habla con tu clúster.
 
 Después sigue las guías en orden. Cada paso es un script numerado que se puede leer antes de
 ejecutarlo; las guías explican qué hace cada uno y el comando equivalente a mano.

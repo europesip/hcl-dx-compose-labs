@@ -1,6 +1,6 @@
 # HCL DX Compose from scratch on Kubernetes (CF238)
 
-**English** · [Español](README.es.md) · [Configuration wizard (optional)](https://europesip.github.io/hcl-dx-compose-labs/)
+**English** · [Español](README.es.md) · [Configuration wizard (optional, experimental)](https://europesip.github.io/hcl-dx-compose-labs/)
 
 Hands-on labs to **install HCL Digital Experience Compose step by step**, as a proof of concept
 (PoC). You start from an empty cluster and build the platform in four labs, each one on top of the
@@ -108,7 +108,7 @@ cd hcl-dx-compose-labs
 Then create your `env.sh` (it is **never** committed: it is in `.gitignore`) in one of two ways.
 Both produce the same result and the scripts work the same way:
 
-**A. By hand** (what the guides describe):
+**A. By hand** (what the guides describe; **the recommended path**):
 
 ```bash
 cp env.example.sh env.sh        # your configuration
@@ -117,17 +117,34 @@ vi env.sh                       # fill in the variables marked with  # <<<
 source ./env.sh
 ```
 
-**B. With the optional [configuration wizard](https://europesip.github.io/hcl-dx-compose-labs/)**:
-a static web page (English / Spanish) that asks for your platform, host name, StorageClasses,
-namespaces and the labs you want, and downloads a ZIP with:
+**B. With the optional [configuration wizard](https://europesip.github.io/hcl-dx-compose-labs/)**
+(*experimental, work in progress*). A static web page (English / Spanish) that asks for your
+platform, host name, StorageClasses, namespaces and the labs you want, and gives you two options:
 
-- `env.sh`: only your values; it then loads `env.example.sh` for every other default.
-- `RUNBOOK.md`: your personalised, read-only list of steps with the scripts to run and the
+- **Option A · only `env.sh`**: just the configuration file; then you follow the labs manually with
+  the guides.
+- **Option B · `env.sh` + `RUNBOOK.md`** (ZIP): also a personalised, read-only `RUNBOOK.md` with the
+  instructions to build, one after the other, the labs you selected: the scripts to run and the
   equivalent `kubectl` / `helm` commands with your values.
 
-The wizard runs **entirely in your browser**: nothing you type is sent anywhere, and secrets
-(Harbor token, OpenRouter key, passwords) can be left empty and filled in later in `env.sh`. The
-scripts are still what installs everything; the wizard never talks to your cluster.
+> ⚠️ **The wizard is a work in progress and must be treated as experimental.** It aims to make the
+> installation easier and clearer, but **the recommended path today is A, without the wizard**.
+> It is a simplified, functional option specific to these labs; EUROPESIP has another wizard
+> developed internally, with advanced features and more customisation options, available on demand.
+
+**Your credentials stay yours, and you can check it.** The wizard is **one single `index.html`**
+with plain HTML, CSS and JavaScript (**no React, no frameworks, no build, no dependencies**), so it
+is easy to review and it runs on GitHub Pages as is:
+
+- **Source code**: [europesip/hcl-dx-compose-labs-wizard](https://github.com/europesip/hcl-dx-compose-labs-wizard)
+  (its own repository) and the published copy in this repository, [docs/index.html](docs/index.html).
+- **Use it online** on GitHub Pages, without installing anything:
+  https://europesip.github.io/hcl-dx-compose-labs/
+- **Or run it locally**: download `index.html` and open it in your browser (it works offline).
+- It runs **entirely in your browser** and a Content-Security-Policy (`connect-src 'none'`) stops
+  the browser from sending anything anywhere. Secrets (Harbor token, OpenRouter key, passwords) can
+  be left empty and filled in later in `env.sh`. The scripts are still what installs everything;
+  the wizard never talks to your cluster.
 
 After that, follow the guides in order. Every step is a numbered script you can read before
 running it; the guides explain what each one does and the equivalent command by hand.
