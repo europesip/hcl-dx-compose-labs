@@ -109,15 +109,17 @@ html[lang="en"] .brand small[data-l="en"], html[lang="es"] .brand small[data-l="
       <tr><td><b>B · <code>env.sh</code> + <code>RUNBOOK.md</code></b> (ZIP)</td><td>Also a personalised, <b>read-only</b>
         <code>RUNBOOK.md</code>: the instructions to build, one after the other, the labs you selected, with the scripts to
         run and the equivalent <code>kubectl</code> / <code>helm</code> commands using your values</td><td>Follow the runbook, which calls the lab scripts</td></tr>
-      <tr><td><b>C · Direct installation</b> (ZIP with a <code>runbook/</code> folder)</td><td>An optimised <code>RUNBOOK.md</code> with
-        <b>direct commands</b>: your values written in each command, so you see exactly what every step does, and the checks
-        marked as optional. Plus <code>install.sh</code>, which runs those same commands one after the other showing the
-        lab and step it is in, <code>secrets.env</code> (the only values not written in the commands) and the values files
-        generated for your installation</td><td>Unzip it in the root of the clone (it creates <code>runbook/</code> and
-        overwrites nothing), fill in <code>secrets.env</code>, then follow <code>RUNBOOK.md</code> or run <code>./install.sh</code></td></tr>
+      <tr><td><b>C · Direct installation</b> (ZIP with a <code>dx-install/</code> folder)</td><td>A <b>self-contained, tailor-made
+        installation</b>: every file (values, properties, LDIF, secrets) already filled in with your values, credentials
+        included in plain text; a <code>RUNBOOK.md</code> with short, easy-to-follow commands (checks marked as optional) and
+        <code>install.sh</code>, which runs those same commands one after the other showing the lab and step it is in. It
+        does not need the labs repository: you can send it to someone who has nothing else</td><td>Unzip it anywhere,
+        <code>cd dx-install</code>, then follow <code>RUNBOOK.md</code> or run <code>./install.sh</code>. Only
+        <code>setup-postgres-dx.sql</code> (Lab 2B) has to be copied in by hand</td></tr>
     </table></div>
-    <p>A and B go in the root of your clone of the labs repository and use the lab scripts; C works from its own
-      <code>runbook/</code> folder and only reads the lab files. In every case the wizard itself never talks to your cluster.</p>
+    <p>A and B go in the root of your clone of the labs repository and use the lab scripts; C is independent. In every
+      case the wizard itself never talks to your cluster. Option C carries credentials in plain text: keep it private and
+      rotate them afterwards.</p>
   </section>
 
   <section class="card">
@@ -142,10 +144,11 @@ html[lang="en"] .brand small[data-l="en"], html[lang="es"] .brand small[data-l="
     </ul>
     <p>How to check it:</p>
     <ol>
-      <li>Read <code>index.html</code> (the JavaScript is at the end, about 500 commented lines).</li>
+      <li>Read <code>index.html</code> (the JavaScript is at the end, after the <code>LAB TEMPLATES</code> block).</li>
       <li>Search it: there is no <code>fetch</code>, <code>XMLHttpRequest</code>, <code>WebSocket</code>, <code>sendBeacon</code>
         or external script or style.
-        <pre>grep -nE 'fetch\(|XMLHttpRequest|WebSocket|sendBeacon|&lt;script src|&lt;link ' index.html</pre></li>
+        <pre>sed '/BEGIN LAB TEMPLATES/,/END LAB TEMPLATES/d' index.html | grep -nE 'fetch\(|XMLHttpRequest|WebSocket|sendBeacon|&lt;script src|&lt;link '</pre>
+        The <code>LAB TEMPLATES</code> block is excluded because it is not code: it holds text copies of the lab files that option C fills in and puts in the ZIP (one of them, <code>iq-chat.py</code>, talks about WebSocket). The page never runs them.</li>
       <li>Open your browser developer tools, <b>Network</b> tab, fill in the form and download: there are no requests.</li>
       <li>Or run it locally with the network disconnected.</li>
     </ol>
@@ -188,17 +191,17 @@ html[lang="en"] .brand small[data-l="en"], html[lang="es"] .brand small[data-l="
         personalizado y <b>de solo lectura</b>: las instrucciones para montar, uno tras otro, los labs que has elegido, con
         los scripts que hay que ejecutar y los comandos <code>kubectl</code> / <code>helm</code> equivalentes con tus valores</td>
         <td>Sigues el runbook, que llama a los scripts de los labs</td></tr>
-      <tr><td><b>C · Instalación directa</b> (ZIP con una carpeta <code>runbook/</code>)</td><td>Un <code>RUNBOOK.md</code>
-        optimizado con <b>comandos directos</b>: tus valores escritos en cada comando, para ver exactamente qué hace cada paso,
-        y las comprobaciones marcadas como opcionales. Además <code>install.sh</code>, que ejecuta esos mismos comandos uno
-        tras otro mostrando el lab y la fase en la que está, <code>secrets.env</code> (los únicos valores que no van escritos
-        en los comandos) y los values generados para tu instalación</td><td>Descomprímelo en la raíz de la copia (crea
-        <code>runbook/</code> y no sobrescribe nada), rellena <code>secrets.env</code> y sigue <code>RUNBOOK.md</code> o
-        ejecuta <code>./install.sh</code></td></tr>
+      <tr><td><b>C · Instalación directa</b> (ZIP con una carpeta <code>dx-install/</code>)</td><td>Una <b>instalación a medida
+        y autónoma</b>: todos los ficheros (values, properties, LDIF, secrets) ya rellenos con tus valores, credenciales
+        incluidas en claro; un <code>RUNBOOK.md</code> con comandos cortos y fáciles de seguir (las comprobaciones marcadas
+        como opcionales) e <code>install.sh</code>, que ejecuta esos mismos comandos uno tras otro mostrando el lab y la fase
+        en la que está. No necesita el repositorio de los labs: se puede enviar a alguien que no tenga nada más</td>
+        <td>Descomprímelo donde quieras, <code>cd dx-install</code> y sigue <code>RUNBOOK.md</code> o ejecuta
+        <code>./install.sh</code>. Solo hay que copiar a mano <code>setup-postgres-dx.sql</code> (Lab 2B)</td></tr>
     </table></div>
-    <p>A y B van en la raíz de tu copia del repositorio de los labs y usan los scripts de los labs; C trabaja desde su
-      propia carpeta <code>runbook/</code> y solo lee los ficheros de los labs. En todos los casos, el asistente en sí
-      nunca habla con tu clúster.</p>
+    <p>A y B van en la raíz de tu copia del repositorio de los labs y usan los scripts de los labs; C es independiente.
+      En todos los casos, el asistente en sí nunca habla con tu clúster. La opción C lleva credenciales en claro: guárdala
+      en privado y rótalas después.</p>
   </section>
 
   <section class="card">
@@ -224,10 +227,11 @@ html[lang="en"] .brand small[data-l="en"], html[lang="es"] .brand small[data-l="
     </ul>
     <p>Cómo comprobarlo:</p>
     <ol>
-      <li>Lee <code>index.html</code> (el JavaScript está al final, unas 500 líneas comentadas).</li>
+      <li>Lee <code>index.html</code> (el JavaScript está al final, tras el bloque <code>LAB TEMPLATES</code>).</li>
       <li>Búscalo: no hay <code>fetch</code>, <code>XMLHttpRequest</code>, <code>WebSocket</code>, <code>sendBeacon</code>
         ni scripts o estilos externos.
-        <pre>grep -nE 'fetch\(|XMLHttpRequest|WebSocket|sendBeacon|&lt;script src|&lt;link ' index.html</pre></li>
+        <pre>sed '/BEGIN LAB TEMPLATES/,/END LAB TEMPLATES/d' index.html | grep -nE 'fetch\(|XMLHttpRequest|WebSocket|sendBeacon|&lt;script src|&lt;link '</pre>
+        Se excluye el bloque <code>LAB TEMPLATES</code> porque no es código: contiene copias en texto de los ficheros de los labs que la opción C rellena y mete en el ZIP (uno de ellos, <code>iq-chat.py</code>, habla de WebSocket). La página nunca los ejecuta.</li>
       <li>Abre las herramientas de desarrollo del navegador, pestaña <b>Red</b> (<i>Network</i>), rellena el formulario y
         descarga: no hay peticiones.</li>
       <li>O ejecútalo en local con la red desconectada.</li>

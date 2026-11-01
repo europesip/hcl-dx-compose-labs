@@ -257,22 +257,23 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
         <button type="button" class="btn" id="dlZip" data-i18n="dlzip">Download ZIP</button>
       </div>
       <div class="opt">
-        <h3 data-i18n="oCT">Option C · Direct installation (runbook/)</h3>
-        <p data-i18n-html="oCB">A ZIP that creates a <code>runbook/</code> folder: a <code>RUNBOOK.md</code> with direct commands
-          (your values written in each command, checks marked as optional), an <code>install.sh</code> that runs it all
-          showing the lab and step, <code>secrets.env</code> and the generated values files. It overwrites nothing.</p>
-        <button type="button" class="btn primary" id="dlDirect" data-i18n="dldirect">Download runbook/ ZIP</button>
+        <h3 data-i18n="oCT">Option C · Direct installation (dx-install/)</h3>
+        <p data-i18n-html="oCB">A <b>self-contained</b> folder, a tailor-made installation you can even send to someone without
+          the labs repository: every file already filled in with your values (credentials included, in plain text), a
+          <code>RUNBOOK.md</code> with short, easy-to-follow commands and an <code>install.sh</code> that runs them showing the
+          lab and step. Only <code>setup-postgres-dx.sql</code> (Lab 2B) has to be added by hand.</p>
+        <button type="button" class="btn primary" id="dlDirect" data-i18n="dldirect">Download dx-install/ ZIP</button>
       </div>
     </div>
     <p class="hint" data-i18n-html="where">A and B: put the files in the root of your clone of the repository (next to
-      <code>env.example.sh</code>) and <code>source ./env.sh</code>; the lab scripts install everything. C: unzip it in the root
-      of the clone (it creates <code>runbook/</code>), fill in <code>runbook/secrets.env</code>, then <code>cd runbook</code> and
-      follow its <code>RUNBOOK.md</code> or run <code>./install.sh</code>. <code>env.sh</code> and <code>runbook/</code> are in <code>.gitignore</code>.</p>
+      <code>env.example.sh</code>) and <code>source ./env.sh</code>; the lab scripts install everything. C: unzip it anywhere
+      (it creates <code>dx-install/</code>), then <code>cd dx-install</code> and follow its <code>RUNBOOK.md</code> or run
+      <code>./install.sh</code>. Option C contains credentials in plain text: keep it private and rotate them afterwards.</p>
     <div class="tabs" role="tablist">
       <button type="button" class="btn small" role="tab" aria-selected="true" data-tab="env">env.sh</button>
       <button type="button" class="btn small" role="tab" aria-selected="false" data-tab="run">RUNBOOK.md (B)</button>
-      <button type="button" class="btn small" role="tab" aria-selected="false" data-tab="drun">runbook/RUNBOOK.md (C)</button>
-      <button type="button" class="btn small" role="tab" aria-selected="false" data-tab="dsh">runbook/install.sh (C)</button>
+      <button type="button" class="btn small" role="tab" aria-selected="false" data-tab="drun">dx-install/RUNBOOK.md (C)</button>
+      <button type="button" class="btn small" role="tab" aria-selected="false" data-tab="dsh">dx-install/install.sh (C)</button>
       <button type="button" class="btn small" id="copy" data-i18n="copy">Copy</button>
     </div>
     <pre id="preview" aria-live="polite"></pre>
@@ -329,15 +330,15 @@ const T = {
     nsdx: "Namespace del software de HCL", nssh: "Namespace de herramientas de terceros", srel: "Release de búsqueda", pgc: "Cluster PostgreSQL", helmv: "Versión de Helm en tu estación de trabajo",
     namesh: "Nombres de Kubernetes: minúsculas, dígitos y guiones. Mantén la release de búsqueda como dx-search salvo que sepas por qué (el chart de DX la espera para la credencial push-admin compartida).",
     s7: "7 · Tus ficheros", dlzip: "Descargar ZIP", dlenv: "Descargar env.sh",
-    where: 'A y B: deja los ficheros en la raíz de tu copia del repositorio (junto a <code>env.example.sh</code>) y haz <code>source ./env.sh</code>; quien instala son los scripts de los labs. C: descomprímelo en la raíz de la copia (crea <code>runbook/</code>), rellena <code>runbook/secrets.env</code>, haz <code>cd runbook</code> y sigue su <code>RUNBOOK.md</code> o ejecuta <code>./install.sh</code>. <code>env.sh</code> y <code>runbook/</code> están en <code>.gitignore</code>.',
+    where: 'A y B: deja los ficheros en la raíz de tu copia del repositorio (junto a <code>env.example.sh</code>) y haz <code>source ./env.sh</code>; quien instala son los scripts de los labs. C: descomprímelo donde quieras (crea <code>dx-install/</code>), haz <code>cd dx-install</code> y sigue su <code>RUNBOOK.md</code> o ejecuta <code>./install.sh</code>. La opción C lleva credenciales en claro: guárdala en privado y rótalas después.',
     optsH: "Elige lo que necesitas:",
     oAT: "Opción A · Solo env.sh",
     oAB: 'Solo el fichero de configuración que necesitan los labs. Después sigue los labs <b>a mano</b>, con la guía de cada uno (<code>GUIDE.es.md</code>).',
     oBT: "Opción B · env.sh + RUNBOOK.md",
     oBB: 'Un ZIP con <code>env.sh</code> y <code>RUNBOOK.md</code>: las instrucciones para montar, uno tras otro, los labs que has elegido, con los scripts de los labs y los comandos equivalentes con tus valores.',
-    oCT: "Opción C · Instalación directa (runbook/)",
-    oCB: 'Un ZIP que crea una carpeta <code>runbook/</code>: un <code>RUNBOOK.md</code> con comandos directos (tus valores escritos en cada comando, las comprobaciones marcadas como opcionales), un <code>install.sh</code> que lo ejecuta todo mostrando el lab y el paso, <code>secrets.env</code> y los values generados. No sobrescribe nada.',
-    dldirect: "Descargar ZIP runbook/",
+    oCT: "Opción C · Instalación directa (dx-install/)",
+    oCB: 'Una carpeta <b>autónoma</b>, una instalación a medida que puedes incluso enviar a alguien sin el repositorio de los labs: todos los ficheros ya rellenos con tus valores (credenciales incluidas, en claro), un <code>RUNBOOK.md</code> con comandos cortos y fáciles de seguir y un <code>install.sh</code> que los ejecuta mostrando el lab y el paso. Solo hay que añadir a mano <code>setup-postgres-dx.sql</code> (Lab 2B).',
+    dldirect: "Descargar ZIP dx-install/",
     copy: "Copiar", copied: "Copiado",
     foot: 'Laboratorios para aprender (PoC), no para producción. Para un proyecto real recomendamos un partner de HCL o los servicios especializados de HCL. · <a href="https://github.com/europesip/hcl-dx-compose-labs">Repositorio de los labs</a> · <a href="https://github.com/europesip/hcl-dx-compose-labs-wizard">Código fuente del asistente</a> · <a href="about.html" class="about-link">Acerca de</a> · <a href="https://www.europesip.com">EUROPESIP</a>'
   }
@@ -738,216 +739,399 @@ function buildRunbook(s){
 }
 
 // ---------------------------------------------------------------------------------------------
-// Direct installation (option C): runbook/RUNBOOK.md + runbook/install.sh + runbook/secrets.env
-// Both files are generated from the SAME list of steps, so they always match. Values are written
-// literally in every command; only secrets come from variables (secrets.env).
-// The commands run from <repo>/runbook/ and read the lab files with ../ (nothing is overwritten).
+// Direct installation (option C): a SELF-CONTAINED folder dx-install/ for one installation.
+// Every file (values, properties, LDIF, secrets...) is rendered here with the user's values, so the
+// bundle does not need the labs repository (except setup-postgres-dx.sql, which is not published).
+// RUNBOOK.md and install.sh come from the SAME list of steps, so they always match.
+// The lab files are carried in TPL (synchronised by tools/sync-wizard-templates.py).
 // ---------------------------------------------------------------------------------------------
-const sq = v => "'" + String(v).replace(/'/g, "'\\''") + "'";          // shell single-quoted literal
-const kapply = "--dry-run=client -o yaml | kubectl apply -f -";        // idempotent create
+// BEGIN LAB TEMPLATES (generated by tools/sync-wizard-templates.py: do not edit by hand)
+const TPL = {
+  "common/openshift/namespaces.yaml": "# OpenShift only (PLATFORM=openshift). Applied by common/01-namespaces.sh, which replaces the variables.\n# Annotations required by HCL for the DX namespace (UID range and groups that the restricted-v2 SCC\n# assigns to the pods; DX containers run with UID/GID 1000-1001).\n# Documentation: DX Compose CF238 > Preparation > Mandatory tasks > Preparing the namespace.\napiVersion: v1\nkind: Namespace\nmetadata:\n  name: ${DX_NS}\n  annotations:\n    openshift.io/sa.scc.mcs: \"s0:c24,c4\"\n    openshift.io/sa.scc.supplemental-groups: \"1001/10000\"\n    openshift.io/sa.scc.uid-range: \"1000/10000\"\n---\n# The third-party namespace needs no annotations: CNPG and LiteLLM work with restricted-v2 using the\n# range OpenShift assigns. For OpenLDAP see lab2-ldap-postgres/a-ldap/openldap-values.yaml.\napiVersion: v1\nkind: Namespace\nmetadata:\n  name: ${SHARED_NS}\n",
+  "lab0-poc-wsl/storage-poc.yaml": "# Lab 0 · StorageClasses for the single-node PoC (k3s on WSL2). Applied by 01-storage.sh, which\n# replaces ${SC_RWO} / ${SC_RWX} with the names in env.sh (dx-deploy-rwo / dx-deploy-rwx by default).\n#\n#   RWO -> local-path provisioner shipped with k3s (dynamic: one directory per PVC)\n#   RWX -> STATIC (no-provisioner): k3s local-path only supports ReadWriteOnce and the DX chart\n#          asks for ReadWriteMany for the DAM binaries. On a single node a hostPath\n#          PersistentVolume really is RWX (every pod sees the same disk): 01-storage.sh creates\n#          it with the name dx-poc-dam-binaries.\napiVersion: storage.k8s.io/v1\nkind: StorageClass\nmetadata:\n  name: ${SC_RWO}\nprovisioner: rancher.io/local-path\nreclaimPolicy: Delete\nvolumeBindingMode: WaitForFirstConsumer\n---\napiVersion: storage.k8s.io/v1\nkind: StorageClass\nmetadata:\n  name: ${SC_RWX}\nprovisioner: kubernetes.io/no-provisioner\nreclaimPolicy: Retain\nvolumeBindingMode: WaitForFirstConsumer\n",
+  "lab0-poc-wsl/dam-binaries-pv.yaml": "# Lab 0 · RWX volume for the DAM binaries in the PoC (hostPath on the only node).\n# Created by 01-storage.sh (which replaces ${SC_RWX}). Capacity = volumes.digitalAssetManagement.binaries\n# of Lab 1 (10Gi).\napiVersion: v1\nkind: PersistentVolume\nmetadata:\n  name: dx-poc-dam-binaries\n  labels: { lab: hcl-dx-compose }\nspec:\n  capacity:\n    storage: 10Gi\n  accessModes: [ReadWriteMany]\n  persistentVolumeReclaimPolicy: Retain\n  storageClassName: ${SC_RWX}\n  hostPath:\n    path: /var/lib/dx-poc/dam-binaries\n    type: DirectoryOrCreate\n",
+  "lab0-poc-wsl/custom-values.poc.yaml": "# ------------------------------------------------------------------------------------------\n# Lab 0 · DX PoC layer: reduced resources for a single node with ~15 GiB (WSL2)\n# Added by common/dx-helm.sh at the end of the layers when DX_POC=1 (env.sh).\n#\n# Only the REQUESTS are lowered (what Kubernetes adds up to decide whether a pod fits); the\n# LIMITS are kept. The chart default requests (~10.4 GiB for base DX alone) are sized for\n# production and are far above the real usage of a demo (the Web Engine uses ~2.7 GiB).\n# DO NOT use in production.\n# ------------------------------------------------------------------------------------------\nresources:\n  webEngine:\n    requests: { cpu: \"1000m\", memory: \"3072Mi\" }      # default 2000m / 4096Mi\n  imageProcessor:\n    requests: { cpu: \"100m\", memory: \"512Mi\" }        # default 200m / 2048Mi\n  digitalAssetManagement:\n    requests: { cpu: \"250m\", memory: \"1024Mi\" }       # default 500m / 1536Mi\n  persistenceNode:\n    requests: { cpu: \"250m\", memory: \"768Mi\" }        # default 500m / 1024Mi\n",
+  "lab0-poc-wsl/custom-search-values.poc.yaml": "# Lab 0 · PoC layer for search (hcl-dx-search): reduced requests for a single node.\n# Added by lab4-opensearch/02-search-install.sh when DX_POC=1. Limits are unchanged.\nresources:\n  openSearchManager:\n    requests: { cpu: \"500m\", memory: \"1536Mi\" }       # default 1000m / 2048Mi (JVM -Xmx1024M)\n  fileProcessor:\n    requests: { cpu: \"250m\", memory: \"512Mi\" }        # default 1000m / 2048Mi\n  searchMiddlewareQuery:\n    requests: { cpu: \"250m\", memory: \"512Mi\" }        # default 500m / 768Mi\n",
+  "lab1-dx-base/custom-values.yaml": "# ------------------------------------------------------------------------------------------\n# Lab 1 · Base custom-values.yaml for DX Compose · chart hcl-dx-deployment 2.49.0 (CF238)\n#\n# It is the base layer for EVERY iteration. The following labs do not modify it: they add their\n# own layers with -f (see common/dx-helm.sh). It only contains what changes compared to the chart\n# default values (charts/values-dx-default-2.49.0.yaml).\n#\n# Set from env.sh by common/dx-helm.sh with --set-string (so they are not repeated here):\n#   networking.webEngine.host           <- DX_HOST\n#   volumes.*.storageClassName          <- SC_RWO / SC_RWX (the values below are only the defaults)\n# ------------------------------------------------------------------------------------------\n\n# Images: straight from the official HCL Harbor. The names (dx-compose/webengine, ...) and the\n# CF238 tags already come in the chart, so we only change the registry and the pull secret.\nimages:\n  repository: \"hclcr.io\"\n  imagePullSecrets:\n    - name: regcred          # created by lab1-dx-base/01-secrets.sh\n\n# Volumes: the two StorageClasses of the requirements (RWO and RWX)\nvolumes:\n  digitalAssetManagement:\n    binaries:                # shared by every DAM pod -> RWX\n      storageClassName: \"dx-deploy-rwx\"\n      requests:\n        storage: \"10Gi\"\n  persistenceNode:\n    database:                # DX internal PostgreSQL (DAM, People Service, internal IQ)\n      storageClassName: \"dx-deploy-rwo\"\n      requests:\n        storage: \"10Gi\"\n  licenseManager:\n    data:\n      storageClassName: \"dx-deploy-rwo\"\n      requests:\n        storage: \"2Gi\"\n  webEngine:\n    customization:           # server profile and Derby (minimum 5Gi: Derby takes ~700Mi)\n      storageClassName: \"dx-deploy-rwo\"\n      requests:\n        storage: \"5Gi\"\n    log:\n      storageClassName: \"dx-deploy-rwo\"\n      requests:\n        storage: \"5Gi\"\n\n# What is deployed: DX Compose = Web Engine (not Core). Without the DX OpenLDAP (we use an\n# external one in Lab 2) and without Remote Search.\napplications:\n  core: false\n  webEngine: true\n  openLdap: false            # the chart default is true\n  remoteSearch: false\n  persistence: true          # Persistence Node: DAM database\n\npeopleservice:\n  enabled: false\n\nnetworking:\n  haproxy:\n    # ClusterIP: published with an Ingress (Kubernetes) or a Route (OpenShift), see 03-expose.sh\n    serviceType: \"ClusterIP\"\n  # TLS certificate served by HAProxy (created by 01-secrets.sh)\n  tlsCertSecret: \"dx-tls-cert\"\n\nsecurity:\n  webEngine:\n    # wpsadmin credentials in a secret. With customWebEngineSecret, the plain-text user and\n    # password must be empty (otherwise the chart refuses to install).\n    webEngineUser: null\n    webEnginePassword: null\n    customWebEngineSecret: \"web-engine-secret\"\n\nlogging:\n  webEngine:\n    level:\n      - \"*=info\"\n\nconfiguration:\n  containerTimezone: \"Europe/Madrid\"   # any IANA time zone, e.g. \"Europe/London\", \"UTC\"\n  # Container that validates the requirements (storage, resources) before each pod starts\n  prereqsChecker:\n    enabled: true\n",
+  "lab1-dx-base/ingress-dx.yaml": "# Kubernetes (PLATFORM=kubernetes) · DX Ingress with ingress-nginx. Applied by 03-expose.sh,\n# which replaces the env.sh variables.\n#\n# TLS is terminated at the Ingress with the same dx-tls-cert certificate and the Ingress\n# re-encrypts towards HAProxy (backend-protocol HTTPS), the only entry point of DX.\n# The whole \"/\" is published: DX uses /wps, /dx (API, DAM, IQ), /hcl, /ibm and /adminCenter.\n#\n# k3s ships Traefik by default; the reference lab cluster uses ingress-nginx. With Traefik, remove\n# the nginx annotations, use ingressClassName: traefik and a ServersTransport with\n# insecureSkipVerify (HAProxy serves a self-signed certificate) or an IngressRouteTCP with passthrough.\napiVersion: networking.k8s.io/v1\nkind: Ingress\nmetadata:\n  name: ${DX_RELEASE}-ingress\n  namespace: ${DX_NS}\n  annotations:\n    nginx.ingress.kubernetes.io/backend-protocol: \"HTTPS\"\n    nginx.ingress.kubernetes.io/proxy-body-size: \"0\"          # large uploads to DAM\n    nginx.ingress.kubernetes.io/proxy-read-timeout: \"600\"     # long IQ responses\n    nginx.ingress.kubernetes.io/proxy-send-timeout: \"600\"\nspec:\n  ingressClassName: ${INGRESS_CLASS}\n  tls:\n    - hosts:\n        - ${DX_HOST}\n      secretName: dx-tls-cert\n  rules:\n    - host: ${DX_HOST}\n      http:\n        paths:\n          - path: /\n            pathType: Prefix\n            backend:\n              service:\n                name: ${DX_RELEASE}-haproxy\n                port:\n                  number: 443\n",
+  "lab1-dx-base/route-dx-openshift.yaml": "# OpenShift (PLATFORM=openshift) · DX Route with TLS passthrough. Applied by 03-expose.sh.\n# The OpenShift router does not decrypt the traffic: TLS is terminated by the DX HAProxy with dx-tls-cert.\napiVersion: route.openshift.io/v1\nkind: Route\nmetadata:\n  name: ${DX_RELEASE}-passthrough\n  namespace: ${DX_NS}\nspec:\n  host: ${DX_HOST}\n  port:\n    targetPort: \"haproxy\"\n  to:\n    kind: Service\n    name: ${DX_RELEASE}-haproxy\n    weight: 100\n  tls:\n    termination: passthrough\n    insecureEdgeTerminationPolicy: None\n",
+  "lab2-ldap-postgres/a-ldap/openldap-values.yaml": "# Lab 2A · Lab OpenLDAP in the shared namespace (third-party software, not HCL)\n# Community chart helm-openldap/openldap-stack-ha 4.3.3 (OpenLDAP 2.6.9, image jpgouin/openldap).\n# With a real customer you would use their corporate directory (OpenLDAP, Active Directory, etc.)\n# and this step disappears: only host, port, suffix and bind user change in custom-values.ldap.yaml.\n#\n# Result:\n#   service   openldap.dx-shared.svc.cluster.local:389 (ldap) and :636 (ldaps)\n#   suffix    dc=dxdemo,dc=com\n#   admin     cn=admin,dc=dxdemo,dc=com  (password in the openldap-admin secret)\n#   users     ou=users,dc=dxdemo,dc=com: andres, eduardo, macarena, enrique, jordi, patricia, german\n\nglobal:\n  ldapDomain: \"dc=dxdemo,dc=com\"\n  # Passwords in a secret created by 01-ldap-install.sh (not in this file)\n  existingSecret: openldap-admin\n\nreplicaCount: 1\nreplication:\n  enabled: false             # single node: no multi-master replication\n\npersistence:\n  enabled: true\n  storageClass: dx-deploy-rwo   # overridden by 01-ldap-install.sh with ${SC_RWO}\n  size: 1Gi\n\n# Demo structure and users. Loaded ONLY on the first start (empty PVC).\ncustomLdifCm: openldap-demo-ldif\n\nltb-passwd:\n  enabled: false\nphpldapadmin:\n  enabled: false\n\nresources:\n  requests: { cpu: 50m, memory: 128Mi }\n  limits:   { cpu: 500m, memory: 512Mi }\n\n# OpenShift: the restricted-v2 SCC does not allow the fixed runAsUser/fsGroup of the chart.\n# Uncomment so that OpenShift assigns a UID from the namespace range:\n# podSecurityContext:\n#   enabled: false\n# containerSecurityContext:\n#   enabled: false\n",
+  "lab2-ldap-postgres/a-ldap/demo-users.ldif": "# Lab 2A · Demo users and groups. 01-ldap-install.sh replaces the LDAP_USERS_PASSWORD variable\n# with a different {SSHA} hash for each user (never in plain text) and stores it in the\n# openldap-demo-ldif ConfigMap.\n#\n# The root (dc=dxdemo,dc=com) MUST be here: with a custom LDIF the image does not create the\n# default tree, and without a root the first ldapadd fails (\"No such object\") and the LDAP starts empty.\n#\n# Groups are groupOfUniqueNames with uniqueMember because that is what the LDAP configuration\n# generated by the DX chart looks for (groupFilter objectclass=groupOfUniqueNames,\n# groupMemberIdMap groupOfUniqueNames:uniqueMember).\n\ndn: dc=dxdemo,dc=com\nobjectClass: dcObject\nobjectClass: organization\ndc: dxdemo\no: DX Demo\n\ndn: ou=users,dc=dxdemo,dc=com\nobjectClass: organizationalUnit\nou: users\n\ndn: ou=groups,dc=dxdemo,dc=com\nobjectClass: organizationalUnit\nou: groups\n\ndn: uid=andres,ou=users,dc=dxdemo,dc=com\nobjectClass: inetOrgPerson\nuid: andres\ncn: Andres\ngivenName: Andres\nsn: Demo\ntitle: Portal Administrator\nmail: andres@dxdemo.com\nuserPassword: ${LDAP_USERS_PASSWORD}\n\ndn: uid=eduardo,ou=users,dc=dxdemo,dc=com\nobjectClass: inetOrgPerson\nuid: eduardo\ncn: Eduardo\ngivenName: Eduardo\nsn: Demo\ntitle: Portal Administrator\nmail: eduardo@dxdemo.com\nuserPassword: ${LDAP_USERS_PASSWORD}\n\ndn: uid=macarena,ou=users,dc=dxdemo,dc=com\nobjectClass: inetOrgPerson\nuid: macarena\ncn: Macarena\ngivenName: Macarena\nsn: Demo\ntitle: Content Author\nmail: macarena@dxdemo.com\nuserPassword: ${LDAP_USERS_PASSWORD}\n\ndn: uid=enrique,ou=users,dc=dxdemo,dc=com\nobjectClass: inetOrgPerson\nuid: enrique\ncn: Enrique\ngivenName: Enrique\nsn: Demo\ntitle: Content Author\nmail: enrique@dxdemo.com\nuserPassword: ${LDAP_USERS_PASSWORD}\n\ndn: uid=jordi,ou=users,dc=dxdemo,dc=com\nobjectClass: inetOrgPerson\nuid: jordi\ncn: Jordi\ngivenName: Jordi\nsn: Demo\ntitle: Content Author\nmail: jordi@dxdemo.com\nuserPassword: ${LDAP_USERS_PASSWORD}\n\ndn: uid=patricia,ou=users,dc=dxdemo,dc=com\nobjectClass: inetOrgPerson\nuid: patricia\ncn: Patricia\ngivenName: Patricia\nsn: Demo\ntitle: Marketing\nmail: patricia@dxdemo.com\nuserPassword: ${LDAP_USERS_PASSWORD}\n\ndn: uid=german,ou=users,dc=dxdemo,dc=com\nobjectClass: inetOrgPerson\nuid: german\ncn: German\ngivenName: German\nsn: Demo\ntitle: Marketing\nmail: german@dxdemo.com\nuserPassword: ${LDAP_USERS_PASSWORD}\n\ndn: cn=dxadmins,ou=groups,dc=dxdemo,dc=com\nobjectClass: groupOfUniqueNames\ncn: dxadmins\ndescription: Portal administrators (rights in DX: GUIDE.md, Lab 2A step 4)\nuniqueMember: uid=andres,ou=users,dc=dxdemo,dc=com\nuniqueMember: uid=eduardo,ou=users,dc=dxdemo,dc=com\n\ndn: cn=dxauthors,ou=groups,dc=dxdemo,dc=com\nobjectClass: groupOfUniqueNames\ncn: dxauthors\ndescription: Content authors\nuniqueMember: uid=macarena,ou=users,dc=dxdemo,dc=com\nuniqueMember: uid=enrique,ou=users,dc=dxdemo,dc=com\nuniqueMember: uid=jordi,ou=users,dc=dxdemo,dc=com\n\ndn: cn=dxmarketing,ou=groups,dc=dxdemo,dc=com\nobjectClass: groupOfUniqueNames\ncn: dxmarketing\ndescription: Marketing\nuniqueMember: uid=patricia,ou=users,dc=dxdemo,dc=com\nuniqueMember: uid=german,ou=users,dc=dxdemo,dc=com\n",
+  "lab2-ldap-postgres/a-ldap/custom-values.ldap.yaml": "# ------------------------------------------------------------------------------------------\n# Lab 2A · DX layer: authentication against the OpenLDAP in the shared namespace\n# Added by common/dx-helm.sh as soon as the dx-ldap-bind secret exists (03-dx-upgrade.sh).\n#\n# It uses the NATIVE LDAP configuration of the chart (configuration.webEngine.ldap, type \"other\"),\n# documented in DX Compose CF238 > Configuring LDAP. The chart generates the Open Liberty\n# <ldapRegistry> and <federatedRepository>; only special filters or attributes would need a\n# configOverrideFiles with your own XML (see enterprise/active-directory).\n#\n# The basic registry is kept (security.webEngine.basicRegistry.enabled: true, the default): the\n# federated repository includes both the basic registry (wpsadmin) and the LDAP, so wpsadmin can\n# still log in and so can the LDAP users. If it were disabled, the administrator would have to\n# exist in the LDAP and webEngineUser would have to be its full DN.\n# ------------------------------------------------------------------------------------------\nconfiguration:\n  webEngine:\n    ldap:\n      type: \"other\"                 # none | dx (DX OpenLDAP) | other (external LDAP)\n      host: \"openldap.dx-shared.svc.cluster.local\"   # overridden by dx-helm.sh with ${LDAP_HOST}\n      port: 389\n      sslEnabled: false             # lab; in production 636 + truststore (see GUIDE)\n      suffix: \"dc=dxdemo,dc=com\"    # baseDN for searches\n      serverType: \"Custom\"\n      id: \"dx_ldap\"\n      # Bind user (full DN) and password in a secret with keys bindUser/bindPassword\n      customLdapSecret: \"dx-ldap-bind\"\n",
+  "lab2-ldap-postgres/enterprise/active-directory/custom-values.ad.yaml": "# ------------------------------------------------------------------------------------------\n# Lab 2 · Enterprise branch · DX layer: authentication against Microsoft Active Directory\n# Added by common/dx-helm.sh as soon as the dx-ad-bind secret exists (01-secrets-ad.sh).\n# It replaces the OpenLDAP layer (a-ldap/custom-values.ldap.yaml): the two are never used together.\n#\n# Unlike the OpenLDAP branch (native configuration.webEngine.ldap block), here the configuration\n# is written by hand with configOverrideFiles: the native chart block generates OpenLDAP filters\n# (inetOrgPerson / groupOfUniqueNames) and AD needs its own (sAMAccountName, objectCategory,\n# memberOf). Documentation: DX Compose CF238 > \"Configuration changes using overrides\"\n# (Configuring LDAP section).\n#\n# The AD data is NOT in this file: it arrives as environment variables from the dx-ad-bind secret\n# (customSecrets) and Open Liberty replaces them in the XML (${AD_HOST}, ...).\n# ------------------------------------------------------------------------------------------\nconfiguration:\n  webEngine:\n    # Environment variables AD_HOST, AD_PORT, AD_BASE_DN, AD_BIND_USER, AD_BIND_PASSWORD, AD_SSL\n    customSecrets:\n      ad-config: \"dx-ad-bind\"\n\n    # LDAPS (port 636): create the secret with the AD CA and uncomment (see GUIDE-enterprise.md)\n    # customTruststoreSecrets:\n    #   ad-ca: \"dx-ad-ca\"\n\n    configOverrideFiles:\n      ad-registry.xml: |\n        <server description=\"DX Web Engine - Microsoft Active Directory\">\n          <ldapRegistry id=\"ad\" realm=\"ActiveDirectoryRealm\"\n              host=\"${AD_HOST}\" port=\"${AD_PORT}\"\n              baseDN=\"${AD_BASE_DN}\"\n              bindDN=\"${AD_BIND_USER}\" bindPassword=\"${AD_BIND_PASSWORD}\"\n              ldapType=\"Microsoft Active Directory\"\n              sslEnabled=\"${AD_SSL}\"\n              ignoreCase=\"true\"\n              referral=\"ignore\"\n              recursiveSearch=\"false\"\n              bindAuthMechanism=\"simple\"\n              returnToPrimaryServer=\"true\"\n              allUserAttributes=\"true\"\n              searchPageSize=\"500\"\n              searchTimeLimit=\"15s\"\n              readTimeout=\"30s\"\n              connectTimeout=\"10s\">\n\n            <!-- Login by sAMAccountName (the \"Windows user\"); groups by memberOf/member -->\n            <activedFilters\n                userFilter=\"(&amp;(sAMAccountName=%v)(objectcategory=person))\"\n                groupFilter=\"(&amp;(cn=%v)(objectcategory=group))\"\n                userIdMap=\"user:sAMAccountName\"\n                groupIdMap=\"*:cn\"\n                groupMemberIdMap=\"memberOf:member\"/>\n\n            <attributeConfiguration>\n              <attribute name=\"sAMAccountName\" propertyName=\"uid\" entityType=\"PersonAccount\"/>\n              <attribute name=\"mail\" propertyName=\"ibm-primaryEmail\" entityType=\"PersonAccount\"/>\n              <attribute name=\"title\" propertyName=\"ibm-jobTitle\" entityType=\"PersonAccount\"/>\n            <\/attributeConfiguration>\n\n            <ldapEntityType name=\"PersonAccount\">\n              <objectClass>person<\/objectClass>\n            <\/ldapEntityType>\n            <ldapEntityType name=\"Group\">\n              <objectClass>group<\/objectClass>\n            <\/ldapEntityType>\n\n            <groupProperties>\n              <memberAttribute name=\"member\" scope=\"direct\" objectClass=\"group\"/>\n              <membershipAttribute name=\"memberOf\" scope=\"direct\"/>\n            <\/groupProperties>\n\n            <loginProperty name=\"uid\">uid<\/loginProperty>\n          <\/ldapRegistry>\n\n          <!-- Joins the chart basic registry (wpsadmin) and the AD in a single realm -->\n          <federatedRepository>\n            <primaryRealm name=\"FederatedRealm\" allowOpIfRepoDown=\"true\">\n              <participatingBaseEntry name=\"o=defaultWIMFileBasedRealm\"/>\n              <participatingBaseEntry name=\"${AD_BASE_DN}\"/>\n            <\/primaryRealm>\n          <\/federatedRepository>\n        <\/server>\n",
+  "lab2-ldap-postgres/b-postgres/cluster-dx-pg.yaml": "# Lab 2B · PostgreSQL 18 for the DX Web Engine, managed by CloudNativePG, in the shared namespace.\n# Applied by 03-postgres-cluster.sh (replaces ${SHARED_NS}, ${PG_CLUSTER} and ${SC_RWO}).\n#\n# ⚠️ Support: in CF238 HCL documents DB2, Oracle and SQL Server for the Web Engine. PostgreSQL is\n# being validated by HCL (their tests work with PostgreSQL 18) but it is NOT SUPPORTED TODAY.\n# This lab is for learning the transfer process, not for production.\n#\n# Write service: ${PG_CLUSTER}-rw.${SHARED_NS}.svc.cluster.local:5432\n# Status:  kubectl -n ${SHARED_NS} get clusters.postgresql.cnpg.io\n#          (on Rancher, \"kubectl get cluster\" clashes with Cluster API: use the full name)\napiVersion: postgresql.cnpg.io/v1\nkind: Cluster\nmetadata:\n  name: ${PG_CLUSTER}\n  namespace: ${SHARED_NS}\nspec:\n  instances: 1                      # lab; 3 for HA (1 primary + 2 replicas)\n  imageName: ghcr.io/cloudnative-pg/postgresql:18.6-standard-trixie   # pinned minor version\n  primaryUpdateStrategy: unsupervised\n\n  enableSuperuserAccess: true\n  superuserSecret:\n    name: dx-pg-superuser\n\n  postgresql:\n    parameters:\n      max_connections: \"500\"\n      # DX uses XA transactions (2PC): PostgreSQL requires max_prepared_transactions > 0\n      max_prepared_transactions: \"500\"\n      shared_buffers: \"512MB\"\n      timezone: \"Europe/Madrid\"\n\n  storage:\n    storageClass: ${SC_RWO}\n    size: 10Gi\n\n  # Tablespaces used by the DX JCR. CNPG creates them declaratively, each one in its own PVC.\n  tablespaces:\n    - name: icmlfq32\n      owner: { name: dxuser }\n      storage: { storageClass: ${SC_RWO}, size: 2Gi }\n    - name: icmlnf32\n      owner: { name: dxuser }\n      storage: { storageClass: ${SC_RWO}, size: 1Gi }\n    - name: icmvfq04\n      owner: { name: dxuser }\n      storage: { storageClass: ${SC_RWO}, size: 1Gi }\n    - name: icmsfq04\n      owner: { name: dxuser }\n      storage: { storageClass: ${SC_RWO}, size: 2Gi }\n    - name: icmlsndx\n      owner: { name: dxuser }\n      storage: { storageClass: ${SC_RWO}, size: 1Gi }\n\n  bootstrap:\n    initdb:\n      database: dx_core\n      owner: dxuser\n      secret:\n        name: dx-pg-dxuser\n      encoding: UTF8\n      localeCollate: en_US.UTF-8\n      localeCType: en_US.UTF-8\n      # Schemas, roles, grants, extensions and parameters of dx_core: run ONCE, as postgres,\n      # inside dx_core. The SQL is in setup-postgres-dx.sql; 03-postgres-cluster.sh loads it\n      # into the dx-pg-setup-sql ConfigMap (see GUIDE, Lab 2B step 3).\n      postInitApplicationSQLRefs:\n        configMapRefs:\n          - name: dx-pg-setup-sql\n            key: setup-postgres-dx.sql\n\n  # Login users managed by CNPG (password in a basic-auth secret)\n  managed:\n    roles:\n      # For the Lab 3 appendix (IQ sessions in PostgreSQL). The iqdb database is created there.\n      - name: dx_iq_db_user\n        ensure: present\n        login: true\n        passwordSecret:\n          name: dx-pg-iquser\n",
+  "lab2-ldap-postgres/b-postgres/custom-values.postgres.yaml": "# ------------------------------------------------------------------------------------------\n# Lab 2B · DX layer: Web Engine on the PostgreSQL in the shared namespace (transfer from Derby)\n# Added by common/dx-helm.sh as soon as the custom-credentials-webengine-dbdomain-secret exists.\n#\n# Documentation: DX Compose CF238 > Configuring an external database and database transfer.\n# ⚠️ PostgreSQL is not yet supported by HCL for the Web Engine (see GUIDE, section 2B).\n# ------------------------------------------------------------------------------------------\nconfiguration:\n  webEngine:\n    # true = on the next start the Web Engine transfers the Derby data to the external database\n    # ONCE. It records it when finished, so later restarts and upgrades do not repeat it.\n    useExternalDatabase: true\n    customDbTypePropertiesSecret: custom-credentials-webengine-dbtype-secret\n    customDbDomainPropertiesSecret: custom-credentials-webengine-dbdomain-secret\n    # false: the target database is empty (just created by CNPG). Set it to true only to redo\n    # the transfer over a database that already has tables (it DELETES its content); in that\n    # case, set it back to false as soon as it finishes (HCL recommendation).\n    dropDatabaseTables: false\n",
+  "lab2-ldap-postgres/b-postgres/dx_dbtype.properties": "postgresql.DbDriver=org.postgresql.Driver\npostgresql.DbLibrary=/opt/openliberty/wlp/usr/svrcfg/templates/jars/postgresql/postgresql-42.7.11.jar\npostgresql.JdbcProviderName=wpdbJDBC_postgresql\nderby.DbDriver=org.apache.derby.jdbc.EmbeddedDriver\n",
+  "lab2-ldap-postgres/b-postgres/dx_dbdomain.properties.template": "InitializeFeedbackDB=true\nfeedback.DbType=postgresql\nfeedback.DbName=dx_core\nfeedback.DbSchema=feedback\nfeedback.DataSourceName=wpfdbkdbDS\nfeedback.DbUrl=jdbc:postgresql://${PG_HOST}:5432/dx_core?sslmode=disable\nfeedback.DbUser=dxuser\nfeedback.DbPassword=${DXUSER_PASSWORD}\nfeedback.DbRuntimeUser=dxuser\nfeedback.DbRuntimePassword=${DXUSER_PASSWORD}\nfeedback.DBA.DbUser=dxuser\nfeedback.DBA.DbPassword=${DXUSER_PASSWORD}\nfeedback.DbConfigRoleName=WP_PZN_CONFIG_USERS\nfeedback.DbRuntimeRoleName=WP_PZN_RUNTIME_USERS\nfeedback.XDbName=dx_core\nfeedback.DbNode=pznNode\nlikeminds.DbType=postgresql\nlikeminds.DbName=dx_core\nlikeminds.DbSchema=likeminds\nlikeminds.DataSourceName=wplmdbDS\nlikeminds.DbUrl=jdbc:postgresql://${PG_HOST}:5432/dx_core?sslmode=disable\nlikeminds.DbUser=dxuser\nlikeminds.DbPassword=${DXUSER_PASSWORD}\nlikeminds.DbRuntimeUser=dxuser\nlikeminds.DbRuntimePassword=${DXUSER_PASSWORD}\nlikeminds.DBA.DbUser=dxuser\nlikeminds.DBA.DbPassword=${DXUSER_PASSWORD}\nlikeminds.DbConfigRoleName=WP_PZN_CONFIG_USERS\nlikeminds.DbRuntimeRoleName=WP_PZN_RUNTIME_USERS\nlikeminds.XDbName=dx_core\nlikeminds.DbNode=pznNode\nrelease.DbType=postgresql\nrelease.DbName=dx_core\nrelease.DbSchema=release\nrelease.DataSourceName=wpreldbDS\nrelease.DbUrl=jdbc:postgresql://${PG_HOST}:5432/dx_core?sslmode=disable\nrelease.DbUser=dxuser\nrelease.DbPassword=${DXUSER_PASSWORD}\nrelease.DbRuntimeUser=dxuser\nrelease.DbRuntimePassword=${DXUSER_PASSWORD}\nrelease.DBA.DbUser=dxuser\nrelease.DBA.DbPassword=${DXUSER_PASSWORD}\nrelease.DbConfigRoleName=WP_BASE_CONFIG_USERS\nrelease.DbRuntimeRoleName=WP_BASE_RUNTIME_USERS\nrelease.XDbName=dx_core\nrelease.DbNode=wpsNode\ncommunity.DbType=postgresql\ncommunity.DbName=dx_core\ncommunity.DbSchema=community\ncommunity.DataSourceName=wpcommdbDS\ncommunity.DbUrl=jdbc:postgresql://${PG_HOST}:5432/dx_core?sslmode=disable\ncommunity.DbUser=dxuser\ncommunity.DbPassword=${DXUSER_PASSWORD}\ncommunity.DbRuntimeUser=dxuser\ncommunity.DbRuntimePassword=${DXUSER_PASSWORD}\ncommunity.DBA.DbUser=dxuser\ncommunity.DBA.DbPassword=${DXUSER_PASSWORD}\ncommunity.DbConfigRoleName=WP_BASE_CONFIG_USERS\ncommunity.DbRuntimeRoleName=WP_BASE_RUNTIME_USERS\ncommunity.XDbName=dx_core\ncommunity.DbNode=wpsNode\ncustomization.DbType=postgresql\ncustomization.DbName=dx_core\ncustomization.DbSchema=customization\ncustomization.DataSourceName=wpcustdbDS\ncustomization.DbUrl=jdbc:postgresql://${PG_HOST}:5432/dx_core?sslmode=disable\ncustomization.DbUser=dxuser\ncustomization.DbPassword=${DXUSER_PASSWORD}\ncustomization.DbRuntimeUser=dxuser\ncustomization.DbRuntimePassword=${DXUSER_PASSWORD}\ncustomization.DBA.DbUser=dxuser\ncustomization.DBA.DbPassword=${DXUSER_PASSWORD}\ncustomization.DbConfigRoleName=WP_BASE_CONFIG_USERS\ncustomization.DbRuntimeRoleName=WP_BASE_RUNTIME_USERS\ncustomization.XDbName=dx_core\ncustomization.DbNode=wpsNode\njcr.DbType=postgresql\njcr.DbName=dx_core\njcr.DbSchema=jcr\njcr.DataSourceName=wpjcrdbDS\njcr.DbUrl=jdbc:postgresql://${PG_HOST}:5432/dx_core?sslmode=disable\njcr.DbUser=dxuser\njcr.DbPassword=${DXUSER_PASSWORD}\njcr.DbRuntimeUser=dxuser\njcr.DbRuntimePassword=${DXUSER_PASSWORD}\njcr.DBA.DbUser=dxuser\njcr.DBA.DbPassword=${DXUSER_PASSWORD}\njcr.DbConfigRoleName=WP_JCR_CONFIG_USERS\njcr.DbRuntimeRoleName=WP_JCR_RUNTIME_USERS\njcr.XDbName=dx_core\njcr.DbNode=wpsNode\n",
+  "lab2-ldap-postgres/enterprise/oracle/custom-values.oracle.yaml": "# ------------------------------------------------------------------------------------------\n# Lab 2 · Enterprise branch · DX layer: Web Engine on Oracle (transfer from Derby)\n# Added by common/dx-helm.sh INSTEAD of the PostgreSQL layer when the dx-oracle-ca secret exists\n# (TCPS connection). Without TLS it is not needed: the PostgreSQL layer is identical except for\n# the truststore.\n#\n# Oracle IS supported by HCL for the Web Engine in CF238 (19c and 21c, AL32UTF8/AL16UTF16).\n# Documentation: DX Compose CF238 > Configuring an external database and database transfer.\n# ------------------------------------------------------------------------------------------\nconfiguration:\n  webEngine:\n    useExternalDatabase: true\n    customDbTypePropertiesSecret: custom-credentials-webengine-dbtype-secret\n    customDbDomainPropertiesSecret: custom-credentials-webengine-dbdomain-secret\n    # false with the PDB just prepared by setup-oracle-dx.sql. true ONLY to redo the transfer\n    # over schemas that already have tables (it DELETES them); afterwards, false again.\n    dropDatabaseTables: false\n    # CA of the TCPS listener in the Web Engine truststore (requires a pod restart)\n    customTruststoreSecrets:\n      oracle-ca: \"dx-oracle-ca\"\n",
+  "lab2-ldap-postgres/enterprise/oracle/dx_dbtype.properties": "oracle.DbDriver=oracle.jdbc.driver.OracleDriver\noracle.DbLibrary=/opt/openliberty/wlp/usr/svrcfg/templates/jars/oracle/ojdbc11.jar:/opt/openliberty/wlp/usr/svrcfg/templates/jars/oracle/xdb6-11.2.0.4.jar\noracle.JdbcProviderName=wpdbJDBC_oracle\nderby.DbDriver=org.apache.derby.jdbc.EmbeddedDriver\n",
+  "lab2-ldap-postgres/enterprise/oracle/dx_dbdomain.properties.template": "InitializeFeedbackDB=true\nfeedback.DbType=oracle\nfeedback.DbName=feedback\nfeedback.DbSchema=feedback\nfeedback.DataSourceName=wpfdbkdbDS\nfeedback.DbUrl=${ORACLE_JDBC_URL}\nfeedback.DbUser=${ORACLE_DX_USER}\nfeedback.DbPassword=${ORACLE_DX_PASSWORD}\nfeedback.DbRuntimeUser=${ORACLE_DX_USER}\nfeedback.DbRuntimePassword=${ORACLE_DX_PASSWORD}\nfeedback.DBA.DbUser=${ORACLE_DX_USER}\nfeedback.DBA.DbPassword=${ORACLE_DX_PASSWORD}\nfeedback.DbConfigRoleName=WP_PZN_CONFIG_USERS\nfeedback.DbRuntimeRoleName=WP_PZN_RUNTIME_USERS\nfeedback.XDbName=feedback\nfeedback.DbNode=pznNode\nlikeminds.DbType=oracle\nlikeminds.DbName=likeminds\nlikeminds.DbSchema=likeminds\nlikeminds.DataSourceName=wplmdbDS\nlikeminds.DbUrl=${ORACLE_JDBC_URL}\nlikeminds.DbUser=${ORACLE_DX_USER}\nlikeminds.DbPassword=${ORACLE_DX_PASSWORD}\nlikeminds.DbRuntimeUser=${ORACLE_DX_USER}\nlikeminds.DbRuntimePassword=${ORACLE_DX_PASSWORD}\nlikeminds.DBA.DbUser=${ORACLE_DX_USER}\nlikeminds.DBA.DbPassword=${ORACLE_DX_PASSWORD}\nlikeminds.DbConfigRoleName=WP_PZN_CONFIG_USERS\nlikeminds.DbRuntimeRoleName=WP_PZN_RUNTIME_USERS\nlikeminds.XDbName=likeminds\nlikeminds.DbNode=pznNode\nrelease.DbType=oracle\nrelease.DbName=release\nrelease.DbSchema=release\nrelease.DataSourceName=wpreldbDS\nrelease.DbUrl=${ORACLE_JDBC_URL}\nrelease.DbUser=${ORACLE_DX_USER}\nrelease.DbPassword=${ORACLE_DX_PASSWORD}\nrelease.DbRuntimeUser=${ORACLE_DX_USER}\nrelease.DbRuntimePassword=${ORACLE_DX_PASSWORD}\nrelease.DBA.DbUser=${ORACLE_DX_USER}\nrelease.DBA.DbPassword=${ORACLE_DX_PASSWORD}\nrelease.DbConfigRoleName=WP_BASE_CONFIG_USERS\nrelease.DbRuntimeRoleName=WP_BASE_RUNTIME_USERS\nrelease.XDbName=release\nrelease.DbNode=wpsNode\ncommunity.DbType=oracle\ncommunity.DbName=community\ncommunity.DbSchema=community\ncommunity.DataSourceName=wpcommdbDS\ncommunity.DbUrl=${ORACLE_JDBC_URL}\ncommunity.DbUser=${ORACLE_DX_USER}\ncommunity.DbPassword=${ORACLE_DX_PASSWORD}\ncommunity.DbRuntimeUser=${ORACLE_DX_USER}\ncommunity.DbRuntimePassword=${ORACLE_DX_PASSWORD}\ncommunity.DBA.DbUser=${ORACLE_DX_USER}\ncommunity.DBA.DbPassword=${ORACLE_DX_PASSWORD}\ncommunity.DbConfigRoleName=WP_BASE_CONFIG_USERS\ncommunity.DbRuntimeRoleName=WP_BASE_RUNTIME_USERS\ncommunity.XDbName=community\ncommunity.DbNode=wpsNode\ncustomization.DbType=oracle\ncustomization.DbName=customization\ncustomization.DbSchema=customization\ncustomization.DataSourceName=wpcustdbDS\ncustomization.DbUrl=${ORACLE_JDBC_URL}\ncustomization.DbUser=${ORACLE_DX_USER}\ncustomization.DbPassword=${ORACLE_DX_PASSWORD}\ncustomization.DbRuntimeUser=${ORACLE_DX_USER}\ncustomization.DbRuntimePassword=${ORACLE_DX_PASSWORD}\ncustomization.DBA.DbUser=${ORACLE_DX_USER}\ncustomization.DBA.DbPassword=${ORACLE_DX_PASSWORD}\ncustomization.DbConfigRoleName=WP_BASE_CONFIG_USERS\ncustomization.DbRuntimeRoleName=WP_BASE_RUNTIME_USERS\ncustomization.XDbName=customization\ncustomization.DbNode=wpsNode\njcr.DbType=oracle\njcr.DbName=jcr\njcr.DbSchema=jcr\njcr.DataSourceName=wpjcrdbDS\njcr.DbUrl=${ORACLE_JDBC_URL}\njcr.DbUser=${ORACLE_DX_USER}\njcr.DbPassword=${ORACLE_DX_PASSWORD}\njcr.DbRuntimeUser=${ORACLE_DX_USER}\njcr.DbRuntimePassword=${ORACLE_DX_PASSWORD}\njcr.DBA.DbUser=${ORACLE_DX_USER}\njcr.DBA.DbPassword=${ORACLE_DX_PASSWORD}\njcr.DbConfigRoleName=WP_JCR_CONFIG_USERS\njcr.DbRuntimeRoleName=WP_JCR_RUNTIME_USERS\njcr.XDbName=jcr\njcr.DbNode=wpsNode\n",
+  "lab3-iq-openrouter/litellm-values.yaml": "# Lab 3 · LiteLLM (public BerriAI chart litellm-helm 1.106.5) in the shared namespace\n# LiteLLM is NOT HCL software: the hcl-dx-iq chart only deploys the Integrator and the MCP Server,\n# and HCL treats LiteLLM as a prerequisite. Version, patches and configuration are the\n# responsibility of whoever installs it.\n#\n# It publishes the two logical models IQ asks for and routes them to OpenRouter:\n#   iq-general-purpose -> general questions and tool use (MCP)            -> Claude Sonnet 4.6\n#   iq-summary         -> conversation summary to reduce the context      -> Claude Haiku 4.5\n# They are the models HCL validates, with their OpenRouter ID. To change them: change the ID\n# (https://openrouter.ai/models) and run 02-litellm-install.sh again. IQ is not touched.\n#\n# Why OpenRouter and not AWS Bedrock (the HCL guides use Bedrock): see GUIDE.md, section 3.\n#\n# \"anthropic/\" provider against the OpenRouter Anthropic endpoint (and NOT \"openrouter/\"):\n#   the HCL MCP Server publishes tools with dots in the name (dam.mime-type.tool...).\n#   The anthropic/ provider sanitises those names to the format Claude requires and maps them back;\n#   openrouter/ (OpenAI format) sends them as they are and Claude rejects the request (HTTP 400).\n#   Format: model \"anthropic/<OpenRouter id>\", api_base https://openrouter.ai/api\n#\n# Do not use OpenAI reasoning models (gpt-5.x): they inject reasoning_effort and break the IQ\n# tools. With non-Claude models, HCL says to disable enableDam in IQ.\nreplicaCount: 1\n\nimage:\n  repository: ghcr.io/berriai/litellm\n  tag: \"1.106.5\"            # pinned (= chart appVersion); the chart uses pullPolicy Always by default\n  pullPolicy: IfNotPresent\n\n# Master key and OpenRouter key in the litellm-env secret (01-secrets.sh)\nmasterkeySecretName: litellm-env\nmasterkeySecretKey: PROXY_MASTER_KEY\nenvironmentSecrets:\n  - litellm-env\n\n# No database: by default the chart deploys its own PostgreSQL (deployStandalone: true)\ndb:\n  deployStandalone: false\n  useExisting: false\nmigrationJob:\n  enabled: false\n\nproxy_config:\n  model_list:\n    - model_name: iq-general-purpose\n      litellm_params:\n        model: anthropic/anthropic/claude-sonnet-4.6\n        api_base: https://openrouter.ai/api\n        api_key: os.environ/OPENROUTER_API_KEY\n        # Prompt caching: marks the system prompt as the end of the cacheable part. Anthropic caches\n        # by prefix (tools -> system -> messages): it covers the ~53 tools and the prompt, which\n        # are most of the tokens of every IQ request.\n        cache_control_injection_points:\n          - location: message\n            role: system\n    - model_name: iq-summary\n      litellm_params:\n        model: anthropic/anthropic/claude-haiku-4.5\n        api_base: https://openrouter.ai/api\n        api_key: os.environ/OPENROUTER_API_KEY\n        cache_control_injection_points:\n          - location: message\n            role: system\n  litellm_settings:\n    drop_params: true       # HCL: essential; drops parameters the provider does not accept\n    json_logs: true\n  general_settings:\n    master_key: os.environ/PROXY_MASTER_KEY\n\nlogLevel: INFO\n\nresources:\n  requests:\n    cpu: 100m\n    memory: 512Mi\n  limits:\n    cpu: 1000m\n    memory: 2Gi\n",
+  "lab3-iq-openrouter/custom-iq-values.yaml": "# ------------------------------------------------------------------------------------------\n# Lab 3 · custom-iq-values.yaml · chart hcl-dx-iq 1.0.2 (CF238) · release dx-iq · DX namespace\n# No secrets. Always used with helm upgrade -f (never --reuse-values).\n# Set from env.sh by 04-iq-install.sh: configuration.dx.releaseName, externalHost and the\n# LiteLLM URL (both occurrences of http://litellm.dx-shared...:4000 below).\n#\n# Deviations from the HCL documentation (needed in IQ 1.0.2, see GUIDE, section 3):\n#   - LITELLM_BASE_URL: undocumented but essential variable.\n#   - LiteLLM in front of OpenRouter: HCL does not validate OpenRouter (it does validate LiteLLM).\n# ------------------------------------------------------------------------------------------\nimages:\n  repository: \"hclcr.io\"\n  imagePullSecrets:\n    - name: regcred\n  # No tags: the chart ships the images compatible with CF238\n\nconfiguration:\n  dx:\n    releaseName: \"dx-deployment\"   # = DX_RELEASE\n    externalHost: \"\"               # = DX_HOST; the LLM uses it to build the links it returns\n    # Empty = enter through the DX HAProxy (https://<releaseName>-haproxy:443)\n    internalHost: \"\"\n    port: 443\n    ssl: true\n\n  # Chat sessions in in-memory SQLite (lost when the pod restarts). To store them in the\n  # PostgreSQL of the shared namespace, see the GUIDE appendix (custom-iq-values.db-external.yaml).\n  database:\n    enabled: false\n\n  mcpServer:\n    standaloneMode: false\n    enableWcm: true\n    # Works with Claude thanks to the LiteLLM anthropic/ provider (see litellm-values.yaml).\n    # With a provider that does not fix tool names containing dots -> enableDam: false\n    enableDam: true\n\n  # LiteLLM lives in another namespace: the service FQDN is used (= LITELLM_URL_INTERNAL)\n  litellm:\n    liteLlmUrl: \"http://litellm.dx-shared.svc.cluster.local:4000\"\n\n  licensing:\n    deploymentKey: \"\"        # empty: static key from iq-litellm-api-secret (no KMS)\n\nenvironment:\n  pod:\n    integrator:\n      - name: \"DX_CONTEXT_ROOT\"\n        value: \"/wps\"\n      # Response token cap, below the maximum of both models (Haiku 4.5: 64k)\n      - name: \"LLM_MAX_TOKENS\"\n        value: \"16384\"\n      # Undocumented but essential in Integrator 1.0.2: it is the URL the LLM adapter really\n      # uses. Without it, it calls an internal HCL URL. Same value as litellm.liteLlmUrl.\n      - name: \"LITELLM_BASE_URL\"\n        value: \"http://litellm.dx-shared.svc.cluster.local:4000\"\n      # LITELLM_URL and LITELLM_API_KEY do NOT go here: the chart redefines them. The key comes\n      # from the iq-litellm-api-secret secret (01-secrets.sh).\n\nscaling:\n  replicas:\n    integrator: 1            # with in-memory SQLite it must be 1 (multi-pod requires PostgreSQL)\n    mcpServer: 1\n\nresources:\n  integrator:\n    requests: { cpu: \"200m\", memory: \"512Mi\" }\n    limits:   { cpu: \"1000m\", memory: \"1024Mi\" }\n  mcpServer:\n    requests: { cpu: \"200m\", memory: \"256Mi\" }\n    limits:   { cpu: \"500m\", memory: \"512Mi\" }\n\nlogging:\n  integrator:\n    level:\n      - \"api:server-v1:*=info\"     # \"api:*=debug\" only while debugging\n  mcpServer:\n    level:\n      - \"api:server-v1:*=info\"\n",
+  "lab3-iq-openrouter/custom-iq-values.db-external.yaml": "# Lab 3 · Appendix · Optional IQ layer: chat sessions in the PostgreSQL of the shared namespace\n# Requires Lab 2B (PostgreSQL cluster) and ./A1-iq-database.sh. Usage:\n#   ./04-iq-install.sh -f custom-iq-values.db-external.yaml\nconfiguration:\n  database:\n    enabled: true\n    dbHost: \"dx-pg-rw.dx-shared.svc.cluster.local\"   # overridden by 04-iq-install.sh with ${PG_HOST}\n    dbPort: 5432\n    dbName: \"iqdb\"\n    dbCustomSecret: \"custom-external-db-credentials\" # secret in the DX namespace (username/password)\n    dbTlsEnabled: false                              # CNPG serves TLS: it can be set to true\n\nscaling:\n  replicas:\n    integrator: 1            # with PostgreSQL it could already scale to more than 1\n",
+  "lab3-iq-openrouter/custom-values.iq.yaml": "# ------------------------------------------------------------------------------------------\n# Lab 3 · DX layer: enables IQ\n# Added by common/dx-helm.sh as soon as the <IQ_RELEASE>-integrator service exists (04-iq-install.sh).\n#\n# With this value, the DX HAProxy routes /dx/api/iq/v1/ and /dx/ui/iq/ to the Integrator and the\n# IQ button appears in the DX toolbar. It must be \"<IQ release>-integrator\" (dx-helm.sh sets it\n# from IQ_RELEASE).\n# ------------------------------------------------------------------------------------------\nnetworking:\n  dxIqService: \"dx-iq-integrator\"\n",
+  "lab3-iq-openrouter/iq-chat.py": "\"\"\"Lab 3 · Minimal IQ client: asks IQ a question the same way the browser does.\n\nIQ has no chat REST API: the UI speaks JSON-RPC 2.0 over WebSocket at\nwss://<DX_HOST>/dx/api/iq/v1/ws (methods start_session, send_message, close_session; the\nspecification is in the Integrator pod: /home/dx_user/server-v1/openrpc/spec.json).\nThe connection goes through the DX HAProxy with the user's session cookie, so IQ acts with\ntheir permissions. Python standard library only (nothing to install).\n\nUsage (run by 06-iq-chat-test.sh):  python3 -I iq-chat.py <host> <cookiejar> \"<question>\" [lang]\n\"\"\"\nimport base64, json, os, socket, ssl, struct, sys, time\n\nhost, jar, question = sys.argv[1], sys.argv[2], sys.argv[3]\nlanguage = sys.argv[4] if len(sys.argv) > 4 else \"en\"\n\ncookies = []\nfor line in open(jar):\n    if line.startswith(\"#HttpOnly_\"):\n        line = line[len(\"#HttpOnly_\"):]\n    elif line.startswith(\"#\") or not line.strip():\n        continue\n    f = line.rstrip(\"\\n\").split(\"\\t\")\n    if len(f) >= 7:\n        cookies.append(f\"{f[5]}={f[6]}\")\n\nctx = ssl._create_unverified_context()          # self-signed lab certificate\nsock = ctx.wrap_socket(socket.create_connection((host, 443), timeout=240), server_hostname=host)\nkey = base64.b64encode(os.urandom(16)).decode()\nreq = (f\"GET /dx/api/iq/v1/ws HTTP/1.1\\r\\nHost: {host}\\r\\nUpgrade: websocket\\r\\nConnection: Upgrade\\r\\n\"\n       f\"Sec-WebSocket-Key: {key}\\r\\nSec-WebSocket-Version: 13\\r\\nOrigin: https://{host}\\r\\n\"\n       f\"Cookie: {'; '.join(cookies)}\\r\\n\\r\\n\")\nsock.sendall(req.encode())\nresp = b\"\"\nwhile b\"\\r\\n\\r\\n\" not in resp:\n    resp += sock.recv(4096)\nstatus = resp.split(b\"\\r\\n\", 1)[0].decode()\nprint(\"handshake:\", status)\nif \" 101 \" not in status:\n    sys.exit(1)\nbuf = resp.split(b\"\\r\\n\\r\\n\", 1)[1]\n\ndef send(obj):\n    data = json.dumps(obj).encode()\n    hdr = bytearray([0x81])\n    n = len(data)\n    if n < 126:   hdr.append(0x80 | n)\n    elif n < 65536: hdr += bytes([0x80 | 126]) + struct.pack(\">H\", n)\n    else:         hdr += bytes([0x80 | 127]) + struct.pack(\">Q\", n)\n    mask = os.urandom(4)\n    sock.sendall(bytes(hdr) + mask + bytes(b ^ mask[i % 4] for i, b in enumerate(data)))\n\ndef recv_exact(n):\n    global buf\n    while len(buf) < n:\n        chunk = sock.recv(65536)\n        if not chunk:\n            raise EOFError(\"connection closed\")\n        buf += chunk\n    out, buf = buf[:n], buf[n:]\n    return out\n\ndef recv():\n    msg = b\"\"\n    while True:\n        b0, b1 = recv_exact(2)\n        op, n = b0 & 0x0F, b1 & 0x7F\n        if n == 126: n = struct.unpack(\">H\", recv_exact(2))[0]\n        elif n == 127: n = struct.unpack(\">Q\", recv_exact(8))[0]\n        payload = recv_exact(n)\n        if op == 0x9:                       # ping -> pong\n            sock.sendall(bytes([0x8A, 0x80]) + os.urandom(4)); continue\n        if op == 0x8: raise EOFError(\"close from the server\")\n        msg += payload\n        if b0 & 0x80:\n            return json.loads(msg.decode())\n\ndef call(rid, method, params):\n    send({\"jsonrpc\": \"2.0\", \"id\": rid, \"method\": method, \"params\": params})\n    while True:\n        m = recv()\n        if m.get(\"id\") == rid:\n            return m\n        print(\"  (notification:\", str(m)[:120], \")\")\n\nt0 = time.time()\nr = call(1, \"start_session\", {})\nprint(\"IQ session:\", r[\"result\"][\"id\"], r[\"result\"][\"status\"])\nsid = r[\"result\"][\"id\"]\nsend({\"jsonrpc\": \"2.0\", \"id\": 2, \"method\": \"send_message\",\n      \"params\": {\"id\": sid, \"payload\": {\"question\": question, \"language\": language}}})\nanswer = None\nwhile answer is None:\n    m = recv()\n    res = m.get(\"result\") or {}\n    meta = res.get(\"metadata\") or {}\n    if m.get(\"error\") or res.get(\"businessError\"):\n        print(\"ERROR:\", json.dumps(m)[:600]); break\n    if res.get(\"answer\"):\n        answer = res[\"answer\"]; break\n    print(f\"  [{time.time()-t0:5.1f}s] {meta.get('type') or m.get('method')}: \"\n          f\"{meta.get('toolName') or ''} {meta.get('label') or str(res)[:100]}\")\nprint(f\"---- final IQ answer ({time.time()-t0:.1f}s) ----\")\nprint(answer)\nsend({\"jsonrpc\": \"2.0\", \"id\": 3, \"method\": \"close_session\", \"params\": {\"id\": sid}})\n",
+  "lab3-iq-openrouter/custom-mcp/server.py": "\"\"\"Lab 3B · EUROPESIP custom MCP Server for HCL DX IQ.\n\nAn MCP Server is a service that publishes \"tools\" (functions with a name, a description and\nparameters) that the LLM can decide to call. This one exposes four, over \"streamable\" HTTP at /mcp\n(the same transport as the HCL MCP Server):\n  - europesip_services(): who EUROPESIP is and which services it offers.\n  - europesip_faq(topic): support, AI, digital sovereignty, labs, contact...\n    Information the model cannot know by itself.\n  - figma_web_to_dx(source) -> shown as \"figma&web-to-dx\": presents the EUROPESIP tool that\n    generates WCM / Blueprint components from Figma, screenshots or URLs.\n  - europesip_echo(text): diagnostics.\n\nTechnical names only use [a-zA-Z0-9_-] (required by IQ/Claude); the display name goes in \"title\".\nThe answers are in English; IQ translates them to the user's language when it replies.\nEvery request is logged: method, path and the NAMES of headers and cookies (never their values),\nto see what the IQ Integrator sends. Official MCP SDK for Python (FastMCP).\n\"\"\"\nimport logging, os\nimport uvicorn\nfrom starlette.requests import Request\nfrom starlette.responses import PlainTextResponse\nfrom mcp.server.fastmcp import FastMCP\nfrom mcp.server.transport_security import TransportSecuritySettings\n\nlogging.basicConfig(level=logging.INFO, format=\"%(asctime)s %(levelname)s %(message)s\")\nlog = logging.getLogger(\"europesip-mcp\")\n\nWEB = \"https://www.europesip.com\"\nLABS_REPO = \"https://github.com/europesip/hcl-dx-compose-labs\"\n\nSERVICES = (\n    \"EUROPESIP is a company specialised in HCL and IBM products, with broad experience in \"\n    \"portals (HCL Digital Experience) and in HCL Domino. It also has strong knowledge of \"\n    \"artificial intelligence: it has developed tools that make AI easier to use and speed up \"\n    \"development, such as its figma&web-to-dx tool, which integrates with HCL DX IQ to generate \"\n    \"Blueprint components from Figma designs, screenshots or website URLs. \"\n    \"EUROPESIP puts a strong emphasis on digital sovereignty. \"\n    f\"More information at {WEB}.\"\n)\n\nFAQ = {\n    \"support\": \"EUROPESIP support for HCL DX is available Monday to Friday from 9:00 to 18:00 (Madrid time) at soporte@europesip.com.\",\n    \"services\": SERVICES,\n    \"ai\": (\"EUROPESIP has strong knowledge of artificial intelligence and has developed tools that make \"\n           \"AI easier to use and speed up development; for example figma&web-to-dx, integrated with \"\n           f\"HCL DX IQ to create Blueprint components from Figma, screenshots or URLs. More information at {WEB}.\"),\n    \"sovereignty\": (\"EUROPESIP puts a strong emphasis on digital sovereignty: organisations keeping control \"\n                    \"of their data, their platforms and their technology decisions. \"\n                    f\"More information at {WEB}.\"),\n    \"labs\": (\"The EUROPESIP labs to install HCL DX Compose CF238 from scratch on Kubernetes (base DX, \"\n             \"LDAP, PostgreSQL, IQ with OpenRouter, custom MCP and search with OpenSearch) are published \"\n             f\"at {LABS_REPO}, in English and Spanish. Every lab has its guide and ready-to-run scripts, \"\n             \"and an optional configuration wizard.\"),\n    \"contact\": f\"For more information about EUROPESIP and its services: {WEB}. Support: soporte@europesip.com.\",\n    \"iq\": \"At EUROPESIP, IQ uses LiteLLM with Claude through OpenRouter. LiteLLM is not supplied by HCL: we install it ourselves.\",\n}\n# Appended to every answer: the model tends to fill in with data we did not give it\n# (\"official partner\", made-up services...). We ask it to stick to what the tool returns.\nSTICK = (\"\\n\\n[Instruction for the assistant: answer using only this EUROPESIP information; \"\n         \"do not add services, certifications or data that do not appear here. For any other \"\n         f\"detail, refer to {WEB}.]\")\n\n# Words the model may use to ask for each topic (English and Spanish). ORDER matters: the most\n# specific topics first (\"HCL labs\" contains \"hcl\").\nALIASES = {\n    \"sovereignty\": [\"sovereign\", \"soberan\"],\n    \"labs\": [\"lab\", \"compose\", \"install\", \"repo\", \"github\", \"course\", \"curso\", \"poc\"],\n    \"support\": [\"support\", \"soporte\", \"hours\", \"horario\"],\n    \"iq\": [\"litellm\", \"openrouter\"],\n    \"ai\": [\"intelligence\", \"inteligencia\", \"artificial\", \"tool\", \"herramienta\"],\n    \"contact\": [\"contact\", \"web\", \"page\", \"pagina\", \"página\"],\n    \"services\": [\"service\", \"servicio\", \"company\", \"empresa\", \"who\", \"quien\", \"quién\",\n                 \"europesip\", \"portal\", \"domino\", \"hcl\", \"ibm\"],\n}\n# Exact short topics that would match too much as substrings\nEXACT = {\"ia\": \"ai\", \"ai\": \"ai\", \"soberania\": \"sovereignty\", \"soberanía\": \"sovereignty\"}\n\nmcp = FastMCP(\n    \"europesip-kb\",\n    host=\"0.0.0.0\",\n    port=int(os.getenv(\"PORT\", \"3000\")),\n    stateless_http=True,       # like the HCL MCP: no sessions, GET /mcp -> 405\n    json_response=True,\n    # Lab: no Host header validation (the Integrator calls it by the Service name)\n    transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=False),\n)\n\n@mcp.tool()\ndef europesip_services() -> str:\n    \"\"\"Describes EUROPESIP and the services it offers (company specialised in HCL and IBM\n    products: HCL DX portals, HCL Domino, artificial intelligence, digital sovereignty). Use it\n    when the user asks who EUROPESIP is, what it does or which services it offers.\"\"\"\n    log.info(\"TOOL europesip_services\")\n    return SERVICES + STICK\n\n@mcp.tool()\ndef europesip_faq(topic: str) -> str:\n    \"\"\"Looks up the EUROPESIP knowledge base. Use it when the user asks about EUROPESIP support\n    (hours), its AI experience, digital sovereignty, its HCL DX Compose installation labs, its\n    website or how to get in touch. Topics: support, services, ai, sovereignty, labs, contact, iq.\"\"\"\n    log.info(\"TOOL europesip_faq topic=%r\", topic)\n    t = topic.strip().lower()\n    if t in FAQ:                                   # the exact topic\n        return FAQ[t] + STICK\n    if t in EXACT:\n        return FAQ[EXACT[t]] + STICK\n    for key, words in ALIASES.items():             # otherwise, by keywords\n        if any(w in t for w in words):\n            return FAQ[key] + STICK\n    return \"There is no information about that topic. Available topics: \" + \", \".join(FAQ)\n\n@mcp.tool(name=\"figma_web_to_dx\", title=\"figma&web-to-dx\")\ndef figma_web_to_dx(source: str = \"\") -> str:\n    \"\"\"figma&web-to-dx: designs web pages or HCL DX WCM / Blueprint components from a Figma\n    design, a screenshot or the URL of an external site. Use it when the user wants to create a\n    DX component, template or page from a design, an image or a website.\n    Parameter source: the Figma, screenshot or site URL (optional).\"\"\"\n    log.info(\"TOOL figma_web_to_dx source=%r\", source[:200])\n    return (\"EUROPESIP has an MCP tool, figma&web-to-dx, that integrates with HCL DX IQ to make \"\n            \"building Blueprint components easier and faster from simple Figma URLs, website \"\n            f\"screenshots or site URLs. For more information, contact EUROPESIP: {WEB}.\" + STICK)\n\n@mcp.tool()\ndef europesip_echo(text: str) -> str:\n    \"\"\"Diagnostic tool: returns the received text with a prefix.\n    Use it only if the user explicitly asks to test the EUROPESIP echo.\"\"\"\n    log.info(\"TOOL europesip_echo\")\n    return f\"[europesip-mcp] {text}\"\n\n@mcp.custom_route(\"/probe/ready\", methods=[\"GET\"])\nasync def probe_ready(request: Request) -> PlainTextResponse:\n    \"\"\"The IQ Integrator calls /probe/ready before asking for the tools (as with the HCL MCP).\"\"\"\n    return PlainTextResponse(\"OK\")\n\napp = mcp.streamable_http_app()\n\nclass LogRequests:\n    \"\"\"ASGI middleware: logs method, path and header/cookie names (no values).\"\"\"\n    def __init__(self, inner):\n        self.inner = inner\n    async def __call__(self, scope, receive, send):\n        if scope[\"type\"] == \"http\":\n            hdrs = {k.decode().lower(): v.decode(errors=\"replace\") for k, v in scope[\"headers\"]}\n            cookies = sorted(c.split(\"=\", 1)[0].strip() for c in hdrs.get(\"cookie\", \"\").split(\";\") if \"=\" in c)\n            log.info(\"REQ %s %s headers=%s cookies=%s\", scope[\"method\"], scope[\"path\"],\n                     sorted(h for h in hdrs if h != \"cookie\"), cookies or \"-\")\n        await self.inner(scope, receive, send)\n\nif __name__ == \"__main__\":\n    uvicorn.run(LogRequests(app), host=\"0.0.0.0\", port=int(os.getenv(\"PORT\", \"3000\")), log_level=\"warning\")\n",
+  "lab3-iq-openrouter/custom-mcp/europesip-mcp.yaml": "# Lab 3B · EUROPESIP custom MCP Server, in the shared namespace (not HCL software).\n# Applied by 01-mcp-deploy.sh, which replaces ${SHARED_NS}. The code (server.py) goes in the\n# europesip-mcp-code ConfigMap. Public python:3.12-slim image; the dependencies are installed at\n# start-up (requires access to PyPI). In production you would build your own image with the code.\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: europesip-mcp\n  namespace: ${SHARED_NS}\n  labels: { app: europesip-mcp }\nspec:\n  replicas: 1\n  selector:\n    matchLabels: { app: europesip-mcp }\n  template:\n    metadata:\n      labels: { app: europesip-mcp }\n    spec:\n      containers:\n        - name: mcp\n          image: python:3.12-slim\n          command: [\"sh\", \"-c\", \"pip install --no-cache-dir -q 'mcp==1.30.0' uvicorn && exec python /app/server.py\"]\n          env:\n            - { name: PORT, value: \"3000\" }\n            - { name: PYTHONUNBUFFERED, value: \"1\" }\n          ports:\n            - { name: http, containerPort: 3000 }\n          readinessProbe:\n            httpGet: { path: /probe/ready, port: 3000 }\n            initialDelaySeconds: 10\n            periodSeconds: 5\n          resources:\n            requests: { cpu: 50m, memory: 128Mi }\n            limits:   { cpu: 500m, memory: 256Mi }\n          volumeMounts:\n            - { name: code, mountPath: /app }\n      volumes:\n        - name: code\n          configMap: { name: europesip-mcp-code }\n---\napiVersion: v1\nkind: Service\nmetadata:\n  name: europesip-mcp\n  namespace: ${SHARED_NS}\nspec:\n  selector: { app: europesip-mcp }\n  ports:\n    - { name: http, port: 3000, targetPort: 3000 }\n",
+  "lab4-opensearch/custom-search-values.yaml": "# ------------------------------------------------------------------------------------------\n# Lab 4 · custom-search-values.yaml · chart hcl-dx-search 2.36.0 (CF238) · release dx-search\n# Only what changes compared to the default values (charts/values-search-default-2.36.0.yaml).\n# The adminDN is not here: 01-certs.sh generates it in admin-dn.rendered.yaml.\n# Set from env.sh by 02-search-install.sh: the StorageClass (SC_RWO) and the DX release (DX_RELEASE).\n#\n# hcl-dx-search is HCL software: it goes in the DX namespace, the SAME namespace as DX. So:\n#   - the DX HAProxy routes /dx/api/search and /dx/ui/search to <release>-search-middleware-query\n#   - search finds the DX HAProxy by itself for the permission (ACL) queries\n#   - both charts share the push-admin credential (DAM pushes its assets to the index)\n# ------------------------------------------------------------------------------------------\nimages:\n  repository: \"hclcr.io\"\n  imagePullSecrets:\n    - name: regcred\n  # names (dx-compose/dx-opensearch, ...) and CF238 tags: the chart ones\n\nvolumes:\n  openSearchManager:\n    data:\n      storageClassName: \"dx-deploy-rwo\"   # the chart default is \"manual\"\n      requests:\n        storage: \"5Gi\"\n\napplications:\n  openSearch: true\n  searchMiddleware: true\n  # Extracts the text of DAM documents (Office, PDF...) to index it (1 CPU / 2 GiB).\n  # The chart ships it disabled, but the CF238 Search Middleware looks for it anyway and, without\n  # it, logs \"Could not connect to file processor\" every 3 seconds: we enable it.\n  fileProcessor: true\n\nsecurity:\n  # searchadmin and pushadmin: empty passwords -> the chart generates them and stores them in secrets.\n  # pushadmin must match the DX one: with the dx-deployment / dx-search releases in the same\n  # namespace, both charts converge on the same secret by themselves (so they are not created by hand).\n  pushAdministration:\n    deploymentReleaseName: \"dx-deployment\"   # = DX_RELEASE\n\nconfiguration:\n  containerTimezone: \"Europe/Madrid\"\n  automatedSetup:\n    # DX release in the same namespace: creates the content sources and the crawlers\n    dxDeploymentName: \"dx-deployment\"        # = DX_RELEASE\n    # Protocol the crawlers and the permission (ACL) queries use to call the DX HAProxy.\n    # The default is \"http\" (port 80), but the DX HAProxy only listens on 443 with TLS\n    # (networking.haproxy.ssl: true, the default): without this, timeout and 0 documents.\n    haproxyProtocol: \"https\"\n    digitalAssetManagement:\n      enabled: true\n    wcm:\n      enabled: true          # crawled every 15 minutes (crawlerSchedule)\n    jcr:\n      enabled: true\n    portal:\n      enabled: true\n    people:\n      enabled: false         # People Service is not installed in these labs\n",
+  "lab4-opensearch/custom-values.search.yaml": "# ------------------------------------------------------------------------------------------\n# Lab 4 · DX layer: Search V2 with OpenSearch\n# Added by common/dx-helm.sh as soon as the <SEARCH_RELEASE>-search-middleware-query service exists.\n# Documentation: DX Compose CF238 > Enabling Search V2.\n# ------------------------------------------------------------------------------------------\nnetworking:\n  # \"query\" service of the Search Middleware (<search release>-search-middleware-query), in the\n  # same namespace. HAProxy routes /dx/api/search and /dx/ui/search to it.\n  # dx-helm.sh sets it from SEARCH_RELEASE.\n  searchMiddlewareService: \"dx-search-search-middleware-query\"\n\nconfiguration:\n  searchMiddleware:\n    # Enables Search V2 in DX Compose (the V2 UI is already enabled in the Web Engine)\n    enabled: true\n    # hcl-dx-search release: the shared push-admin credential is read from it (default value).\n    # dx-helm.sh sets it from SEARCH_RELEASE.\n    searchReleaseName: \"dx-search\"\n    # DAM sends its assets to the index\n    damIndexing: true\n",
+};
+// END LAB TEMPLATES
+
+const PH = {   // placeholders for the values the user left empty
+  user: "PUT-YOUR-HCL-ACCOUNT-EMAIL-HERE", token: "PUT-YOUR-HCL-HARBOR-CLI-SECRET-HERE",
+  openrouter: "PUT-YOUR-OPENROUTER-API-KEY-HERE", adpw: "PUT-YOUR-AD-BIND-PASSWORD-HERE", orapw: "PUT-YOUR-ORACLE-PASSWORD-HERE",
+};
+const ADMIN_DN = "CN=admin,OU=DX Compose Labs,O=EUROPESIP,C=ES";   // subject of the admin cert created in step 4-1
+const ysq = v => "'" + String(v).replace(/'/g, "''") + "'";           // YAML single-quoted string
+const sq = v => "'" + String(v).replace(/'/g, "'\\''") + "'";          // shell single-quoted string
+const kapply = "--dry-run=client -o yaml | kubectl apply -f -";        // create, or update if it exists
 function randomKey(){
   const b = new Uint8Array(24); crypto.getRandomValues(b);
   return "sk-" + Array.from(b, x => x.toString(16).padStart(2, "0")).join("");
 }
-let litellmKey = "";   // generated once per page load (LiteLLM master key)
+let litellmKey = "";   // LiteLLM master key, generated once per page load
+
+// SHA-1 (for the {SSHA} hashes of the LDIF, as OpenLDAP verifies them). Small, synchronous, no API needed.
+function sha1(msg){
+  const l = msg.length, w = new Uint32Array(80), H = [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0];
+  const n = ((l + 8) >> 6) + 1, m = new Uint8Array(n * 64); m.set(msg); m[l] = 0x80;
+  const dv = new DataView(m.buffer); dv.setUint32(n * 64 - 4, l * 8); dv.setUint32(n * 64 - 8, Math.floor(l / 0x20000000));
+  for (let i = 0; i < n; i++) {
+    for (let t = 0; t < 16; t++) w[t] = dv.getUint32(i * 64 + t * 4);
+    for (let t = 16; t < 80; t++) { const x = w[t-3] ^ w[t-8] ^ w[t-14] ^ w[t-16]; w[t] = (x << 1) | (x >>> 31); }
+    let [a, b, c, d, e] = H;
+    for (let t = 0; t < 80; t++) {
+      const f = t < 20 ? (b & c) | (~b & d) : t < 40 ? b ^ c ^ d : t < 60 ? (b & c) | (b & d) | (c & d) : b ^ c ^ d;
+      const k = t < 20 ? 0x5A827999 : t < 40 ? 0x6ED9EBA1 : t < 60 ? 0x8F1BBCDC : 0xCA62C1D6;
+      const tmp = (((a << 5) | (a >>> 27)) + f + e + k + w[t]) >>> 0;
+      e = d; d = c; c = (b << 30) | (b >>> 2); b = a; a = tmp;
+    }
+    H[0] = (H[0] + a) >>> 0; H[1] = (H[1] + b) >>> 0; H[2] = (H[2] + c) >>> 0; H[3] = (H[3] + d) >>> 0; H[4] = (H[4] + e) >>> 0;
+  }
+  const out = new Uint8Array(20), ov = new DataView(out.buffer); H.forEach((h, i) => ov.setUint32(i * 4, h)); return out;
+}
+function ssha(pw){
+  const p = new TextEncoder().encode(pw), salt = new Uint8Array(8); crypto.getRandomValues(salt);
+  const both = new Uint8Array(p.length + 8); both.set(p); both.set(salt, p.length);
+  const all = new Uint8Array(28); all.set(sha1(both)); all.set(salt, 20);
+  return "{SSHA}" + btoa(String.fromCharCode(...all));
+}
+
+// Fill a lab file with the user's values: ${VARS}, then the reference names (namespaces, releases,
+// StorageClasses, service URLs) replaced in one pass so a new value is never replaced again.
+function fill(s, path, vars = {}, extra = []){
+  let t = TPL[path];
+  if (t === undefined) throw new Error("missing template " + path);
+  for (const [k, v] of Object.entries(vars)) t = t.split("${" + k + "}").join(v);
+  const map = {
+    "dx-deploy-rwo": s.SC_RWO, "dx-deploy-rwx": s.SC_RWX,
+    "http://litellm.dx-shared.svc.cluster.local:4000": s.LITELLM_URL,
+    "openldap.dx-shared.svc.cluster.local": s.LDAP_HOST, "dx-pg-rw.dx-shared.svc.cluster.local": s.PG_HOST,
+    "dx-deployment": s.DX_RELEASE, "dx-search": s.SEARCH_RELEASE, "dx-iq": s.IQ_RELEASE,
+    "dx-shared": s.SHARED_NS, "dx-demo": s.DX_NS,
+  };
+  const keys = Object.keys(map).sort((a, b) => b.length - a.length).map(k => k.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&"));
+  t = t.replace(new RegExp(keys.join("|"), "g"), m => map[m]);
+  for (const [a, b] of extra) { if (!t.includes(a)) throw new Error(`${path}: "${a}" not found`); t = t.replace(a, b); }
+  return t;
+}
+// The lab files start with a comment block written for the lab scripts (env.sh, dx-helm.sh...).
+// In the bundle it is replaced by a short description, and the few references to lab scripts left
+// in the body point to the equivalent file or step of dx-install/.
+const DESC = {
+  "lab0-poc-wsl/storage-poc.yaml": "Lab 0 · StorageClasses for the single-node PoC: RWO = k3s local-path; RWX = static (a hostPath volume).",
+  "lab0-poc-wsl/dam-binaries-pv.yaml": "Lab 0 · RWX volume for the DAM binaries (hostPath on the only node).",
+  "lab0-poc-wsl/custom-values.poc.yaml": "Lab 0 · DX layer with reduced resource REQUESTS so that everything fits in one node (limits unchanged). Not for production.",
+  "lab0-poc-wsl/custom-search-values.poc.yaml": "Lab 0 · Search layer with reduced resource requests for a single node.",
+  "common/openshift/namespaces.yaml": "OpenShift namespaces. The DX one carries the SCC annotations HCL requires (pods run with UID/GID 1000-1001).",
+  "lab1-dx-base/custom-values.yaml": "Lab 1 · Base DX Compose values (chart hcl-dx-deployment 2.49.0, CF238). Each later lab adds its own layer on top with -f.",
+  "lab1-dx-base/ingress-dx.yaml": "Lab 1 · Ingress: TLS terminated with dx-tls-cert and re-encrypted towards the DX HAProxy, the only entry point of DX.",
+  "lab1-dx-base/route-dx-openshift.yaml": "Lab 1 · OpenShift passthrough Route: TLS is terminated by the DX HAProxy.",
+  "lab2-ldap-postgres/a-ldap/openldap-values.yaml": "Lab 2A · Lab OpenLDAP (community chart openldap-stack-ha 4.3.3): third-party software, in the shared namespace.",
+  "lab2-ldap-postgres/a-ldap/custom-values.ldap.yaml": "Lab 2A · DX layer: authentication against the OpenLDAP (native LDAP block of the chart, type other). wpsadmin (basic registry) still works.",
+  "lab2-ldap-postgres/enterprise/active-directory/custom-values.ad.yaml": "Lab 2A · DX layer: authentication against Microsoft Active Directory with configOverrideFiles.\n# The ${AD_...} values are Open Liberty variables: they come from the dx-ad-bind secret (2a-ad/secrets.yaml).",
+  "lab2-ldap-postgres/b-postgres/cluster-dx-pg.yaml": "Lab 2B · PostgreSQL 18 for the Web Engine, managed by CloudNativePG.\n# ⚠ PostgreSQL is not supported yet by HCL for the Web Engine in CF238: this is for learning the transfer process.",
+  "lab2-ldap-postgres/b-postgres/custom-values.postgres.yaml": "Lab 2B · DX layer: the Web Engine moves its database from Derby to the external database (one-off transfer on the next start).",
+  "lab2-ldap-postgres/enterprise/oracle/custom-values.oracle.yaml": "Lab 2B · DX layer: the Web Engine moves its database from Derby to Oracle over TCPS (listener CA in the truststore).",
+  "lab3-iq-openrouter/custom-iq-values.yaml": "Lab 3 · IQ values (chart hcl-dx-iq 1.0.2): IQ goes through the DX HAProxy and uses LiteLLM in the shared namespace.\n# LITELLM_BASE_URL is undocumented but essential in IQ 1.0.2.",
+  "lab3-iq-openrouter/custom-iq-values.db-external.yaml": "Lab 3 appendix · IQ chat sessions in the PostgreSQL of the shared namespace (database iqdb).",
+  "lab3-iq-openrouter/custom-values.iq.yaml": "Lab 3 · DX layer: enables IQ (HAProxy routes /dx/api/iq/v1 and /dx/ui/iq to the Integrator; the IQ button appears).",
+  "lab3-iq-openrouter/custom-mcp/europesip-mcp.yaml": "Lab 3B · EUROPESIP custom MCP Server (not HCL software). Its code (server.py) goes in the europesip-mcp-code ConfigMap.",
+  "lab4-opensearch/custom-search-values.yaml": "Lab 4 · Search values (chart hcl-dx-search 2.36.0): OpenSearch + Search Middleware + File Processor, in the DX namespace.",
+  "lab4-opensearch/custom-values.search.yaml": "Lab 4 · DX layer: enables Search V2 with OpenSearch.",
+};
+const BODY_FIX = [
+  [/[ \t]+# overridden by [^\n]*/g, ""],
+  [/^[ \t]*# dx-helm\.sh sets it from [A-Z_]+\.\n/gm, ""],
+  ["# created by lab1-dx-base/01-secrets.sh", "# in 1-dx/secrets.yaml"],
+  ["see 03-expose.sh", "see 1-dx/"],
+  ["(created by 01-secrets.sh)", "(created by install.sh, step 1-3)"],
+  ["secret (01-secrets.sh)", "secret (3-iq/secrets.yaml)"],
+  ["created by 01-ldap-install.sh", "in 2a-ldap/secrets.yaml"],
+  ["03-postgres-cluster.sh loads it", "install.sh (step 2B-3) loads it"],
+  ["and run 02-litellm-install.sh again", "and run the helm upgrade of step 3-2 again"],
+];
+const stripLead = t => t.replace(/^(?:[ \t]*(?:#[^\n]*)?\n)+/, "");
+function doc(s, path, vars = {}, extra = [], raw = false){
+  let t = raw ? TPL[path] : fill(s, path, vars, extra);
+  if (DESC[path]) t = stripLead(t);
+  for (const [a, b] of BODY_FIX) t = typeof a === "string" ? t.split(a).join(b) : t.replace(a, b);
+  return header(s, path) + (DESC[path] ? "# " + DESC[path] + "\n\n" : "") + t;
+}
+const header = (s, from) => `# Generated by the configuration wizard for ${s.DX_HOST} on ${new Date().toISOString().slice(0, 10)}.\n` +
+  `# Based on ${from} (hcl-dx-compose-labs), with your values already filled in.\n`;
+
+function secretDoc(name, ns, data, o = {}){
+  const L = ["---", "apiVersion: v1", "kind: Secret", "metadata:", `  name: ${name}`, `  namespace: ${ns}`];
+  if (o.labels) L.push("  labels:", ...Object.entries(o.labels).map(([k, v]) => `    ${k}: "${v}"`));
+  L.push(`type: ${o.type || "Opaque"}`, "stringData:", ...Object.entries(data).map(([k, v]) => `  ${/^[\w-]+$/.test(k) ? k : ysq(k)}: ${ysq(v)}`));
+  return L.join("\n");
+}
+const secretsFile = (s, title, docs) => `# ${title}\n# Generated by the configuration wizard for ${s.DX_HOST}. Contains credentials in PLAIN TEXT: keep it private.\n` + docs.join("\n") + "\n";
+
+function bundleFiles(s){
+  const pw = s.LAB_PASSWORD || "EuropeS1P", user = s.HCL_HARBOR_USER || PH.user, token = s.HCL_HARBOR_TOKEN || PH.token;
+  const f = {}, add = (p, text, mode) => f[p] = {text, mode};
+  const ns = s.DX_NS, sh = s.SHARED_NS;
+  if (s.poc) {
+    add("0-poc/storage-poc.yaml", doc(s, "lab0-poc-wsl/storage-poc.yaml", {SC_RWO: s.SC_RWO, SC_RWX: s.SC_RWX}));
+    add("0-poc/dam-binaries-pv.yaml", doc(s, "lab0-poc-wsl/dam-binaries-pv.yaml", {SC_RWO: s.SC_RWO, SC_RWX: s.SC_RWX}));
+    add("0-poc/prepare-dam-volume.yaml", `# One-off pod: gives the DAM hostPath directory to DAM's uid/gid (1000:1001), which hostPath
+# volumes do not do by themselves (lab0-poc-wsl/01-storage.sh).
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dx-poc-prepare-dam
+  namespace: default
+spec:
+  restartPolicy: Never
+  containers:
+    - name: c
+      image: busybox:1.36
+      command: ["sh", "-c", "chown 1000:1001 /d && chmod 2775 /d && ls -ld /d"]
+      volumeMounts: [{ name: d, mountPath: /d }]
+  volumes:
+    - name: d
+      hostPath: { path: /var/lib/dx-poc/dam-binaries, type: DirectoryOrCreate }
+`);
+    add("0-poc/custom-values.poc.yaml", doc(s, "lab0-poc-wsl/custom-values.poc.yaml"));
+    if (s.lab4) add("0-poc/custom-search-values.poc.yaml", doc(s, "lab0-poc-wsl/custom-search-values.poc.yaml"));
+  }
+  // Lab 1
+  add("1-dx/namespaces.yaml", s.openshift
+    ? doc(s, "common/openshift/namespaces.yaml", {DX_NS: ns, SHARED_NS: sh})
+    : `# Namespaces: ${ns} for HCL software, ${sh} for third-party tools.\napiVersion: v1\nkind: Namespace\nmetadata:\n  name: ${ns}\n  labels: { lab: hcl-dx-compose }\n---\napiVersion: v1\nkind: Namespace\nmetadata:\n  name: ${sh}\n  labels: { lab: hcl-dx-compose }\n`);
+  add("1-dx/secrets.yaml", secretsFile(s, "Lab 1 secrets: pull secret for hclcr.io and wpsadmin credentials", [
+    secretDoc("regcred", ns, {".dockerconfigjson": JSON.stringify({auths: {"hclcr.io": {username: user, password: token, email: user}}})}, {type: "kubernetes.io/dockerconfigjson"}),
+    secretDoc("web-engine-secret", ns, {username: "wpsadmin", password: pw})]), 0o100600);
+  add("1-dx/custom-values.yaml", doc(s, "lab1-dx-base/custom-values.yaml", {},
+    [["networking:\n  haproxy:", `networking:\n  webEngine:\n    host: "${s.DX_HOST}"\n  haproxy:`]]));
+  const exp = s.openshift ? "route-dx-openshift.yaml" : "ingress-dx.yaml";
+  add("1-dx/" + exp, doc(s, "lab1-dx-base/" + exp, {DX_NS: ns, DX_RELEASE: s.DX_RELEASE, DX_HOST: s.DX_HOST, INGRESS_CLASS: s.INGRESS_CLASS}));
+  // Lab 2A
+  if (s.dir === "openldap") {
+    add("2a-ldap/secrets.yaml", secretsFile(s, "Lab 2A secrets: OpenLDAP administrator and the DX bind user", [
+      secretDoc("openldap-admin", sh, {LDAP_ADMIN_USERNAME: "admin", LDAP_ADMIN_PASSWORD: pw, LDAP_CONFIG_ADMIN_PASSWORD: pw}),
+      secretDoc("dx-ldap-bind", ns, {bindUser: "cn=admin,dc=dxdemo,dc=com", bindPassword: pw})]), 0o100600);
+    const ldif = stripLead(TPL["lab2-ldap-postgres/a-ldap/demo-users.ldif"]).split("${LDAP_USERS_PASSWORD}").map((x, i, a) => i < a.length - 1 ? x + ssha(pw) : x).join("");
+    add("2a-ldap/demo-users.ldif", `# Lab 2A · Demo users and groups (groupOfUniqueNames / uniqueMember, as the DX chart expects).\n# Generated by the configuration wizard: every userPassword is a salted {SSHA} hash of "${pw}".\n\n` + ldif);
+    add("2a-ldap/openldap-values.yaml", doc(s, "lab2-ldap-postgres/a-ldap/openldap-values.yaml"));
+    add("2a-ldap/custom-values.ldap.yaml", doc(s, "lab2-ldap-postgres/a-ldap/custom-values.ldap.yaml"));
+  } else if (s.dir === "ad") {
+    add("2a-ad/secrets.yaml", secretsFile(s, "Lab 2A secret: Active Directory connection (environment variables of the Web Engine)", [
+      secretDoc("dx-ad-bind", ns, {AD_HOST: s.AD_HOST || "PUT-YOUR-AD-HOST-HERE", AD_PORT: s.AD_PORT, AD_SSL: s.AD_PORT === "636" ? "true" : "false",
+        AD_BASE_DN: s.AD_BASE_DN || "PUT-YOUR-AD-BASE-DN-HERE", AD_BIND_USER: s.AD_BIND_USER || "PUT-YOUR-AD-BIND-USER-HERE", AD_BIND_PASSWORD: s.AD_BIND_PASSWORD || PH.adpw})]), 0o100600);
+    add("2a-ad/custom-values.ad.yaml", doc(s, "lab2-ldap-postgres/enterprise/active-directory/custom-values.ad.yaml", {}, [], true));
+  }
+  // Lab 2B
+  if (s.db === "postgres") {
+    const lab = {"cnpg.io/reload": "true"}, ba = "kubernetes.io/basic-auth";
+    add("2b-postgres/secrets.yaml", secretsFile(s, "Lab 2B secrets: PostgreSQL users (CloudNativePG applies password changes thanks to the label)", [
+      secretDoc("dx-pg-superuser", sh, {username: "postgres", password: pw}, {type: ba, labels: lab}),
+      secretDoc("dx-pg-dxuser", sh, {username: "dxuser", password: pw}, {type: ba, labels: lab}),
+      secretDoc("dx-pg-iquser", sh, {username: "dx_iq_db_user", password: pw}, {type: ba, labels: lab})]), 0o100600);
+    add("2b-postgres/cluster-dx-pg.yaml", doc(s, "lab2-ldap-postgres/b-postgres/cluster-dx-pg.yaml", {SHARED_NS: sh, PG_CLUSTER: s.PG_CLUSTER, SC_RWO: s.SC_RWO}));
+    add("2b-postgres/dx_dbtype.properties", TPL["lab2-ldap-postgres/b-postgres/dx_dbtype.properties"]);
+    add("2b-postgres/dx_dbdomain.properties", fill(s, "lab2-ldap-postgres/b-postgres/dx_dbdomain.properties.template", {PG_HOST: s.PG_HOST, DXUSER_PASSWORD: pw}), 0o100600);
+    add("2b-postgres/custom-values.postgres.yaml", doc(s, "lab2-ldap-postgres/b-postgres/custom-values.postgres.yaml"));
+    add("2b-postgres/COPY-setup-postgres-dx.sql-HERE.txt", "Copy setup-postgres-dx.sql into this folder before running step 2B-3.\n" +
+      "It prepares the dx_core database (schemas, roles, grants and parameters): see the Lab 2 guide, 2B step 3,\n" +
+      "https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab2-ldap-postgres/GUIDE.md\n");
+  } else if (s.db === "oracle") {
+    const tcps = /tcps:\/\//i.test(s.ORACLE_JDBC_URL) || !s.ORACLE_JDBC_URL;
+    add("2b-oracle/dx_dbtype.properties", TPL["lab2-ldap-postgres/enterprise/oracle/dx_dbtype.properties"]);
+    add("2b-oracle/dx_dbdomain.properties", fill(s, "lab2-ldap-postgres/enterprise/oracle/dx_dbdomain.properties.template",
+      {ORACLE_JDBC_URL: s.ORACLE_JDBC_URL || "PUT-YOUR-ORACLE-JDBC-URL-HERE", ORACLE_DX_USER: s.ORACLE_DX_USER, ORACLE_DX_PASSWORD: s.ORACLE_DX_PASSWORD || PH.orapw}), 0o100600);
+    add("2b-oracle/custom-values.oracle.yaml", tcps
+      ? doc(s, "lab2-ldap-postgres/enterprise/oracle/custom-values.oracle.yaml")
+      : doc(s, "lab2-ldap-postgres/b-postgres/custom-values.postgres.yaml"));
+  }
+  // Lab 3
+  if (s.lab3) {
+    const docs = [
+      secretDoc("litellm-env", sh, {OPENROUTER_API_KEY: s.OPENROUTER_API_KEY || PH.openrouter, PROXY_MASTER_KEY: litellmKey}),
+      secretDoc("iq-litellm-api-secret", ns, {virtualKey: litellmKey})];
+    if (s.iqdb) docs.push(secretDoc("custom-external-db-credentials", ns, {username: "dx_iq_db_user", password: pw}));
+    add("3-iq/secrets.yaml", secretsFile(s, "Lab 3 secrets: OpenRouter key and LiteLLM master key (the key IQ uses to call LiteLLM)", docs), 0o100600);
+    add("3-iq/litellm-values.yaml", doc(s, "lab3-iq-openrouter/litellm-values.yaml"));
+    add("3-iq/custom-iq-values.yaml", doc(s, "lab3-iq-openrouter/custom-iq-values.yaml", {},
+      [['externalHost: ""', `externalHost: "${s.DX_HOST}"`]]));
+    if (s.iqdb) add("3-iq/custom-iq-values.db-external.yaml", doc(s, "lab3-iq-openrouter/custom-iq-values.db-external.yaml"));
+    add("3-iq/custom-values.iq.yaml", doc(s, "lab3-iq-openrouter/custom-values.iq.yaml"));
+    add("3-iq/iq-chat.py", TPL["lab3-iq-openrouter/iq-chat.py"]);
+    if (s.lab3b) {
+      add("3b-mcp/server.py", TPL["lab3-iq-openrouter/custom-mcp/server.py"]);
+      add("3b-mcp/europesip-mcp.yaml", doc(s, "lab3-iq-openrouter/custom-mcp/europesip-mcp.yaml", {SHARED_NS: sh}));
+    }
+  }
+  // Lab 4
+  if (s.lab4) {
+    add("4-search/custom-search-values.yaml", doc(s, "lab4-opensearch/custom-search-values.yaml", {},
+      [["configuration:\n  containerTimezone", `configuration:\n  openSearch:\n    security:\n      adminDN: ${ysq(ADMIN_DN)}   # subject of the admin certificate created in step 4-1\n  containerTimezone`]]));
+    add("4-search/custom-values.search.yaml", doc(s, "lab4-opensearch/custom-values.search.yaml"));
+  }
+  return f;
+}
 
 function directSteps(s){
   const es = lang === "es", t = (en, sp) => es ? sp : en;
   const W = s.helm === "3" ? "--wait" : "--wait=legacy";
-  const ns = s.DX_NS, sh = s.SHARED_NS, H = s.DX_HOST, rwo = s.SC_RWO, rwx = s.SC_RWX;
+  const ns = s.DX_NS, sh = s.SHARED_NS, H = s.DX_HOST, pw = s.LAB_PASSWORD || "EuropeS1P";
+  const user = s.HCL_HARBOR_USER || PH.user, token = s.HCL_HARBOR_TOKEN || PH.token;
   const steps = [];
   const add = (lab, id, title, note, cmd, o = {}) => steps.push({lab, id, title, note, cmd, opt: !!o.opt, manual: o.manual || ""});
   const L0 = "Lab 0 · PoC WSL2", L1 = t("Lab 1 · Base DX", "Lab 1 · DX base"), L2A = s.dir === "ad" ? "Lab 2A · Active Directory" : "Lab 2A · OpenLDAP",
         L2B = s.db === "oracle" ? "Lab 2B · Oracle" : "Lab 2B · PostgreSQL", L3 = t("Lab 3A · IQ with OpenRouter", "Lab 3A · IQ con OpenRouter"),
         L3B = t("Lab 3B · Custom MCP", "Lab 3B · MCP propio"), L4 = t("Lab 4 · Search", "Lab 4 · Búsqueda");
-  const dx = upto => dxHelm(s, upto, {prefix: "../", wait: W});
+  const dx = upto => {
+    const fl = ["1-dx/custom-values.yaml"];
+    if (upto >= 2 && s.dir === "openldap") fl.push("2a-ldap/custom-values.ldap.yaml");
+    if (upto >= 2 && s.dir === "ad") fl.push("2a-ad/custom-values.ad.yaml");
+    if (upto >= 2.5 && s.db === "postgres") fl.push("2b-postgres/custom-values.postgres.yaml");
+    if (upto >= 2.5 && s.db === "oracle") fl.push("2b-oracle/custom-values.oracle.yaml");
+    if (upto >= 3 && s.lab3) fl.push("3-iq/custom-values.iq.yaml");
+    if (upto >= 4 && s.lab4) fl.push("4-search/custom-values.search.yaml");
+    if (s.poc) fl.push("0-poc/custom-values.poc.yaml");
+    return [`helm upgrade --install ${s.DX_RELEASE} charts/hcl-dx-deployment-2.49.0.tgz -n ${ns} \\`, ...fl.map(x => `  -f ${x} \\`), `  --timeout 30m ${W}`].join("\n");
+  };
+  const chat = q => `curl -sk -c cookies.txt -o /dev/null -H 'Content-Type: application/json' \\
+  -d '{"username":"wpsadmin","password":${JSON.stringify(pw).replace(/'/g, "'\\''")}}' https://${H}/dx/api/core/v1/auth/login
+curl -sk -b cookies.txt -c cookies.txt -L -o /dev/null https://${H}/wps/myportal
+python3 -I 3-iq/iq-chat.py ${H} cookies.txt ${sq(q)} ${es ? "es" : "en"}`;
 
   if (s.poc) {
     add(L0, "0-1", t("StorageClasses and DAM volume (single node)", "StorageClasses y volumen de DAM (un nodo)"),
       t("RWO with the k3s local-path; RWX simulated with a hostPath volume owned by DAM's uid/gid.", "RWO con el local-path de k3s; RWX simulada con un volumen hostPath propiedad del uid/gid de DAM."),
-`SC_RWO=${rwo} SC_RWX=${rwx} envsubst '$SC_RWO $SC_RWX' < ../lab0-poc-wsl/storage-poc.yaml | kubectl apply -f -
-SC_RWO=${rwo} SC_RWX=${rwx} envsubst '$SC_RWO $SC_RWX' < ../lab0-poc-wsl/dam-binaries-pv.yaml | kubectl apply -f -
-kubectl delete pod dx-poc-prepare-dam --ignore-not-found
-kubectl run dx-poc-prepare-dam --rm -i --restart=Never --quiet --image=busybox:1.36 --overrides='{"spec":{"containers":[{"name":"c","image":"busybox:1.36","command":["sh","-c","chown 1000:1001 /d && chmod 2775 /d && ls -ld /d"],"volumeMounts":[{"name":"d","mountPath":"/d"}]}],"volumes":[{"name":"d","hostPath":{"path":"/var/lib/dx-poc/dam-binaries","type":"DirectoryOrCreate"}}]}}' </dev/null`);
-    add(L0, "0-2", "ingress-nginx", t("Listens on ports 80/443 of WSL (hostNetwork): Windows reaches it through localhost.", "Escucha en los puertos 80/443 de WSL (hostNetwork): Windows llega por localhost."),
-`helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx >/dev/null 2>&1 || true
-helm repo update ingress-nginx
+`kubectl apply -f 0-poc/storage-poc.yaml
+kubectl apply -f 0-poc/dam-binaries-pv.yaml
+kubectl apply -f 0-poc/prepare-dam-volume.yaml
+kubectl wait pod/dx-poc-prepare-dam --for=jsonpath='{.status.phase}'=Succeeded --timeout=180s
+kubectl delete pod dx-poc-prepare-dam`);
+    add(L0, "0-2", "ingress-nginx", t("Listens on ports 80/443 of WSL: Windows reaches it through localhost.", "Escucha en los puertos 80/443 de WSL: Windows llega por localhost."),
+`helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --version 4.15.1 -n ingress-nginx --create-namespace \\
   --set controller.kind=DaemonSet --set controller.hostNetwork=true --set controller.dnsPolicy=ClusterFirstWithHostNet \\
   --set controller.service.type=ClusterIP --set controller.ingressClassResource.default=true
 kubectl -n ingress-nginx rollout status ds/ingress-nginx-controller --timeout=300s`);
   }
-
-  // ---- Lab 1
   add(L1, "1-0", t("Check the cluster (optional)", "Comprobar el clúster (opcional)"), "",
 `kubectl get nodes
-kubectl get storageclass ${rwo} ${rwx}
-${s.openshift ? "" : `kubectl get ingressclass ${s.INGRESS_CLASS}\n`}getent hosts ${H} || echo "WARNING: ${H} does not resolve"`, {opt: true});
+kubectl get storageclass ${s.SC_RWO} ${s.SC_RWX}${s.openshift ? "" : `\nkubectl get ingressclass ${s.INGRESS_CLASS}`}`, {opt: true});
   add(L1, "1-1", "Namespaces", t(`${ns}: HCL software only · ${sh}: third-party tools.`, `${ns}: solo software de HCL · ${sh}: herramientas de terceros.`),
-    s.openshift
-? `DX_NS=${ns} SHARED_NS=${sh} envsubst '$DX_NS $SHARED_NS' < ../common/openshift/namespaces.yaml | oc apply -f -
-kubectl label namespace ${ns} ${sh} lab=hcl-dx-compose --overwrite`
-: `kubectl create namespace ${ns} ${kapply}
-kubectl create namespace ${sh} ${kapply}
-kubectl label namespace ${ns} ${sh} lab=hcl-dx-compose --overwrite`);
-  const pulls = [`[ -f charts/hcl-dx-deployment-2.49.0.tgz ] || helm pull oci://hclcr.io/dx-compose/hcl-dx-deployment --version 2.49.0 -d charts`];
-  if (s.lab3) pulls.push(`[ -f charts/hcl-dx-iq-1.0.2.tgz ] || helm pull oci://hclcr.io/dx/hcl-dx-iq --version 1.0.2 -d charts`);
-  if (s.lab4) pulls.push(`[ -f charts/hcl-dx-search-2.36.0.tgz ] || helm pull oci://hclcr.io/dx-compose/hcl-dx-search --version 2.36.0 -d charts`);
-  add(L1, "1-2", t("HCL charts from hclcr.io", "Charts de HCL desde hclcr.io"), t("Into runbook/charts. The images are pulled by the cluster with the regcred secret.", "En runbook/charts. Las imágenes las descarga el clúster con el secret regcred."),
-`mkdir -p charts
-printf '%s' "$HCL_HARBOR_TOKEN" | helm registry login hclcr.io -u "$HCL_HARBOR_USER" --password-stdin
+    `kubectl apply -f 1-dx/namespaces.yaml`);
+  const pulls = ["[ -f charts/hcl-dx-deployment-2.49.0.tgz ] || helm pull oci://hclcr.io/dx-compose/hcl-dx-deployment --version 2.49.0 -d charts"];
+  if (s.lab3) pulls.push("[ -f charts/hcl-dx-iq-1.0.2.tgz ] || helm pull oci://hclcr.io/dx/hcl-dx-iq --version 1.0.2 -d charts");
+  if (s.lab4) pulls.push("[ -f charts/hcl-dx-search-2.36.0.tgz ] || helm pull oci://hclcr.io/dx-compose/hcl-dx-search --version 2.36.0 -d charts");
+  add(L1, "1-2", t("HCL charts from hclcr.io", "Charts de HCL desde hclcr.io"), t("The cluster pulls the images itself, with the regcred secret.", "Las imágenes las descarga el propio clúster, con el secret regcred."),
+`helm registry login hclcr.io -u ${sq(user)} -p ${sq(token)}
+mkdir -p charts
 ${pulls.join("\n")}`);
-  const tls = s.TLS_CERT
-    ? `kubectl -n ${ns} create secret tls dx-tls-cert --cert=${sq(s.TLS_CERT)} --key=${sq(s.TLS_KEY)} ${kapply}`
-    : `[ -f dx-tls.crt ] || openssl req -x509 -newkey rsa:2048 -nodes -sha256 -days 365 -keyout dx-tls.key -out dx-tls.crt \\
-  -subj "/CN=${H}" -addext "subjectAltName=DNS:${H}" 2>/dev/null
-kubectl -n ${ns} create secret tls dx-tls-cert --cert=dx-tls.crt --key=dx-tls.key ${kapply}`;
-  add(L1, "1-3", "Secrets", t("Image pull secret, HAProxy TLS certificate and wpsadmin credentials.", "Secret de descarga de imágenes, certificado TLS de HAProxy y credenciales de wpsadmin."),
-`kubectl -n ${ns} create secret docker-registry regcred --docker-server=hclcr.io \\
-  --docker-username="$HCL_HARBOR_USER" --docker-password="$HCL_HARBOR_TOKEN" --docker-email="$HCL_HARBOR_USER" ${kapply}
-${tls}
-kubectl -n ${ns} create secret generic web-engine-secret \\
-  --from-literal=username=wpsadmin --from-literal=password="$WPSADMIN_PASSWORD" ${kapply}`);
+  add(L1, "1-3", "Secrets", t("Pull secret and wpsadmin (1-dx/secrets.yaml) + a self-signed TLS certificate for HAProxy.", "Pull secret y wpsadmin (1-dx/secrets.yaml) + un certificado TLS autofirmado para HAProxy."),
+`kubectl apply -f 1-dx/secrets.yaml
+${s.TLS_CERT ? `kubectl -n ${ns} create secret tls dx-tls-cert --cert=${sq(s.TLS_CERT)} --key=${sq(s.TLS_KEY)} ${kapply}` :
+`[ -f 1-dx/dx-tls.crt ] || openssl req -x509 -newkey rsa:2048 -nodes -sha256 -days 365 -keyout 1-dx/dx-tls.key -out 1-dx/dx-tls.crt \\
+  -subj "/CN=${H}" -addext "subjectAltName=DNS:${H}"
+kubectl -n ${ns} create secret tls dx-tls-cert --cert=1-dx/dx-tls.crt --key=1-dx/dx-tls.key ${kapply}`}`);
   add(L1, "1-4", t("Install DX Compose (15-25 min the first time)", "Instalar DX Compose (15-25 min la primera vez)"),
-    t("Base layer of Lab 1; in another terminal: kubectl -n " + ns + " get pods -w", "Capa base del Lab 1; en otra terminal: kubectl -n " + ns + " get pods -w"), dx(1));
-  add(L1, "1-5", t("External access", "Acceso externo"), s.openshift ? t("Passthrough Route to HAProxy.", "Route passthrough hacia HAProxy.") : t("Ingress that re-encrypts towards HAProxy.", "Ingress que vuelve a cifrar hacia HAProxy."),
-`DX_NS=${ns} DX_RELEASE=${s.DX_RELEASE} DX_HOST=${H} INGRESS_CLASS=${s.INGRESS_CLASS} \\
-  envsubst '$DX_NS $DX_RELEASE $DX_HOST $INGRESS_CLASS' < ../lab1-dx-base/${s.openshift ? "route-dx-openshift.yaml | oc" : "ingress-dx.yaml | kubectl"} apply -f -`);
+    t(`In another terminal: kubectl -n ${ns} get pods -w`, `En otra terminal: kubectl -n ${ns} get pods -w`), dx(1));
+  add(L1, "1-5", t("External access", "Acceso externo"), "", `kubectl apply -f 1-dx/${s.openshift ? "route-dx-openshift.yaml" : "ingress-dx.yaml"}`);
   add(L1, "1-6", t("Check the portal (optional)", "Comprobar el portal (opcional)"), "",
 `kubectl -n ${ns} get pods
 curl -sk -o /dev/null -w 'https://${H}/wps/portal -> HTTP %{http_code}\\n' https://${H}/wps/portal`, {opt: true});
 
-  // ---- Lab 2A
   if (s.dir === "openldap") {
     add(L2A, "2A-1", t("Lab OpenLDAP with the demo users", "OpenLDAP de laboratorio con los usuarios de demo"),
-      t("The passwords of the LDIF become salted {SSHA} hashes before going into the ConfigMap.", "Las contraseñas del LDIF se convierten en hashes {SSHA} con sal antes de ir al ConfigMap."),
-`kubectl -n ${sh} create secret generic openldap-admin --from-literal=LDAP_ADMIN_USERNAME=admin \\
-  --from-literal=LDAP_ADMIN_PASSWORD="$LDAP_ADMIN_PASSWORD" --from-literal=LDAP_CONFIG_ADMIN_PASSWORD="$LDAP_ADMIN_PASSWORD" ${kapply}
-python3 -I - ../lab2-ldap-postgres/a-ldap/demo-users.ldif > demo-users.ssha.ldif <<'PY'
-import base64, hashlib, os, sys
-pw = os.environ["LDAP_USERS_PASSWORD"].encode()
-def ssha():
-    salt = os.urandom(8)
-    return "{SSHA}" + base64.b64encode(hashlib.sha1(pw + salt).digest() + salt).decode()
-sys.stdout.write("".join(l.replace("\${LDAP_USERS_PASSWORD}", ssha()) for l in open(sys.argv[1])))
-PY
-kubectl -n ${sh} create configmap openldap-demo-ldif --from-file=00-demo-users.ldif=demo-users.ssha.ldif ${kapply}
-helm repo add helm-openldap https://jp-gouin.github.io/helm-openldap/ >/dev/null 2>&1 || true
-helm repo update helm-openldap
+      t("The LDIF already carries the users with {SSHA} hashed passwords.", "El LDIF ya lleva los usuarios con las contraseñas en hash {SSHA}."),
+`kubectl apply -f 2a-ldap/secrets.yaml
+kubectl -n ${sh} create configmap openldap-demo-ldif --from-file=00-demo-users.ldif=2a-ldap/demo-users.ldif ${kapply}
+helm repo add helm-openldap https://jp-gouin.github.io/helm-openldap/
 helm upgrade --install ${s.LDAP_RELEASE} helm-openldap/openldap-stack-ha --version 4.3.3 -n ${sh} \\
-  -f ../lab2-ldap-postgres/a-ldap/openldap-values.yaml --set persistence.storageClass=${rwo} ${W} --timeout 10m`);
+  -f 2a-ldap/openldap-values.yaml ${W} --timeout 10m`);
     add(L2A, "2A-2", t("Check groups and members (optional)", "Comprobar grupos y miembros (opcional)"), "",
-`kubectl -n ${sh} exec ${s.LDAP_RELEASE}-0 -c openldap-stack-ha -- sh -c \\
-  'ldapsearch -x -LLL -H ldap://localhost:1389 -D cn=admin,dc=dxdemo,dc=com -w "$LDAP_ADMIN_PASSWORD" -b ou=groups,dc=dxdemo,dc=com cn uniqueMember'`, {opt: true});
-    add(L2A, "2A-3", t("Connect DX to the LDAP (~5 min)", "Conectar DX al LDAP (~5 min)"), t("Bind secret + the LDAP layer in the DX helm upgrade.", "Secret de bind + la capa LDAP en el helm upgrade de DX."),
-`kubectl -n ${ns} create secret generic dx-ldap-bind --from-literal=bindUser="cn=admin,dc=dxdemo,dc=com" \\
-  --from-literal=bindPassword="$LDAP_ADMIN_PASSWORD" ${kapply}
-${dx(2)}`, {manual: t("Give the **Administrator** role to the `dxadmins` group: portal as wpsadmin → *Administration → Access → Resource Permissions → Virtual Resources → PORTAL* (Lab 2 GUIDE, step 4).",
-                     "Da el rol **Administrator** al grupo `dxadmins`: portal como wpsadmin → *Administración → Acceso → Permisos de recursos → Recursos virtuales → PORTAL* (GUIDE del Lab 2, paso 4).")});
+`kubectl -n ${sh} exec ${s.LDAP_RELEASE}-0 -c openldap-stack-ha -- \\
+  ldapsearch -x -LLL -H ldap://localhost:1389 -D cn=admin,dc=dxdemo,dc=com -w ${sq(pw)} -b ou=groups,dc=dxdemo,dc=com cn uniqueMember`, {opt: true});
+    add(L2A, "2A-3", t("Connect DX to the LDAP (~5 min)", "Conectar DX al LDAP (~5 min)"), t("Adds the LDAP layer to DX.", "Añade la capa LDAP a DX."), dx(2),
+      {manual: t("Give the **Administrator** role to the `dxadmins` group: portal as wpsadmin → *Administration → Access → Resource Permissions → Virtual Resources → PORTAL*.",
+                 "Da el rol **Administrator** al grupo `dxadmins`: portal como wpsadmin → *Administración → Acceso → Permisos de recursos → Recursos virtuales → PORTAL*.")});
   } else if (s.dir === "ad") {
-    const ca = s.AD_CA_FILE ? `\nkubectl -n ${ns} create secret generic dx-ad-ca --from-file=ad-ca.crt=${sq(s.AD_CA_FILE)} ${kapply}` : "";
-    add(L2A, "AD-1", t("Active Directory connection secret", "Secret de conexión al Active Directory"), t("Read by the Web Engine as environment variables (customSecrets).", "El Web Engine lo recibe como variables de entorno (customSecrets)."),
-`kubectl -n ${ns} create secret generic dx-ad-bind --from-literal=AD_HOST=${sq(s.AD_HOST)} --from-literal=AD_PORT=${s.AD_PORT} \\
-  --from-literal=AD_SSL=${s.AD_PORT === "636" ? "true" : "false"} --from-literal=AD_BASE_DN=${sq(s.AD_BASE_DN)} \\
-  --from-literal=AD_BIND_USER=${sq(s.AD_BIND_USER)} --from-literal=AD_BIND_PASSWORD="$AD_BIND_PASSWORD" ${kapply}${ca}`);
-    add(L2A, "AD-2", t("DX layer for Active Directory (~5 min)", "Capa de DX para Active Directory (~5 min)"), "", dx(2),
-      {manual: t("Give the **Administrator** role to your AD admin group in the portal (GUIDE-enterprise, step AD-3).", "Da el rol **Administrator** a tu grupo de administradores del AD en el portal (GUIDE-enterprise, paso AD-3).")});
+    add(L2A, "AD-1", t("Active Directory connection secret", "Secret de conexión al Active Directory"), "",
+      `kubectl apply -f 2a-ad/secrets.yaml${s.AD_CA_FILE ? `\nkubectl -n ${ns} create secret generic dx-ad-ca --from-file=ad-ca.crt=${sq(s.AD_CA_FILE)} ${kapply}` : ""}`);
+    add(L2A, "AD-2", t("Connect DX to Active Directory (~5 min)", "Conectar DX al Active Directory (~5 min)"), "", dx(2),
+      {manual: t("Give the **Administrator** role to your AD admin group in the portal.", "Da el rol **Administrator** a tu grupo de administradores del AD en el portal.")});
   }
-
-  // ---- Lab 2B
   if (s.db === "postgres") {
     add(L2B, "2B-1", t("CloudNativePG operator", "Operador CloudNativePG"), "",
-`helm repo add cnpg https://cloudnative-pg.github.io/charts >/dev/null 2>&1 || true
-helm repo update cnpg
+`helm repo add cnpg https://cloudnative-pg.github.io/charts
 helm upgrade --install cnpg cnpg/cloudnative-pg --version 0.29.1 -n ${sh} ${W} --timeout 10m`);
-    const pgs = (name, user, pw) => `kubectl -n ${sh} create secret generic ${name} --type=kubernetes.io/basic-auth \\
-  --from-literal=username=${user} --from-literal=password="$${pw}" --dry-run=client -o yaml \\
-  | kubectl label --local -f - cnpg.io/reload=true -o yaml | kubectl apply -f -`;
-    add(L2B, "2B-2", t("PostgreSQL users", "Usuarios de PostgreSQL"), t("postgres (superuser), dxuser (owner of dx_core) and dx_iq_db_user.", "postgres (superusuario), dxuser (dueño de dx_core) y dx_iq_db_user."),
-      [pgs("dx-pg-superuser", "postgres", "PG_SUPERUSER_PASSWORD"), pgs("dx-pg-dxuser", "dxuser", "DXUSER_PASSWORD"), pgs("dx-pg-iquser", "dx_iq_db_user", "IQ_DB_PASSWORD")].join("\n"));
+    add(L2B, "2B-2", t("PostgreSQL users", "Usuarios de PostgreSQL"), "", `kubectl apply -f 2b-postgres/secrets.yaml`);
     add(L2B, "2B-3", t("PostgreSQL 18 cluster and dx_core preparation", "Cluster PostgreSQL 18 y preparación de dx_core"),
-      t("setup-postgres-dx.sql (see the Lab 2 guide, 2B step 3) runs once when the cluster is created.", "setup-postgres-dx.sql (ver la guía del Lab 2, 2B paso 3) se ejecuta una vez al crear el cluster."),
-`test -f ../lab2-ldap-postgres/b-postgres/setup-postgres-dx.sql || { echo "setup-postgres-dx.sql is missing in lab2-ldap-postgres/b-postgres/ (Lab 2 guide, 2B step 3)"; exit 1; }
-kubectl -n ${sh} create configmap dx-pg-setup-sql --from-file=../lab2-ldap-postgres/b-postgres/setup-postgres-dx.sql ${kapply}
-SHARED_NS=${sh} PG_CLUSTER=${s.PG_CLUSTER} SC_RWO=${rwo} \\
-  envsubst '$SHARED_NS $PG_CLUSTER $SC_RWO' < ../lab2-ldap-postgres/b-postgres/cluster-dx-pg.yaml | kubectl apply -f -
+      t("setup-postgres-dx.sql runs once when the cluster is created.", "setup-postgres-dx.sql se ejecuta una vez al crear el cluster."),
+`kubectl -n ${sh} create configmap dx-pg-setup-sql --from-file=2b-postgres/setup-postgres-dx.sql ${kapply}
+kubectl apply -f 2b-postgres/cluster-dx-pg.yaml
 kubectl -n ${sh} wait clusters.postgresql.cnpg.io/${s.PG_CLUSTER} --for=condition=Ready --timeout=10m`);
-    add(L2B, "2B-4", t("Web Engine database properties", "Propiedades de base de datos del Web Engine"), t("The file with the password only exists while the secret is created.", "El fichero con la contraseña solo existe mientras se crea el secret."),
-`(umask 077; PG_HOST=${s.PG_HOST} envsubst '$PG_HOST $DXUSER_PASSWORD' \\
-  < ../lab2-ldap-postgres/b-postgres/dx_dbdomain.properties.template > dx_dbdomain.properties)
-kubectl -n ${ns} create secret generic custom-credentials-webengine-dbtype-secret \\
-  --from-file=../lab2-ldap-postgres/b-postgres/dx_dbtype.properties ${kapply}
-kubectl -n ${ns} create secret generic custom-credentials-webengine-dbdomain-secret --from-file=dx_dbdomain.properties ${kapply}
-rm -f dx_dbdomain.properties`);
+    add(L2B, "2B-4", t("Web Engine database properties", "Propiedades de base de datos del Web Engine"), "",
+`kubectl -n ${ns} create secret generic custom-credentials-webengine-dbtype-secret --from-file=2b-postgres/dx_dbtype.properties ${kapply}
+kubectl -n ${ns} create secret generic custom-credentials-webengine-dbdomain-secret --from-file=2b-postgres/dx_dbdomain.properties ${kapply}`);
     add(L2B, "2B-5", t("Transfer Derby → PostgreSQL (~14 min)", "Transferencia Derby → PostgreSQL (~14 min)"),
-      t(`Do not scale the Web Engine meanwhile. Follow it: kubectl -n ${ns} logs -f ${s.DX_RELEASE}-web-engine-0 -c system-out-log`, `No escales el Web Engine mientras tanto. Síguela: kubectl -n ${ns} logs -f ${s.DX_RELEASE}-web-engine-0 -c system-out-log`), dx(2.5));
+      t(`Follow it: kubectl -n ${ns} logs -f ${s.DX_RELEASE}-web-engine-0 -c system-out-log`, `Síguela: kubectl -n ${ns} logs -f ${s.DX_RELEASE}-web-engine-0 -c system-out-log`), dx(2.5));
     add(L2B, "2B-6", t("Count the transferred tables (optional, ~465)", "Contar las tablas transferidas (opcional, ~465)"), "",
-`kubectl -n ${sh} exec -i ${s.PG_CLUSTER}-1 -c postgres -- psql -U postgres -d dx_core -Atc \\
-  "select count(*) from pg_tables where schemaname in ('release','jcr','community','customization','feedback','likeminds')" </dev/null`, {opt: true});
+`kubectl -n ${sh} exec ${s.PG_CLUSTER}-1 -c postgres -- psql -U postgres -d dx_core -Atc \\
+  "select count(*) from pg_tables where schemaname in ('release','jcr','community','customization','feedback','likeminds')"`, {opt: true});
   } else if (s.db === "oracle") {
     const tcps = /tcps:\/\//i.test(s.ORACLE_JDBC_URL) || !s.ORACLE_JDBC_URL;
-    add(L2B, "ORA-2", t("Web Engine secrets for Oracle", "Secrets del Web Engine para Oracle"),
-      t("Before: your DBA runs setup-oracle-dx.sql on the PDB (GUIDE-enterprise, ORA-1).", "Antes: tu DBA ejecuta setup-oracle-dx.sql en la PDB (GUIDE-enterprise, ORA-1)."),
-`${tcps ? `kubectl -n ${ns} create secret generic dx-oracle-ca --from-file=oracle-ca.crt=${sq(s.ORACLE_CA_FILE || "<listener CA>")} ${kapply}\n` : ""}(umask 077; ORACLE_JDBC_URL=${sq(s.ORACLE_JDBC_URL || "<jdbc url>")} ORACLE_DX_USER=${sq(s.ORACLE_DX_USER)} \\
-  envsubst '$ORACLE_JDBC_URL $ORACLE_DX_USER $ORACLE_DX_PASSWORD' \\
-  < ../lab2-ldap-postgres/enterprise/oracle/dx_dbdomain.properties.template > dx_dbdomain.properties)
-kubectl -n ${ns} create secret generic custom-credentials-webengine-dbtype-secret \\
-  --from-file=../lab2-ldap-postgres/enterprise/oracle/dx_dbtype.properties ${kapply}
-kubectl -n ${ns} create secret generic custom-credentials-webengine-dbdomain-secret --from-file=dx_dbdomain.properties ${kapply}
-rm -f dx_dbdomain.properties`);
-    add(L2B, "ORA-3", t("Transfer Derby → Oracle", "Transferencia Derby → Oracle"), "", dx(2.5));
+    add(L2B, "ORA-1", t("Web Engine secrets for Oracle", "Secrets del Web Engine para Oracle"),
+      t("Before: your DBA runs setup-oracle-dx.sql on the PDB.", "Antes: tu DBA ejecuta setup-oracle-dx.sql en la PDB."),
+`${tcps ? `kubectl -n ${ns} create secret generic dx-oracle-ca --from-file=oracle-ca.crt=${sq(s.ORACLE_CA_FILE || "PUT-YOUR-LISTENER-CA-FILE-HERE")} ${kapply}\n` : ""}kubectl -n ${ns} create secret generic custom-credentials-webengine-dbtype-secret --from-file=2b-oracle/dx_dbtype.properties ${kapply}
+kubectl -n ${ns} create secret generic custom-credentials-webengine-dbdomain-secret --from-file=2b-oracle/dx_dbdomain.properties ${kapply}`);
+    add(L2B, "ORA-2", t("Transfer Derby → Oracle", "Transferencia Derby → Oracle"), "", dx(2.5));
   }
-
-  // ---- Lab 3
   if (s.lab3) {
-    add(L3, "3-1", t("Secrets of the IQ → LiteLLM → OpenRouter chain", "Secrets de la cadena IQ → LiteLLM → OpenRouter"), "",
-`kubectl -n ${sh} create secret generic litellm-env --from-literal=OPENROUTER_API_KEY="$OPENROUTER_API_KEY" \\
-  --from-literal=PROXY_MASTER_KEY="$LITELLM_MASTER_KEY" ${kapply}
-kubectl -n ${ns} create secret generic iq-litellm-api-secret --from-literal=virtualKey="$LITELLM_MASTER_KEY" ${kapply}`);
-    add(L3, "3-2", "LiteLLM", t("Not supplied by HCL: official BerriAI chart. Two logical models routed to Claude on OpenRouter.", "No lo suministra HCL: chart oficial de BerriAI. Dos modelos lógicos enrutados a Claude en OpenRouter."),
-`helm upgrade --install ${s.LITELLM_RELEASE} oci://ghcr.io/berriai/litellm-helm --version 1.106.5 -n ${sh} \\
-  -f ../lab3-iq-openrouter/litellm-values.yaml
-kubectl -n ${sh} rollout restart deployment/${s.LITELLM_RELEASE}
+    add(L3, "3-1", t("Secrets: OpenRouter key and LiteLLM master key", "Secrets: clave de OpenRouter y master key de LiteLLM"), "", `kubectl apply -f 3-iq/secrets.yaml`);
+    add(L3, "3-2", "LiteLLM", t("Not supplied by HCL: official BerriAI chart, routing IQ's two models to Claude on OpenRouter.", "No lo suministra HCL: chart oficial de BerriAI, que enruta los dos modelos de IQ a Claude en OpenRouter."),
+`helm upgrade --install ${s.LITELLM_RELEASE} oci://ghcr.io/berriai/litellm-helm --version 1.106.5 -n ${sh} -f 3-iq/litellm-values.yaml
 kubectl -n ${sh} rollout status deployment/${s.LITELLM_RELEASE} --timeout=300s`);
     add(L3, "3-3", t("Ask Claude through LiteLLM (optional)", "Preguntar a Claude a través de LiteLLM (opcional)"), "",
 `kubectl -n ${sh} port-forward svc/${s.LITELLM_RELEASE} 8000:4000 >/dev/null 2>&1 & PF=$!; sleep 5
-curl -s http://localhost:8000/v1/chat/completions -H "Authorization: Bearer $LITELLM_MASTER_KEY" -H 'Content-Type: application/json' \\
+curl -s http://localhost:8000/v1/chat/completions -H 'Authorization: Bearer ${litellmKey}' -H 'Content-Type: application/json' \\
   -d '{"model":"iq-general-purpose","max_tokens":20,"messages":[{"role":"user","content":"Answer only: ready"}]}'; echo
 kill $PF`, {opt: true});
-    if (s.iqdb) {
-      add(L3, "A1", t("iqdb database for the IQ sessions (appendix)", "Base de datos iqdb para las sesiones de IQ (apéndice)"), "",
-`kubectl -n ${sh} exec -i ${s.PG_CLUSTER}-1 -c postgres -- psql -U postgres -Atc "select 1 from pg_database where datname='iqdb'" </dev/null | grep -q 1 || \\
-kubectl -n ${sh} exec -i ${s.PG_CLUSTER}-1 -c postgres -- psql -U postgres -v ON_ERROR_STOP=1 <<'SQL'
-CREATE DATABASE iqdb OWNER dx_iq_db_user;
-REVOKE ALL ON DATABASE iqdb FROM PUBLIC;
-GRANT CONNECT, TEMPORARY ON DATABASE iqdb TO dx_iq_db_user;
-SQL
-kubectl -n ${ns} create secret generic custom-external-db-credentials \\
-  --from-literal=username=dx_iq_db_user --from-literal=password="$IQ_DB_PASSWORD" ${kapply}`);
-    }
-    add(L3, "3-4", t("Install IQ (Integrator and MCP Server)", "Instalar IQ (Integrator y MCP Server)"),
-      t("values/iq-env.yaml (generated) holds the LiteLLM URL of this installation.", "values/iq-env.yaml (generado) contiene la URL de LiteLLM de esta instalación."),
+    if (s.iqdb) add(L3, "A1", t("iqdb database for the IQ sessions (appendix)", "Base de datos iqdb para las sesiones de IQ (apéndice)"), "",
+`kubectl -n ${sh} exec ${s.PG_CLUSTER}-1 -c postgres -- psql -U postgres -c "CREATE DATABASE iqdb OWNER dx_iq_db_user" || echo "iqdb already exists"
+kubectl -n ${sh} exec ${s.PG_CLUSTER}-1 -c postgres -- psql -U postgres -c "REVOKE ALL ON DATABASE iqdb FROM PUBLIC" -c "GRANT CONNECT, TEMPORARY ON DATABASE iqdb TO dx_iq_db_user"`);
+    add(L3, "3-4", t("Install IQ (Integrator and MCP Server)", "Instalar IQ (Integrator y MCP Server)"), "",
 `helm upgrade --install ${s.IQ_RELEASE} charts/hcl-dx-iq-1.0.2.tgz -n ${ns} \\
-  -f ../lab3-iq-openrouter/custom-iq-values.yaml -f values/iq-env.yaml \\
-${s.iqdb ? `  -f ../lab3-iq-openrouter/custom-iq-values.db-external.yaml --set-string configuration.database.dbHost=${s.PG_HOST} \\\n` : ""}  --set-string configuration.dx.releaseName=${s.DX_RELEASE} --set-string configuration.dx.externalHost=${H}
-kubectl -n ${ns} rollout restart deployment/${s.IQ_RELEASE}-mcp-server
+  -f 3-iq/custom-iq-values.yaml${s.iqdb ? " \\\n  -f 3-iq/custom-iq-values.db-external.yaml" : ""}
 kubectl -n ${ns} rollout status deployment/${s.IQ_RELEASE}-mcp-server --timeout=300s
-kubectl -n ${ns} rollout restart deployment/${s.IQ_RELEASE}-integrator
+kubectl -n ${ns} rollout restart deployment/${s.IQ_RELEASE}-integrator     # it lists the MCP tools when it starts
 kubectl -n ${ns} rollout status deployment/${s.IQ_RELEASE}-integrator --timeout=300s`);
     add(L3, "3-5", t("Enable IQ in DX (~5 min)", "Habilitar IQ en DX (~5 min)"), "", dx(3));
-    const chat = q => `JAR=$(mktemp)
-curl -sk -c "$JAR" -o /dev/null -H 'Content-Type: application/json' \\
-  -d "{\\"username\\":\\"wpsadmin\\",\\"password\\":\\"$WPSADMIN_PASSWORD\\"}" https://${H}/dx/api/core/v1/auth/login
-curl -sk -b "$JAR" -c "$JAR" -L -o /dev/null https://${H}/wps/myportal
-python3 -I ../lab3-iq-openrouter/iq-chat.py ${H} "$JAR" ${sq(q)} ${es ? "es" : "en"}
-rm -f "$JAR"`;
     add(L3, "3-6", t("Ask IQ from the terminal (optional)", "Preguntar a IQ desde la terminal (opcional)"), "",
       chat(t("Which WCM libraries are there?", "¿Qué bibliotecas de WCM hay?")), {opt: true});
     if (s.lab3b) {
       add(L3B, "3B-1", t("Deploy the EUROPESIP MCP Server", "Desplegar el MCP Server de EUROPESIP"), "",
-`kubectl -n ${sh} create configmap europesip-mcp-code --from-file=../lab3-iq-openrouter/custom-mcp/server.py ${kapply}
-SHARED_NS=${sh} envsubst '$SHARED_NS' < ../lab3-iq-openrouter/custom-mcp/europesip-mcp.yaml | kubectl apply -f -
-kubectl -n ${sh} rollout restart deployment/europesip-mcp
+`kubectl -n ${sh} create configmap europesip-mcp-code --from-file=3b-mcp/server.py ${kapply}
+kubectl apply -f 3b-mcp/europesip-mcp.yaml
 kubectl -n ${sh} rollout status deployment/europesip-mcp --timeout=300s`);
       add(L3B, "3B-2", t("Register it in IQ", "Registrarlo en IQ"), t("The Integrator reads the MCP server list from its ConfigMap when it starts.", "El Integrator lee la lista de MCP Servers de su ConfigMap al arrancar."),
 `kubectl -n ${ns} patch configmap ${s.IQ_RELEASE}-integrator --type merge -p \\
@@ -958,129 +1142,81 @@ kubectl -n ${ns} rollout status deployment/${s.IQ_RELEASE}-integrator --timeout=
         "sleep 15\n" + chat(t("Which services does EUROPESIP offer?", "¿Qué servicios ofrece EUROPESIP?")), {opt: true});
     }
   }
-
-  // ---- Lab 4
   if (s.lab4) {
-    add(L4, "4-1", t("OpenSearch certificates and secrets", "Certificados y secrets de OpenSearch"),
-      t("Lab CA + admin, node and client certificates (mutual TLS); adminDN in RFC 2253 format.", "CA del lab + certificados admin, node y client (TLS mutuo); adminDN en formato RFC 2253."),
-`mkdir -p certs
-(cd certs
- printf 'basicConstraints = CA:FALSE\\nkeyUsage = digitalSignature, keyEncipherment\\nextendedKeyUsage = serverAuth, clientAuth\\n' > ext.cnf
- [ -f root-ca.pem ] || { openssl genrsa -out root-ca-key.pem 2048 2>/dev/null
-   openssl req -new -x509 -sha256 -key root-ca-key.pem -subj "/C=ES/O=EUROPESIP/OU=DX Compose Labs/CN=dx-search-root-ca" -out root-ca.pem -days 730; }
- for c in admin:admin node:opensearch-node client:opensearch-client; do
-   n=\${c%%:*}; cn=\${c#*:}
-   [ -f $n.pem ] && continue
-   openssl genrsa 2048 2>/dev/null | openssl pkcs8 -topk8 -nocrypt -out $n-key.pem
-   openssl req -new -key $n-key.pem -subj "/C=ES/O=EUROPESIP/OU=DX Compose Labs/CN=$cn" -out $n.csr
-   openssl x509 -req -in $n.csr -CA root-ca.pem -CAkey root-ca-key.pem -CAcreateserial -sha256 -days 730 -extfile ext.cnf -out $n.pem 2>/dev/null
- done)
+    add(L4, "4-1", t("OpenSearch certificates", "Certificados de OpenSearch"),
+      t("A lab CA and the admin, node and client certificates (mutual TLS), stored as secrets.", "Una CA del lab y los certificados admin, node y client (TLS mutuo), guardados como secrets."),
+`mkdir -p 4-search/certs && cd 4-search/certs
+printf 'basicConstraints = CA:FALSE\\nkeyUsage = digitalSignature, keyEncipherment\\nextendedKeyUsage = serverAuth, clientAuth\\n' > ext.cnf
+[ -f root-ca.pem ] || openssl req -x509 -newkey rsa:2048 -nodes -sha256 -days 730 -keyout root-ca-key.pem -out root-ca.pem \\
+  -subj "/C=ES/O=EUROPESIP/OU=DX Compose Labs/CN=dx-search-root-ca"
 for n in admin node client; do
-  kubectl -n ${ns} create secret generic search-$n-cert --from-file=certs/$n.pem --from-file=certs/$n-key.pem --from-file=certs/root-ca.pem ${kapply}
+  case $n in admin) cn=admin ;; node) cn=opensearch-node ;; client) cn=opensearch-client ;; esac
+  [ -f $n.pem ] && continue
+  openssl req -new -newkey rsa:2048 -nodes -keyout $n-key.pem -out $n.csr -subj "/C=ES/O=EUROPESIP/OU=DX Compose Labs/CN=$cn"
+  openssl x509 -req -in $n.csr -CA root-ca.pem -CAkey root-ca-key.pem -CAcreateserial -sha256 -days 730 -extfile ext.cnf -out $n.pem
 done
-DN=$(openssl x509 -in certs/admin.pem -noout -subject -nameopt RFC2253 | sed 's/^subject=//')
-printf "configuration:\\n  openSearch:\\n    security:\\n      adminDN: '%s'\\n" "$DN" > values/search-admin-dn.yaml
-cat values/search-admin-dn.yaml`);
+cd ../..
+for n in admin node client; do
+  kubectl -n ${ns} create secret generic search-$n-cert \\
+    --from-file=4-search/certs/$n.pem --from-file=4-search/certs/$n-key.pem --from-file=4-search/certs/root-ca.pem ${kapply}
+done`);
     add(L4, "4-2", t("Install hcl-dx-search (OpenSearch + Search Middleware)", "Instalar hcl-dx-search (OpenSearch + Search Middleware)"), "",
 `helm upgrade --install ${s.SEARCH_RELEASE} charts/hcl-dx-search-2.36.0.tgz -n ${ns} \\
-  -f ../lab4-opensearch/custom-search-values.yaml -f values/search-admin-dn.yaml \\
-${s.poc ? "  -f ../lab0-poc-wsl/custom-search-values.poc.yaml \\\n" : ""}  --set-string volumes.openSearchManager.data.storageClassName=${rwo} \\
-  --set-string security.pushAdministration.deploymentReleaseName=${s.DX_RELEASE} \\
-  --set-string configuration.automatedSetup.dxDeploymentName=${s.DX_RELEASE} \\
+  -f 4-search/custom-search-values.yaml${s.poc ? " \\\n  -f 0-poc/custom-search-values.poc.yaml" : ""} \\
   --timeout 20m ${W}`);
     add(L4, "4-3", t("Enable Search V2 in DX (~5 min)", "Activar Search V2 en DX (~5 min)"), "", dx(4));
     add(L4, "4-4", t("Check the search API (optional)", "Comprobar la API de búsqueda (opcional)"), "",
-`curl -sk -o /dev/null -w 'https://${H}/dx/api/search/v2/explorer/ -> HTTP %{http_code}\\n' https://${H}/dx/api/search/v2/explorer/`, {opt: true});
+      `curl -sk -o /dev/null -w 'https://${H}/dx/api/search/v2/explorer/ -> HTTP %{http_code}\\n' https://${H}/dx/api/search/v2/explorer/`, {opt: true});
   }
   return steps;
 }
 
-function requiredSecrets(s){
-  const r = ["HCL_HARBOR_USER","HCL_HARBOR_TOKEN","WPSADMIN_PASSWORD"];
-  if (s.dir === "openldap") r.push("LDAP_USERS_PASSWORD","LDAP_ADMIN_PASSWORD");
-  if (s.dir === "ad") r.push("AD_BIND_PASSWORD");
-  if (s.db === "postgres") r.push("PG_SUPERUSER_PASSWORD","DXUSER_PASSWORD","IQ_DB_PASSWORD");
-  if (s.db === "oracle") r.push("ORACLE_DX_PASSWORD");
-  if (s.lab3) r.push("OPENROUTER_API_KEY","LITELLM_MASTER_KEY");
-  return r;
-}
-
-function buildSecrets(s){
-  const pw = s.LAB_PASSWORD, now = new Date().toISOString().slice(0, 16).replace("T", " ");
-  const L = ["# runbook/secrets.env · generated by the configuration wizard on " + now + " UTC",
-    "# The ONLY values of the direct installation that are not written in the commands. Keep this file private.",
-    "# A variable already exported in your shell takes precedence (e.g. source ../env.sh before install.sh).",
-    "# Fill in the lines marked with <<< and load it with:  source ./secrets.env", ""];
-  const line = (k, v, hint) => L.push(`export ${k}="\${${k}:-${shq(v)}}"` + (v ? "" : `   # <<< ${hint}`));
-  const need = new Set(requiredSecrets(s));
-  line("HCL_HARBOR_USER", s.HCL_HARBOR_USER, "e-mail of your HCL account");
-  line("HCL_HARBOR_TOKEN", s.HCL_HARBOR_TOKEN, "CLI secret from https://hclcr.io (User Profile)");
-  if (need.has("OPENROUTER_API_KEY")) { line("OPENROUTER_API_KEY", s.OPENROUTER_API_KEY, "sk-or-v1-..."); line("LITELLM_MASTER_KEY", litellmKey, ""); }
-  L.push("", "# Lab passwords (the public lab default is EuropeS1P)");
-  for (const k of ["WPSADMIN_PASSWORD","LDAP_USERS_PASSWORD","LDAP_ADMIN_PASSWORD","PG_SUPERUSER_PASSWORD","DXUSER_PASSWORD","IQ_DB_PASSWORD"])
-    if (need.has(k)) line(k, pw, "lab password");
-  if (need.has("AD_BIND_PASSWORD")) line("AD_BIND_PASSWORD", s.AD_BIND_PASSWORD, "AD service account password");
-  if (need.has("ORACLE_DX_PASSWORD")) line("ORACLE_DX_PASSWORD", s.ORACLE_DX_PASSWORD, "password of the DX Oracle users");
-  return L.join("\n") + "\n";
-}
-
-function buildIqEnv(s){
-  return `# runbook/values/iq-env.yaml · generated by the configuration wizard
-# The LiteLLM URL of this installation, in the two places IQ 1.0.2 reads it. A list is replaced as a
-# whole by Helm, so the three Integrator variables of custom-iq-values.yaml are repeated here.
-configuration:
-  litellm:
-    liteLlmUrl: "${s.LITELLM_URL}"
-environment:
-  pod:
-    integrator:
-      - name: "DX_CONTEXT_ROOT"
-        value: "/wps"
-      - name: "LLM_MAX_TOKENS"
-        value: "16384"
-      - name: "LITELLM_BASE_URL"
-        value: "${s.LITELLM_URL}"
-`;
-}
-
 const D = {
   en: {
-    title: "Direct installation runbook · HCL DX Compose CF238 labs",
-    intro: "This runbook installs the labs you selected with **direct commands**: every value (namespaces, releases, host, StorageClasses...) is written in the command itself, so you see exactly what each step does. Only secrets come from `secrets.env`. Optional checks are marked as such and can be skipped. `install.sh` runs exactly these same commands one after the other.",
-    poc: "> ⚠️ **PoC, not production.** For a real project, an HCL partner or HCL specialised services. The wizard is experimental: the recommended path is still the manual one with the guides.",
-    prep: "Before you start",
-    prepL: ["Clone the labs repository and unzip this ZIP **in its root**: it creates the `runbook/` folder and does not overwrite any file of the repository. Everything generated during the installation (charts, certificates, rendered files) stays in `runbook/`.",
-      "Fill in the lines marked with `<<<` in `runbook/secrets.env` (or export those variables in your shell).",
-      "Work from `runbook/`:"],
-    lab2bNote: "Lab 2B needs `lab2-ldap-postgres/b-postgres/setup-postgres-dx.sql` (see the Lab 2 guide, 2B step 3).",
-    auto: "Or let the script do everything",
-    autoT: "It shows the lab and step it is running, asks for confirmation first, and if something fails it tells you how to resume:",
-    opt: "Optional check", manual: "Manual step",
-    vals: "Your values", end: "Done", endT: url => `Portal: ${url} (wpsadmin and your lab password).`,
+    title: "Direct installation · HCL DX Compose CF238",
+    intro: "A tailor-made installation built from the values you gave the configuration wizard. **This folder is self-contained**: every file is already filled in (values, properties, LDIF, secrets), the commands are short and run from this folder, and you do not need the labs repository. `install.sh` runs exactly these same commands one after the other.",
+    warn: "> ⚠️ **PoC, not production. Credentials in plain text:** passwords and keys are written in the files of this folder so that everything is easy to follow. Keep it private and rotate the secrets afterwards. The wizard is experimental: the recommended path is still the manual one with the guides.",
+    prep: "Before you start", need: "You need `kubectl` (with access to the cluster), `helm`, `openssl`, `curl` and `python3` (only for the optional IQ checks).",
+    sql: "**Lab 2B:** copy `setup-postgres-dx.sql` into `2b-postgres/` (see the [Lab 2 guide, 2B step 3](https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab2-ldap-postgres/GUIDE.md)).",
+    ph: "Some values were left empty in the wizard: replace every `PUT-YOUR-...-HERE` in this folder (`grep -rn PUT-YOUR- .` lists them).",
+    files: "What is in this folder", run: "Run it", runT: "From this folder, step by step with the commands below, or all at once:",
+    opt: "Optional check", manual: "Manual step", end: "Done", endT: url => `Portal: ${url} (wpsadmin / your lab password).`,
+    dirs: {"install.sh": "runs all the steps, showing the lab and step", "0-poc/": "Lab 0: single-node storage, ingress and reduced resources",
+      "1-dx/": "Lab 1: namespaces, secrets, DX values and external access", "2a-ldap/": "Lab 2A: OpenLDAP, demo users and the DX LDAP layer",
+      "2a-ad/": "Lab 2A: Active Directory secret and DX layer", "2b-postgres/": "Lab 2B: PostgreSQL cluster, users, Web Engine properties and DX layer",
+      "2b-oracle/": "Lab 2B: Oracle properties and DX layer", "3-iq/": "Lab 3A: LiteLLM, IQ values, secrets and the terminal chat client",
+      "3b-mcp/": "Lab 3B: the EUROPESIP MCP Server", "4-search/": "Lab 4: OpenSearch values and DX layer (certificates are created by step 4-1)",
+      "charts/": "HCL charts, downloaded by step 1-2"},
   },
   es: {
-    title: "Runbook de instalación directa · labs de HCL DX Compose CF238",
-    intro: "Este runbook instala los labs que has elegido con **comandos directos**: cada valor (namespaces, releases, host, StorageClasses...) está escrito en el propio comando, así que ves exactamente qué hace cada paso. Solo los secretos vienen de `secrets.env`. Las comprobaciones opcionales están marcadas y se pueden saltar. `install.sh` ejecuta exactamente estos mismos comandos, uno tras otro.",
-    poc: "> ⚠️ **PoC, no producción.** Para un proyecto real, un partner de HCL o los servicios especializados de HCL. El asistente es experimental: la vía recomendada sigue siendo la manual con las guías.",
-    prep: "Antes de empezar",
-    prepL: ["Clona el repositorio de los labs y descomprime este ZIP **en su raíz**: crea la carpeta `runbook/` y no sobrescribe ningún fichero del repositorio. Todo lo que se genera durante la instalación (charts, certificados, ficheros renderizados) se queda en `runbook/`.",
-      "Rellena las líneas marcadas con `<<<` en `runbook/secrets.env` (o exporta esas variables en tu shell).",
-      "Trabaja desde `runbook/`:"],
-    lab2bNote: "El Lab 2B necesita `lab2-ldap-postgres/b-postgres/setup-postgres-dx.sql` (ver la guía del Lab 2, 2B paso 3).",
-    auto: "O deja que el script lo haga todo",
-    autoT: "Muestra el lab y el paso que está ejecutando, pide confirmación al empezar y, si algo falla, te dice cómo continuar:",
-    opt: "Comprobación opcional", manual: "Paso manual",
-    vals: "Tus valores", end: "Fin", endT: url => `Portal: ${url} (wpsadmin y tu contraseña del lab).`,
+    title: "Instalación directa · HCL DX Compose CF238",
+    intro: "Una instalación a medida, construida con los valores que diste al asistente de configuración. **Esta carpeta es autónoma**: todos los ficheros ya están rellenos (values, properties, LDIF, secrets), los comandos son cortos y se ejecutan desde esta carpeta, y no necesitas el repositorio de los labs. `install.sh` ejecuta exactamente estos mismos comandos, uno tras otro.",
+    warn: "> ⚠️ **PoC, no producción. Credenciales en claro:** las contraseñas y claves están escritas en los ficheros de esta carpeta para que todo sea fácil de seguir. Guárdala en privado y rota los secretos después. El asistente es experimental: la vía recomendada sigue siendo la manual con las guías.",
+    prep: "Antes de empezar", need: "Necesitas `kubectl` (con acceso al clúster), `helm`, `openssl`, `curl` y `python3` (solo para las comprobaciones opcionales de IQ).",
+    sql: "**Lab 2B:** copia `setup-postgres-dx.sql` en `2b-postgres/` (ver la [guía del Lab 2, 2B paso 3](https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab2-ldap-postgres/GUIDE.es.md)).",
+    ph: "Algunos valores se dejaron vacíos en el asistente: sustituye cada `PUT-YOUR-...-HERE` de esta carpeta (`grep -rn PUT-YOUR- .` los lista).",
+    files: "Qué hay en esta carpeta", run: "Ejecutarlo", runT: "Desde esta carpeta, paso a paso con los comandos de abajo, o todo de una vez:",
+    opt: "Comprobación opcional", manual: "Paso manual", end: "Fin", endT: url => `Portal: ${url} (wpsadmin / tu contraseña del lab).`,
+    dirs: {"install.sh": "ejecuta todos los pasos, mostrando el lab y el paso", "0-poc/": "Lab 0: almacenamiento de un nodo, Ingress y recursos reducidos",
+      "1-dx/": "Lab 1: namespaces, secrets, values de DX y acceso externo", "2a-ldap/": "Lab 2A: OpenLDAP, usuarios de demo y la capa LDAP de DX",
+      "2a-ad/": "Lab 2A: secret de Active Directory y capa de DX", "2b-postgres/": "Lab 2B: cluster PostgreSQL, usuarios, properties del Web Engine y capa de DX",
+      "2b-oracle/": "Lab 2B: properties de Oracle y capa de DX", "3-iq/": "Lab 3A: LiteLLM, values de IQ, secrets y el cliente de chat de terminal",
+      "3b-mcp/": "Lab 3B: el MCP Server de EUROPESIP", "4-search/": "Lab 4: values de OpenSearch y capa de DX (los certificados los crea el paso 4-1)",
+      "charts/": "charts de HCL, los descarga el paso 1-2"},
   }
 };
 
-function buildDirectRunbook(s, steps){
-  const d = D[lang], o = [];
-  const now = new Date().toISOString().slice(0, 16).replace("T", " ");
-  o.push(`# ${d.title}`, "", `${lang === "es" ? "Generado por el asistente de configuración el" : "Generated by the configuration wizard on"} ${now} UTC.`, "", d.intro, "", d.poc, "");
-  o.push(`## ${d.prep}`, "", `1. ${d.prepL[0]}`, `2. ${d.prepL[1]}`, `3. ${d.prepL[2]}`, "", "```bash", "cd hcl-dx-compose-labs/runbook", "source ./secrets.env", "```", "");
-  if (s.db === "postgres") o.push(`> ${d.lab2bNote}`, "");
-  o.push(`### ${d.auto}`, "", d.autoT, "", "```bash", "./install.sh            # " + (lang === "es" ? "todo, sin las comprobaciones opcionales" : "everything, without the optional checks"),
+function buildDirectRunbook(s, steps, files){
+  const d = D[lang], o = [], now = new Date().toISOString().slice(0, 16).replace("T", " ");
+  const dirs = [...new Set(Object.keys(files).map(p => p.includes("/") ? p.split("/")[0] + "/" : p))];
+  const missing = Object.values(files).some(f => f.text.includes("PUT-YOUR-")) || steps.some(x => x.cmd.includes("PUT-YOUR-"));
+  o.push(`# ${d.title}`, "", `${lang === "es" ? "Generado por el asistente de configuración el" : "Generated by the configuration wizard on"} ${now} UTC · https://${s.DX_HOST}`, "", d.intro, "", d.warn, "");
+  o.push(`## ${d.files}`, "", "| | |", "|---|---|", ...["install.sh", ...dirs, "charts/"].map(k => `| \`${k}\` | ${d.dirs[k] || ""} |`), "");
+  o.push(`## ${d.prep}`, "", `- ${d.need}`);
+  if (s.db === "postgres") o.push(`- ${d.sql}`);
+  if (missing) o.push(`- ${d.ph}`);
+  o.push("", `## ${d.run}`, "", d.runT, "", "```bash", "cd dx-install",
+    "./install.sh            # " + (lang === "es" ? "todo, sin las comprobaciones opcionales" : "everything, without the optional checks"),
     "./install.sh --verify   # " + (lang === "es" ? "también las comprobaciones opcionales" : "also the optional checks"),
     "./install.sh --list     # " + (lang === "es" ? "lista de pasos" : "list of steps"),
     "./install.sh --from 2B-1   # " + (lang === "es" ? "continuar desde un paso" : "resume from a step"), "```", "");
@@ -1100,15 +1236,12 @@ function buildDirectRunbook(s, steps){
 function buildInstallSh(s, steps){
   const now = new Date().toISOString().slice(0, 16).replace("T", " ");
   const q = v => "'" + String(v).replace(/'/g, "'\\''") + "'";
-  const ids = steps.map(x => q(x.id)).join(" "), labs = steps.map(x => q(x.lab)).join(" "),
-        titles = steps.map(x => q(x.title)).join(" "), opts = steps.map(x => x.opt ? 1 : 0).join(" ");
   const manual = steps.filter(x => x.manual).map(x => `  echo ${q("  - " + x.id + ": " + x.manual.replace(/\*\*|\*|`/g, ""))}`).join("\n");
-  const req = requiredSecrets(s).join(" ");
   const head = [
 "#!/usr/bin/env bash",
-"# runbook/install.sh · generated by the configuration wizard on " + now + " UTC",
-"# Direct installation of the HCL DX Compose labs: the SAME commands as runbook/RUNBOOK.md, run one",
-"# after the other, showing the lab and step. Experimental: the recommended path is the manual one.",
+"# dx-install/install.sh · generated by the configuration wizard on " + now + " UTC for " + s.DX_HOST,
+"# Runs the SAME commands as RUNBOOK.md, one after the other, showing the lab and step.",
+"# Experimental: the recommended path is the manual one with the guides of the labs.",
 "#",
 "# Usage:  ./install.sh              install (without the optional checks; asks for confirmation)",
 "#         ./install.sh --verify     also run the optional checks",
@@ -1117,21 +1250,20 @@ function buildInstallSh(s, steps){
 "#         ./install.sh --yes        do not ask for confirmation",
 "set -Eeuo pipefail",
 'cd "$(dirname "$0")"',
-"[ -f secrets.env ] && source ./secrets.env",
 "",
 "VERIFY=0; FROM=''; YES=0; LIST=0",
 "while [ $# -gt 0 ]; do",
 "  case \"$1\" in",
 "    --verify) VERIFY=1 ;; --from) FROM=\"${2:-}\"; shift ;; --yes|-y) YES=1 ;; --list) LIST=1 ;;",
-"    -h|--help) sed -n '5,10p' \"$0\"; exit 0 ;;",
+"    -h|--help) sed -n '6,10p' \"$0\"; exit 0 ;;",
 "    *) echo \"Unknown option: $1 (see --help)\"; exit 1 ;;",
 "  esac; shift",
 "done",
 "",
-"IDS=(" + ids + ")",
-"LABS=(" + labs + ")",
-"TITLES=(" + titles + ")",
-"OPT=(" + opts + ")",
+"IDS=(" + steps.map(x => q(x.id)).join(" ") + ")",
+"LABS=(" + steps.map(x => q(x.lab)).join(" ") + ")",
+"TITLES=(" + steps.map(x => q(x.title)).join(" ") + ")",
+"OPT=(" + steps.map(x => x.opt ? 1 : 0).join(" ") + ")",
 ""].join("\n");
   const fns = steps.map((x, i) => `# ${x.id} · ${x.title}\nstep_${i}() {\n${x.cmd}\n}\n`).join("\n");
   const tail = [
@@ -1144,15 +1276,15 @@ function buildInstallSh(s, steps){
 "fi",
 "if [ -n \"$FROM\" ] && ! printf '%s\\n' \"${IDS[@]}\" | grep -qx -- \"$FROM\"; then echo \"Unknown step: $FROM (see --list)\"; exit 1; fi",
 "",
-"# Prerequisites: tools, secrets and the cluster context",
+"# Prerequisites: tools, values still to fill in, and the cluster",
 "missing=()",
-"for c in kubectl helm openssl envsubst curl python3; do command -v $c >/dev/null 2>&1 || missing+=(\"$c\"); done",
+"for c in kubectl helm openssl curl; do command -v $c >/dev/null 2>&1 || missing+=(\"$c\"); done",
 "[ ${#missing[@]} = 0 ] || { echo \"${R}Missing tools:${N} ${missing[*]}\"; exit 1; }",
-"for v in " + req + "; do [ -n \"${!v:-}\" ] || missing+=(\"$v\"); done",
-"[ ${#missing[@]} = 0 ] || { echo \"${R}Empty secrets:${N} ${missing[*]} (fill them in secrets.env)\"; exit 1; }",
-s.db === "postgres" ? "[ -f ../lab2-ldap-postgres/b-postgres/setup-postgres-dx.sql ] || { echo \"${R}Missing${N} lab2-ldap-postgres/b-postgres/setup-postgres-dx.sql (Lab 2 guide, 2B step 3)\"; exit 1; }" : "",
+"P=PUT-YOUR",
+"if grep -rlq --exclude=RUNBOOK.md \"$P-\" .; then echo \"${R}Values still to fill in${N} (replace every $P-...-HERE):\"; grep -rno --exclude=RUNBOOK.md \"$P-[A-Z-]*HERE\" . | sort -u; exit 1; fi",
+s.db === "postgres" ? "[ -f 2b-postgres/setup-postgres-dx.sql ] || { echo \"${R}Copy setup-postgres-dx.sql into 2b-postgres/${N} (Lab 2 guide, 2B step 3)\"; exit 1; }" : "",
 "kubectl version --request-timeout=10s >/dev/null 2>&1 || { echo \"${R}Cannot reach the cluster with kubectl${N}\"; exit 1; }",
-"echo \"${B}HCL DX Compose labs · direct installation${N}\"",
+"echo \"${B}HCL DX Compose · direct installation${N}\"",
 "echo \"  cluster context : $(kubectl config current-context 2>/dev/null)\"",
 "echo \"  DX              : https://" + s.DX_HOST + "/wps/portal\"",
 "echo \"  namespaces      : " + s.DX_NS + " (HCL) · " + s.SHARED_NS + " (third party)\"",
@@ -1182,17 +1314,14 @@ manual ? "echo \"${Y}Manual steps left:${N}\"\n" + manual : "",
 
 function buildDirectZip(s){
   if (!litellmKey) litellmKey = randomKey();
-  const steps = directSteps(s);
-  const files = [
-    {name: "runbook/RUNBOOK.md", text: buildDirectRunbook(s, steps)},
-    {name: "runbook/install.sh", text: buildInstallSh(s, steps), mode: 0o100755},
-    {name: "runbook/secrets.env", text: buildSecrets(s), mode: 0o100600},
+  const files = bundleFiles(s), steps = directSteps(s);
+  const out = [
+    {name: "dx-install/RUNBOOK.md", text: buildDirectRunbook(s, steps, files)},
+    {name: "dx-install/install.sh", text: buildInstallSh(s, steps), mode: 0o100755},
   ];
-  if (s.lab3) files.push({name: "runbook/values/iq-env.yaml", text: buildIqEnv(s)});
-  else files.push({name: "runbook/values/README.txt", text: "Values files generated for this installation.\n"});
-  return files;
+  for (const [p, f] of Object.entries(files)) out.push({name: "dx-install/" + p, text: f.text, mode: f.mode});
+  return out;
 }
-
 // ---------------------------------------------------------------------------------------------
 // ZIP (store, no compression) — no external libraries
 // ---------------------------------------------------------------------------------------------
@@ -1235,7 +1364,7 @@ function download(name, blob){
 let tab = "env", lastEnv = "", lastRun = "", lastDirect = [], ok = false, lastPlatform = "kubernetes";
 const LAB_HOST = "dx-demo.apps.promox.europesip-lab.com", POC_HOST = "dx-demo.127.0.0.1.nip.io";
 const previewText = () => tab === "env" ? lastEnv : tab === "run" ? lastRun
-  : (lastDirect.find(f => f.name === (tab === "dsh" ? "runbook/install.sh" : "runbook/RUNBOOK.md")) || {}).text || "";
+  : (lastDirect.find(f => f.name === (tab === "dsh" ? "dx-install/install.sh" : "dx-install/RUNBOOK.md")) || {}).text || "";
 function update(){
   // Lab 0: switch the default host between the reference cluster and nip.io (only if untouched)
   const pf = document.querySelector("input[name=platform]:checked").value;
@@ -1276,7 +1405,7 @@ function init(){
     try { await navigator.clipboard.writeText(previewText()); $("copy").textContent = lang === "es" ? T.es.copied : "Copied"; setTimeout(() => $("copy").textContent = tr("copy"), 1500); } catch (e) {}
   });
   $("dlZip").addEventListener("click", () => ok && download("dx-compose-labs-config.zip", zip([{name: "env.sh", text: lastEnv, mode: 0o100644}, {name: "RUNBOOK.md", text: lastRun}])));
-  $("dlDirect").addEventListener("click", () => ok && download("dx-compose-labs-runbook.zip", zip(lastDirect)));
+  $("dlDirect").addEventListener("click", () => ok && download("dx-compose-labs-install.zip", zip(lastDirect)));
   $("dlEnv").addEventListener("click", () => ok && download("env.sh", new Blob([lastEnv], {type: "text/x-shellscript"})));
   let l = null;
   try { l = new URL(location.href).searchParams.get("lang"); } catch (e) {}

@@ -127,13 +127,14 @@ lab environment; only the Harbor and OpenRouter credentials are empty), and give
 - **Option B · `env.sh` + `RUNBOOK.md`** (ZIP): also a personalised, read-only `RUNBOOK.md` with the
   instructions to build, one after the other, the labs you selected: the scripts to run and the
   equivalent `kubectl` / `helm` commands with your values.
-- **Option C · direct installation** (ZIP with a `runbook/` folder): an optimised `RUNBOOK.md` with
-  **direct commands** (your values written in each command, checks marked as optional), an
-  `install.sh` that runs those same commands one after the other showing the lab and step it is in,
-  `secrets.env` (the only values not written in the commands) and the values files generated for
-  your installation. Unzip it in the root of the clone: it creates `runbook/` and overwrites nothing.
+- **Option C · direct installation** (ZIP with a `dx-install/` folder): a **self-contained,
+  tailor-made installation**. Every file (values, properties, LDIF, secrets) is already filled in
+  with your values, credentials included in plain text; `RUNBOOK.md` has short, easy-to-follow
+  commands (checks marked as optional) and `install.sh` runs them one after the other showing the
+  lab and step. It does not need this repository, so it can be sent to someone who has nothing
+  else; only `setup-postgres-dx.sql` (Lab 2B) has to be copied into it by hand.
   ```bash
-  cd runbook && vi secrets.env && ./install.sh      # --list, --verify, --from <step>
+  unzip dx-compose-labs-install.zip && cd dx-install && ./install.sh   # --list, --verify, --from <step>
   ```
 
 > ⚠️ **The wizard is a work in progress and must be treated as experimental.** It aims to make the
