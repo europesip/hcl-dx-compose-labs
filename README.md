@@ -225,3 +225,11 @@ Summary (details in [docs/requirements.md](docs/requirements.md)):
   explains why we use OpenRouter and the deviations.
 - The OpenLDAP, PostgreSQL, LiteLLM and custom MCP in `dx-shared` are sized for a lab (one
   replica, no internal TLS and no backups).
+
+## Contributing and licence
+
+Open source under the [Apache License 2.0](LICENSE): you can use, modify and redistribute these labs
+and contribute improvements, keeping the [NOTICE](NOTICE) file and the attribution to
+[EUROPESIP](https://www.europesip.com) as the original author. HCL charts and images are not
+included and keep their own licence. How to contribute, and how to keep the wizard in sync with the
+labs (`tools/sync-wizard-templates.py`): [CONTRIBUTING.md](CONTRIBUTING.md).

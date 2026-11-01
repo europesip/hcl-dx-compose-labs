@@ -47,6 +47,11 @@ p{margin:6px 0}
 .warn{border:1px solid var(--warn-line);background:var(--warn-bg);border-radius:8px;padding:8px 12px;margin:8px 0;font-size:14px}
 .wip{border:1px solid var(--warn-line);border-left:4px solid var(--warn-line);background:var(--warn-bg);border-radius:8px;padding:10px 14px;margin:14px 0}
 .opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:10px}
+table.cmp{border-collapse:collapse;width:100%;font-size:13.5px;margin-top:8px;min-width:640px}
+table.cmp th,table.cmp td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+table.cmp tr:first-child th{background:var(--accent-soft)}
+table.cmp th:first-child{background:var(--bg);white-space:nowrap}
+.tw{overflow-x:auto}
 .opts3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 .opt{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg);display:flex;flex-direction:column;gap:8px}
 .opt h3{margin:0;font-size:15px}
@@ -105,6 +110,7 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
     a personalised <code>RUNBOOK.md</code>) for the <a href="https://github.com/europesip/hcl-dx-compose-labs">hcl-dx-compose-labs</a>.</p>
   <div class="strip" data-i18n-html="strip"><span>⚠ <b>Experimental</b> (work in progress) and <b>optional</b>: the recommended
     path is the manual one.</span> <span>🔒 Runs entirely in your browser: nothing is sent.</span>
+    <a href="#cmpBox" class="cmp-link">Which option should I choose?</a>
     <a href="about.html" class="about-link">About this wizard, source code and privacy →</a></div>
 
   <form id="wiz" autocomplete="off" onsubmit="return false">
@@ -243,6 +249,20 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
     <h2 data-i18n="s7">7 · Your files</h2>
     <div id="errors" class="warn hidden"></div>
     <p class="hint" data-i18n="optsH">Choose what you need:</p>
+    <details id="cmpBox"><summary data-i18n="cmpS">Which option should I choose? Compare the three</summary>
+      <div data-i18n-html="cmpT"><div class="tw"><table class="cmp">
+      <tr><th></th><th>A · Only <code>env.sh</code></th><th>B · <code>env.sh</code> + <code>RUNBOOK.md</code></th><th>C · Direct installation (<code>dx-install/</code>)</th></tr>
+      <tr><th>What you download</th><td>A configuration file with your values</td><td>The same, plus a personalised guide</td><td>A complete folder: every values, properties, LDIF and secrets file already filled in, plus <code>RUNBOOK.md</code> and <code>install.sh</code></td></tr>
+      <tr><th>Needs the labs repository?</th><td>Yes</td><td>Yes</td><td><b>No</b> (only <code>setup-postgres-dx.sql</code> is added for Lab 2B)</td></tr>
+      <tr><th>Where it goes</th><td>Root of your clone</td><td>Root of your clone</td><td>Anywhere</td></tr>
+      <tr><th>What you run</th><td>The scripts of each lab, following the guides</td><td>The same scripts, in the order of the runbook</td><td>Direct commands (<code>kubectl apply -f</code>, <code>helm -f</code>), or everything at once with <code>./install.sh</code></td></tr>
+      <tr><th>What you see in each step</th><td>The script; the guide explains what it does</td><td>The script, with the equivalent command and your values in a drop-down</td><td>The real command and the real files: no variables, no <code>--set</code>, no intermediate scripts</td></tr>
+      <tr><th>Credentials</th><td>In <code>env.sh</code> (can be left empty)</td><td>Same as A</td><td>In plain text inside the files; empty ones show as <code>PUT-YOUR-…-HERE</code></td></tr>
+      <tr><th>Checks</th><td>The <code>99-verify.sh</code> of each lab</td><td>Same as A</td><td>Marked as optional; <code>./install.sh --verify</code> runs them</td></tr>
+      <tr><th>Best for</th><td>Learning with the guides (<b>recommended</b>)</td><td>The same path, with a script tailored to your installation</td><td>Live demos, or sending a tailor-made installation to someone who has nothing else. Keep it private and rotate the credentials afterwards</td></tr>
+    </table></div>
+    <p class="hint">In all three the installed result is the same, and the wizard only generates files: it never talks to your cluster.</p></div>
+    </details>
     <div class="opts opts3">
       <div class="opt">
         <h3 data-i18n="oAT">Option A · Only env.sh</h3>
@@ -284,7 +304,7 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
 <footer>
   <div class="wrap" data-i18n-html="foot">Labs for learning (PoC), not for production. For a real project we recommend an
     HCL partner or HCL specialised services. · <a href="https://github.com/europesip/hcl-dx-compose-labs">Labs repository</a> ·
-    <a href="https://github.com/europesip/hcl-dx-compose-labs-wizard">Wizard source code</a> · <a href="about.html" class="about-link">About</a> ·
+    <a href="https://github.com/europesip/hcl-dx-compose-labs-wizard">Wizard source code</a> · <a href="about.html" class="about-link">About</a> · Open source (Apache-2.0), originally developed by EUROPESIP ·
     <a href="https://www.europesip.com">EUROPESIP</a></div>
 </footer>
 
@@ -299,7 +319,7 @@ const T = {
     subtitle: "Asistente de configuración opcional",
     title: "Asistente de configuración",
     lead: 'Responde unas pocas preguntas y descarga tu <code>env.sh</code> (y, si quieres, un <code>RUNBOOK.md</code> personalizado) para los <a href="https://github.com/europesip/hcl-dx-compose-labs">hcl-dx-compose-labs</a>.',
-    strip: '<span>⚠ <b>Experimental</b> (en desarrollo) y <b>opcional</b>: la vía recomendada es la manual.</span> <span>🔒 Funciona por completo en tu navegador: no se envía nada.</span> <a href="about.html" class="about-link">Acerca del asistente, código fuente y privacidad →</a>',
+    strip: '<span>⚠ <b>Experimental</b> (en desarrollo) y <b>opcional</b>: la vía recomendada es la manual.</span> <span>🔒 Funciona por completo en tu navegador: no se envía nada.</span> <a href="#cmpBox" class="cmp-link">¿Qué opción elijo?</a> <a href="about.html" class="about-link">Acerca del asistente, código fuente y privacidad →</a>',
     s1: "1 · Plataforma", s1h: "¿Dónde se va a ejecutar DX Compose? Todos los campos vienen rellenos con los valores del entorno de referencia de los labs; solo las credenciales de Harbor y OpenRouter están vacías.",
     pk: "k3s, RKE2, EKS, AKS, GKE… con un Ingress controller",
     po: "Namespaces con anotaciones SCC y una Route passthrough",
@@ -332,6 +352,8 @@ const T = {
     s7: "7 · Tus ficheros", dlzip: "Descargar ZIP", dlenv: "Descargar env.sh",
     where: 'A y B: deja los ficheros en la raíz de tu copia del repositorio (junto a <code>env.example.sh</code>) y haz <code>source ./env.sh</code>; quien instala son los scripts de los labs. C: descomprímelo donde quieras (crea <code>dx-install/</code>), haz <code>cd dx-install</code> y sigue su <code>RUNBOOK.md</code> o ejecuta <code>./install.sh</code>. La opción C lleva credenciales en claro: guárdala en privado y rótalas después.',
     optsH: "Elige lo que necesitas:",
+    cmpS: "¿Qué opción elijo? Compara las tres",
+    cmpT: "<div class=\"tw\"><table class=\"cmp\">\n      <tr><th><\/th><th>A · Solo <code>env.sh<\/code><\/th><th>B · <code>env.sh<\/code> + <code>RUNBOOK.md<\/code><\/th><th>C · Instalación directa (<code>dx-install/<\/code>)<\/th><\/tr>\n      <tr><th>Qué descargas<\/th><td>Un fichero de configuración con tus valores<\/td><td>Lo mismo, más una guía personalizada<\/td><td>Una carpeta completa: todos los values, properties, LDIF y secrets ya rellenos, más <code>RUNBOOK.md<\/code> e <code>install.sh<\/code><\/td><\/tr>\n      <tr><th>¿Necesita el repositorio de los labs?<\/th><td>Sí<\/td><td>Sí<\/td><td><b>No<\/b> (solo se añade <code>setup-postgres-dx.sql<\/code> para el Lab 2B)<\/td><\/tr>\n      <tr><th>Dónde va<\/th><td>Raíz de tu copia<\/td><td>Raíz de tu copia<\/td><td>Donde quieras<\/td><\/tr>\n      <tr><th>Qué ejecutas<\/th><td>Los scripts de cada lab, siguiendo las guías<\/td><td>Los mismos scripts, en el orden del runbook<\/td><td>Comandos directos (<code>kubectl apply -f<\/code>, <code>helm -f<\/code>), o todo de una vez con <code>./install.sh<\/code><\/td><\/tr>\n      <tr><th>Qué ves en cada paso<\/th><td>El script; la guía explica qué hace<\/td><td>El script, con el comando equivalente y tus valores en un desplegable<\/td><td>El comando real y los ficheros reales: sin variables, sin <code>--set<\/code>, sin scripts intermedios<\/td><\/tr>\n      <tr><th>Credenciales<\/th><td>En <code>env.sh<\/code> (se pueden dejar vacías)<\/td><td>Igual que A<\/td><td>En claro dentro de los ficheros; las vacías aparecen como <code>PUT-YOUR-…-HERE<\/code><\/td><\/tr>\n      <tr><th>Comprobaciones<\/th><td>Los <code>99-verify.sh<\/code> de cada lab<\/td><td>Igual que A<\/td><td>Marcadas como opcionales; las ejecuta <code>./install.sh --verify<\/code><\/td><\/tr>\n      <tr><th>Ideal para<\/th><td>Aprender con las guías (<b>recomendada<\/b>)<\/td><td>La misma vía, con un guion a medida de tu instalación<\/td><td>Demostraciones en directo, o enviar una instalación a medida a alguien que no tiene nada más. Guárdala en privado y rota las credenciales después<\/td><\/tr>\n    <\/table><\/div>\n    <p class=\"hint\">En las tres el resultado instalado es el mismo, y el asistente solo genera ficheros: nunca se conecta a tu clúster.<\/p>",
     oAT: "Opción A · Solo env.sh",
     oAB: 'Solo el fichero de configuración que necesitan los labs. Después sigue los labs <b>a mano</b>, con la guía de cada uno (<code>GUIDE.es.md</code>).',
     oBT: "Opción B · env.sh + RUNBOOK.md",
@@ -340,7 +362,7 @@ const T = {
     oCB: 'Una carpeta <b>autónoma</b>, una instalación a medida que puedes incluso enviar a alguien sin el repositorio de los labs: todos los ficheros ya rellenos con tus valores (credenciales incluidas, en claro), un <code>RUNBOOK.md</code> con comandos cortos y fáciles de seguir y un <code>install.sh</code> que los ejecuta mostrando el lab y el paso. Solo hay que añadir a mano <code>setup-postgres-dx.sql</code> (Lab 2B).',
     dldirect: "Descargar ZIP dx-install/",
     copy: "Copiar", copied: "Copiado",
-    foot: 'Laboratorios para aprender (PoC), no para producción. Para un proyecto real recomendamos un partner de HCL o los servicios especializados de HCL. · <a href="https://github.com/europesip/hcl-dx-compose-labs">Repositorio de los labs</a> · <a href="https://github.com/europesip/hcl-dx-compose-labs-wizard">Código fuente del asistente</a> · <a href="about.html" class="about-link">Acerca de</a> · <a href="https://www.europesip.com">EUROPESIP</a>'
+    foot: 'Laboratorios para aprender (PoC), no para producción. Para un proyecto real recomendamos un partner de HCL o los servicios especializados de HCL. · <a href="https://github.com/europesip/hcl-dx-compose-labs">Repositorio de los labs</a> · <a href="https://github.com/europesip/hcl-dx-compose-labs-wizard">Código fuente del asistente</a> · <a href="about.html" class="about-link">Acerca de</a> · Código abierto (Apache-2.0), desarrollado originalmente por EUROPESIP · <a href="https://www.europesip.com">EUROPESIP</a>'
   }
 };
 // Messages generated by the script (validation and files)
@@ -380,6 +402,7 @@ function setLang(l){
   document.querySelectorAll("[data-i18n-html]").forEach(e => { const v = tr(e.dataset.i18nHtml); if (v !== undefined) e.innerHTML = v; });
   document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
   document.querySelectorAll("a.about-link").forEach(a => a.href = "about.html" + (lang === "es" ? "?lang=es" : ""));
+  document.querySelectorAll("a.cmp-link").forEach(a => a.onclick = e => { e.preventDefault(); $("cmpBox").open = true; $("cmpBox").scrollIntoView({behavior: "smooth"}); });
   try { localStorage.setItem("dxlabs-lang", lang); } catch (e) {}
   try { const u = new URL(location.href); u.searchParams.set("lang", lang); history.replaceState(null, "", u); } catch (e) {}
   update();
@@ -915,6 +938,17 @@ spec:
     - name: d
       hostPath: { path: /var/lib/dx-poc/dam-binaries, type: DirectoryOrCreate }
 `);
+    add("0-poc/ingress-nginx-values.yaml", `# Lab 0 · ingress-nginx for the single-node PoC (same settings as lab0-poc-wsl/02-ingress.sh).
+# hostNetwork: it listens directly on ports 80/443 of WSL, so the Windows browser reaches DX through localhost.
+controller:
+  kind: DaemonSet
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet
+  service:
+    type: ClusterIP
+  ingressClassResource:
+    default: true
+`);
     add("0-poc/custom-values.poc.yaml", doc(s, "lab0-poc-wsl/custom-values.poc.yaml"));
     if (s.lab4) add("0-poc/custom-search-values.poc.yaml", doc(s, "lab0-poc-wsl/custom-search-values.poc.yaml"));
   }
@@ -1031,8 +1065,7 @@ kubectl delete pod dx-poc-prepare-dam`);
     add(L0, "0-2", "ingress-nginx", t("Listens on ports 80/443 of WSL: Windows reaches it through localhost.", "Escucha en los puertos 80/443 de WSL: Windows llega por localhost."),
 `helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --version 4.15.1 -n ingress-nginx --create-namespace \\
-  --set controller.kind=DaemonSet --set controller.hostNetwork=true --set controller.dnsPolicy=ClusterFirstWithHostNet \\
-  --set controller.service.type=ClusterIP --set controller.ingressClassResource.default=true
+  -f 0-poc/ingress-nginx-values.yaml
 kubectl -n ingress-nginx rollout status ds/ingress-nginx-controller --timeout=300s`);
   }
   add(L1, "1-0", t("Check the cluster (optional)", "Comprobar el clúster (opcional)"), "",
