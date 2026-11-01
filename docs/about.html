@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Security: the browser forbids this page any network connection (connect-src 'none') and any
+     external script, style, image or font. Only the inline code of this file runs. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<title>About the Labs Wizard</title>
+<meta name="description" content="About the optional configuration wizard of the HCL DX Compose CF238 labs: what it generates, why your credentials stay private and where its source code is.">
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --text:#1c2330; --muted:#5b6575; --line:#dde2ea;
+  --accent:#0f62fe; --accent-ink:#ffffff; --accent-soft:#e8f0ff; --warn-bg:#fff6e0; --warn-line:#f0c36d;
+  --ok-bg:#e9f7ef; --ok-line:#7cc49a; --code-bg:#f0f2f6; --focus:#7aa7ff;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11151c; --panel:#181e27; --text:#e6e9ef; --muted:#9aa4b4; --line:#2a3340;
+    --accent:#78a9ff; --accent-ink:#0b1220; --accent-soft:#1d2a40; --warn-bg:#2d2615; --warn-line:#8a6d2b;
+    --ok-bg:#15291e; --ok-line:#2f7a4d; --code-bg:#0f141b; --focus:#4f7fd6;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11151c; --panel:#181e27; --text:#e6e9ef; --muted:#9aa4b4; --line:#2a3340;
+  --accent:#78a9ff; --accent-ink:#0b1220; --accent-soft:#1d2a40; --warn-bg:#2d2615; --warn-line:#8a6d2b;
+  --ok-bg:#15291e; --ok-line:#2f7a4d; --code-bg:#0f141b; --focus:#4f7fd6;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,sans-serif}
+a{color:var(--accent)}
+header{background:var(--panel);border-bottom:1px solid var(--line)}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;flex-wrap:wrap}
+.brand{font-weight:650;font-size:17px}
+.brand small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+.lang{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.lang button{border:0;background:transparent;color:var(--text);padding:6px 12px;font:inherit;cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+main{padding:20px 0 50px}
+h1{font-size:25px;margin:6px 0 8px;line-height:1.25}
+h2{font-size:17px;margin:0 0 6px}
+p{margin:6px 0}
+.lead{color:var(--muted)}
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0}
+.wip{border:1px solid var(--warn-line);border-left:4px solid var(--warn-line);background:var(--warn-bg);border-radius:8px;padding:10px 14px;margin:14px 0}
+.ok{border:1px solid var(--ok-line);border-left:4px solid var(--ok-line);background:var(--ok-bg);border-radius:8px;padding:10px 14px;margin:14px 0}
+.note{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:8px;padding:10px 14px;margin:14px 0}
+ul,ol{margin:6px 0;padding-left:22px}
+li{margin:4px 0}
+table{border-collapse:collapse;width:100%;font-size:14px;margin-top:8px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--bg)}
+.tw{overflow-x:auto}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--code-bg);padding:1px 4px;border-radius:4px;font-size:.92em;overflow-wrap:anywhere}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow:auto;font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:8px 0}
+.choose{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:10px}
+.go{display:flex;flex-direction:column;gap:4px;text-decoration:none;border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--panel);color:var(--text)}
+.go b{font-size:16px}
+.go small{color:var(--muted)}
+.go.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.go.primary small{color:var(--accent-ink);opacity:.85}
+.go:hover{border-color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding:16px 0}
+[data-l]{display:none}
+html[lang="en"] [data-l="en"], html[lang="es"] [data-l="es"]{display:block}
+html[lang="en"] span[data-l="en"], html[lang="es"] span[data-l="es"],html[lang="en"] small[data-l="en"], html[lang="es"] small[data-l="es"]{display:inline}
+.brand small[data-l]{display:none}
+html[lang="en"] .brand small[data-l="en"], html[lang="es"] .brand small[data-l="es"]{display:block}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap top">
+    <div class="brand">HCL DX Compose CF238 · Labs
+      <small data-l="en">About the configuration wizard</small><small data-l="es">Acerca del asistente de configuración</small></div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">English</button>
+      <button type="button" data-lang="es" aria-pressed="false">Español</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ===================================== ENGLISH ===================================== -->
+<div data-l="en">
+  <h1>Configuration wizard for the DX Compose labs</h1>
+  <p class="lead">An optional helper for the <a href="https://github.com/europesip/hcl-dx-compose-labs">hcl-dx-compose-labs</a>
+    (HCL DX Compose CF238 installed from scratch on Kubernetes, as a PoC). Read this page once; then choose below whether
+    you want to use the wizard or follow the labs manually.</p>
+
+  <div class="wip"><b>Experimental · work in progress.</b> The wizard is evolving constantly and must be treated as
+    experimental. It aims to make the installation easier and clearer, but <b>the recommended path today is the one
+    without the wizard</b>: <code>cp env.example.sh env.sh</code>, edit it and follow the guide of each lab. Both ways
+    give the same result.</div>
+
+  <section class="card">
+    <h2>What you get</h2>
+    <p>The wizard asks for your platform (Kubernetes, OpenShift or the WSL2 PoC), the DX host name, the StorageClasses,
+      namespaces and release names and the labs you want. At the end you choose one of two options:</p>
+    <div class="tw"><table>
+      <tr><th>Option</th><th>You download</th><th>Then</th></tr>
+      <tr><td><b>A · Only <code>env.sh</code></b></td><td>The configuration file the labs need, with your values</td>
+        <td>Follow the labs <b>manually</b> with the guide of each lab</td></tr>
+      <tr><td><b>B · <code>env.sh</code> + <code>RUNBOOK.md</code></b> (ZIP)</td><td>Also a personalised, <b>read-only</b>
+        <code>RUNBOOK.md</code>: the instructions to build, one after the other, the labs you selected, with the scripts to
+        run and the equivalent <code>kubectl</code> / <code>helm</code> commands using your values</td><td>Follow the runbook</td></tr>
+    </table></div>
+    <p>The files go in the root of your clone of the labs repository. The lab scripts are what installs everything: the
+      wizard never talks to your cluster.</p>
+  </section>
+
+  <section class="card">
+    <h2>Your credentials stay yours: check it yourself</h2>
+    <div class="ok"><b>Private by design.</b> Everything runs in your browser: nothing you type is sent anywhere and there
+      are no analytics or external scripts. Secrets (Harbor token, OpenRouter key, passwords) are optional: leave them
+      empty and fill them in later in <code>env.sh</code>, which is in <code>.gitignore</code> and is never committed.</div>
+    <p>So that anyone can verify it, the wizard was built as <b>one single file, <code>index.html</code></b>, with plain
+      HTML, CSS and JavaScript: <b>no React, no frameworks, no build step and no dependencies</b>. What you read is exactly
+      what runs, it is easy to review, and it works on GitHub Pages as is.</p>
+    <ul>
+      <li><b>Source code:</b> its own repository,
+        <a href="https://github.com/europesip/hcl-dx-compose-labs-wizard">github.com/europesip/hcl-dx-compose-labs-wizard</a>,
+        and the published copy in the labs repository
+        (<a href="https://github.com/europesip/hcl-dx-compose-labs/tree/main/docs">docs/</a>).</li>
+      <li><b>Use it online</b> on GitHub Pages, without installing anything:
+        <a href="https://europesip.github.io/hcl-dx-compose-labs/">europesip.github.io/hcl-dx-compose-labs</a>.</li>
+      <li><b>Or run it locally:</b> download <code>index.html</code> and open it in your browser. It works offline.</li>
+      <li><b>No network, enforced by the browser:</b> both pages declare a Content-Security-Policy with
+        <code>connect-src 'none'</code>, so the browser blocks any request even if the code tried to send something.</li>
+      <li>The only thing stored in your browser is the language you choose (<code>localStorage</code>).</li>
+    </ul>
+    <p>How to check it:</p>
+    <ol>
+      <li>Read <code>index.html</code> (the JavaScript is at the end, about 500 commented lines).</li>
+      <li>Search it: there is no <code>fetch</code>, <code>XMLHttpRequest</code>, <code>WebSocket</code>, <code>sendBeacon</code>
+        or external script or style.
+        <pre>grep -nE 'fetch\(|XMLHttpRequest|WebSocket|sendBeacon|&lt;script src|&lt;link ' index.html</pre></li>
+      <li>Open your browser developer tools, <b>Network</b> tab, fill in the form and download: there are no requests.</li>
+      <li>Or run it locally with the network disconnected.</li>
+    </ol>
+  </section>
+
+  <div class="note"><b>A simplified wizard, specific to these labs.</b> It is a functional, simplified option designed
+    only for this PoC. EUROPESIP has another wizard developed internally, with advanced features and more customisation
+    options, available on demand: <a href="https://www.europesip.com">www.europesip.com</a>.</div>
+
+  <h2 style="margin-top:22px">How do you want to continue?</h2>
+  <div class="choose">
+    <a class="go primary" href="index.html"><b>Continue to the wizard →</b><small>Generate your env.sh (and, optionally, your RUNBOOK.md)</small></a>
+    <a class="go" href="https://github.com/europesip/hcl-dx-compose-labs#how-to-use-this-repository"><b>No, I'll follow the labs manually</b><small>Recommended path: back to the labs repository and its guides</small></a>
+  </div>
+</div>
+
+<!-- ===================================== ESPAÑOL ===================================== -->
+<div data-l="es">
+  <h1>Asistente de configuración de los labs de DX Compose</h1>
+  <p class="lead">Una ayuda opcional para los <a href="https://github.com/europesip/hcl-dx-compose-labs">hcl-dx-compose-labs</a>
+    (HCL DX Compose CF238 instalado desde cero en Kubernetes, a modo de PoC). Lee esta página una vez; después elige,
+    abajo, si quieres usar el asistente o seguir los labs a mano.</p>
+
+  <div class="wip"><b>Experimental · en desarrollo (WIP).</b> El asistente evoluciona constantemente y debe tratarse
+    como algo experimental. Busca facilitar y aclarar la instalación, pero <b>hoy la vía recomendada es la que no usa el
+    asistente</b>: <code>cp env.example.sh env.sh</code>, editarlo y seguir la guía de cada lab. Las dos formas dan el
+    mismo resultado.</div>
+
+  <section class="card">
+    <h2>Qué obtienes</h2>
+    <p>El asistente pregunta tu plataforma (Kubernetes, OpenShift o la PoC en WSL2), el nombre de host de DX, las
+      StorageClasses, los namespaces y nombres de releases y los labs que quieres hacer. Al final eliges una de estas dos
+      opciones:</p>
+    <div class="tw"><table>
+      <tr><th>Opción</th><th>Descargas</th><th>Después</th></tr>
+      <tr><td><b>A · Solo <code>env.sh</code></b></td><td>El fichero de configuración que necesitan los labs, con tus valores</td>
+        <td>Sigues los labs <b>a mano</b> con la guía de cada uno</td></tr>
+      <tr><td><b>B · <code>env.sh</code> + <code>RUNBOOK.md</code></b> (ZIP)</td><td>Además un <code>RUNBOOK.md</code>
+        personalizado y <b>de solo lectura</b>: las instrucciones para montar, uno tras otro, los labs que has elegido, con
+        los scripts que hay que ejecutar y los comandos <code>kubectl</code> / <code>helm</code> equivalentes con tus valores</td>
+        <td>Sigues el runbook</td></tr>
+    </table></div>
+    <p>Los ficheros van en la raíz de tu copia del repositorio de los labs. Quien instala son los scripts de los labs: el
+      asistente nunca habla con tu clúster.</p>
+  </section>
+
+  <section class="card">
+    <h2>Tus credenciales siguen siendo tuyas: compruébalo tú mismo</h2>
+    <div class="ok"><b>Privado por diseño.</b> Todo funciona en tu navegador: nada de lo que escribes se envía a ningún
+      sitio y no hay analítica ni scripts externos. Los secretos (token de Harbor, clave de OpenRouter, contraseñas) son
+      opcionales: déjalos vacíos y rellénalos después en <code>env.sh</code>, que está en <code>.gitignore</code> y nunca
+      se sube a git.</div>
+    <p>Para que cualquiera pueda comprobarlo, el asistente se ha construido como <b>un único fichero, <code>index.html</code></b>,
+      con HTML, CSS y JavaScript sencillos: <b>sin React, sin frameworks, sin compilación y sin dependencias</b>. Lo que lees
+      es exactamente lo que se ejecuta, es fácil de revisar y funciona tal cual en GitHub Pages.</p>
+    <ul>
+      <li><b>Código fuente:</b> su propio repositorio,
+        <a href="https://github.com/europesip/hcl-dx-compose-labs-wizard">github.com/europesip/hcl-dx-compose-labs-wizard</a>,
+        y la copia publicada en el repositorio de los labs
+        (<a href="https://github.com/europesip/hcl-dx-compose-labs/tree/main/docs">docs/</a>).</li>
+      <li><b>Úsalo en línea</b> en GitHub Pages, sin instalar nada:
+        <a href="https://europesip.github.io/hcl-dx-compose-labs/?lang=es">europesip.github.io/hcl-dx-compose-labs</a>.</li>
+      <li><b>O ejecútalo en local:</b> descarga <code>index.html</code> y ábrelo en tu navegador. Funciona sin conexión.</li>
+      <li><b>Sin red, garantizado por el navegador:</b> las dos páginas declaran una Content-Security-Policy con
+        <code>connect-src 'none'</code>, así que el navegador bloquea cualquier petición aunque el código intentara enviar algo.</li>
+      <li>Lo único que se guarda en tu navegador es el idioma elegido (<code>localStorage</code>).</li>
+    </ul>
+    <p>Cómo comprobarlo:</p>
+    <ol>
+      <li>Lee <code>index.html</code> (el JavaScript está al final, unas 500 líneas comentadas).</li>
+      <li>Búscalo: no hay <code>fetch</code>, <code>XMLHttpRequest</code>, <code>WebSocket</code>, <code>sendBeacon</code>
+        ni scripts o estilos externos.
+        <pre>grep -nE 'fetch\(|XMLHttpRequest|WebSocket|sendBeacon|&lt;script src|&lt;link ' index.html</pre></li>
+      <li>Abre las herramientas de desarrollo del navegador, pestaña <b>Red</b> (<i>Network</i>), rellena el formulario y
+        descarga: no hay peticiones.</li>
+      <li>O ejecútalo en local con la red desconectada.</li>
+    </ol>
+  </section>
+
+  <div class="note"><b>Un asistente simplificado y específico de estos labs.</b> Es una opción funcional y simplificada,
+    pensada solo para esta PoC. EUROPESIP tiene otro asistente desarrollado internamente, con funciones avanzadas y más
+    opciones de personalización, disponible bajo demanda: <a href="https://www.europesip.com">www.europesip.com</a>.</div>
+
+  <h2 style="margin-top:22px">¿Cómo quieres continuar?</h2>
+  <div class="choose">
+    <a class="go primary" href="index.html?lang=es"><b>Continuar al asistente →</b><small>Genera tu env.sh (y, si quieres, tu RUNBOOK.md)</small></a>
+    <a class="go" href="https://github.com/europesip/hcl-dx-compose-labs/blob/main/README.es.md#cómo-usar-este-repositorio"><b>No, prefiero seguir los labs a mano</b><small>Vía recomendada: vuelve al repositorio de los labs y sus guías</small></a>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span data-l="en">Labs for learning (PoC), not for production. For a real project we recommend an HCL partner or HCL
+      specialised services.</span>
+    <span data-l="es">Laboratorios para aprender (PoC), no para producción. Para un proyecto real recomendamos un partner
+      de HCL o los servicios especializados de HCL.</span>
+    <a href="https://github.com/europesip/hcl-dx-compose-labs">hcl-dx-compose-labs</a> ·
+    <a href="https://github.com/europesip/hcl-dx-compose-labs-wizard">hcl-dx-compose-labs-wizard</a> ·
+    <a href="https://www.europesip.com">EUROPESIP</a>
+  </div>
+</footer>
+
+<script>
+"use strict";
+// Language only: shows the English or Spanish block. Same preference as the wizard (localStorage + ?lang=).
+function setLang(l){
+  const lang = l === "es" ? "es" : "en";
+  document.documentElement.lang = lang;
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  try { localStorage.setItem("dxlabs-lang", lang); } catch (e) {}
+  try { const u = new URL(location.href); u.searchParams.set("lang", lang); history.replaceState(null, "", u); } catch (e) {}
+}
+document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.lang)));
+let l = null;
+try { l = new URL(location.href).searchParams.get("lang"); } catch (e) {}
+if (!l) { try { l = localStorage.getItem("dxlabs-lang"); } catch (e) {} }
+setLang(l);
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # HCL DX Compose desde cero en Kubernetes (CF238)
 
-[English](README.md) · **Español** · [Asistente de configuración (opcional, experimental)](https://europesip.github.io/hcl-dx-compose-labs/?lang=es)
+[English](README.md) · **Español** · [Asistente de configuración (opcional, experimental)](https://europesip.github.io/hcl-dx-compose-labs/about.html?lang=es)
 
 Laboratorios prácticos para **instalar HCL Digital Experience Compose paso a paso**, a modo de
 prueba de concepto (PoC). Se parte de un clúster vacío y se construye la plataforma en cuatro
@@ -118,7 +118,7 @@ vi env.sh                       # rellena las variables marcadas con  # <<<
 source ./env.sh
 ```
 
-**B. Con el [asistente de configuración](https://europesip.github.io/hcl-dx-compose-labs/?lang=es) opcional**
+**B. Con el [asistente de configuración](https://europesip.github.io/hcl-dx-compose-labs/about.html?lang=es) opcional**
 (*experimental, en desarrollo*). Una página web estática (inglés / español) que pregunta tu
 plataforma, nombre de host, StorageClasses, namespaces y los labs que quieres hacer, y te da dos
 opciones:
@@ -136,14 +136,15 @@ opciones:
 > bajo demanda.
 
 **Tus credenciales siguen siendo tuyas, y puedes comprobarlo.** El asistente es **un único
-`index.html`** con HTML, CSS y JavaScript sencillos (**sin React, sin frameworks, sin compilación y
+`index.html`** (más una página `about.html` con las explicaciones) con HTML, CSS y JavaScript sencillos (**sin React, sin frameworks, sin compilación y
 sin dependencias**), así que es fácil de revisar y funciona tal cual en GitHub Pages:
 
 - **Código fuente**: [europesip/hcl-dx-compose-labs-wizard](https://github.com/europesip/hcl-dx-compose-labs-wizard)
   (su propio repositorio) y la copia publicada en este repositorio, [docs/index.html](docs/index.html).
-- **Úsalo en línea** en GitHub Pages, sin instalar nada:
-  https://europesip.github.io/hcl-dx-compose-labs/?lang=es
-- **O ejecútalo en local**: descarga `index.html` y ábrelo en tu navegador (funciona sin conexión).
+- **Úsalo en línea** en GitHub Pages, sin instalar nada: empieza por la
+  [página de presentación](https://europesip.github.io/hcl-dx-compose-labs/about.html?lang=es) (qué
+  hace, privacidad, código fuente) o ve directamente al [asistente](https://europesip.github.io/hcl-dx-compose-labs/?lang=es).
+- **O ejecútalo en local**: descarga `index.html` (y `about.html`) y ábrelo en tu navegador (funciona sin conexión).
 - Funciona **por completo en tu navegador** y una Content-Security-Policy (`connect-src 'none'`)
   impide que el navegador envíe nada a ningún sitio. Los secretos (token de Harbor, clave de
   OpenRouter, contraseñas) se pueden dejar vacíos y rellenarlos después en `env.sh`. Quien instala

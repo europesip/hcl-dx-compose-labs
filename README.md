@@ -1,6 +1,6 @@
 # HCL DX Compose from scratch on Kubernetes (CF238)
 
-**English** · [Español](README.es.md) · [Configuration wizard (optional, experimental)](https://europesip.github.io/hcl-dx-compose-labs/)
+**English** · [Español](README.es.md) · [Configuration wizard (optional, experimental)](https://europesip.github.io/hcl-dx-compose-labs/about.html)
 
 Hands-on labs to **install HCL Digital Experience Compose step by step**, as a proof of concept
 (PoC). You start from an empty cluster and build the platform in four labs, each one on top of the
@@ -117,7 +117,7 @@ vi env.sh                       # fill in the variables marked with  # <<<
 source ./env.sh
 ```
 
-**B. With the optional [configuration wizard](https://europesip.github.io/hcl-dx-compose-labs/)**
+**B. With the optional [configuration wizard](https://europesip.github.io/hcl-dx-compose-labs/about.html)**
 (*experimental, work in progress*). A static web page (English / Spanish) that asks for your
 platform, host name, StorageClasses, namespaces and the labs you want, and gives you two options:
 
@@ -132,15 +132,16 @@ platform, host name, StorageClasses, namespaces and the labs you want, and gives
 > It is a simplified, functional option specific to these labs; EUROPESIP has another wizard
 > developed internally, with advanced features and more customisation options, available on demand.
 
-**Your credentials stay yours, and you can check it.** The wizard is **one single `index.html`**
+**Your credentials stay yours, and you can check it.** The wizard is **one single `index.html`** (plus an `about.html` page with the explanations)
 with plain HTML, CSS and JavaScript (**no React, no frameworks, no build, no dependencies**), so it
 is easy to review and it runs on GitHub Pages as is:
 
 - **Source code**: [europesip/hcl-dx-compose-labs-wizard](https://github.com/europesip/hcl-dx-compose-labs-wizard)
   (its own repository) and the published copy in this repository, [docs/index.html](docs/index.html).
-- **Use it online** on GitHub Pages, without installing anything:
-  https://europesip.github.io/hcl-dx-compose-labs/
-- **Or run it locally**: download `index.html` and open it in your browser (it works offline).
+- **Use it online** on GitHub Pages, without installing anything: start at the
+  [about page](https://europesip.github.io/hcl-dx-compose-labs/about.html) (what it does, privacy,
+  source code), or go straight to the [wizard](https://europesip.github.io/hcl-dx-compose-labs/).
+- **Or run it locally**: download `index.html` (and `about.html`) and open it in your browser (it works offline).
 - It runs **entirely in your browser** and a Content-Security-Policy (`connect-src 'none'`) stops
   the browser from sending anything anywhere. Secrets (Harbor token, OpenRouter key, passwords) can
   be left empty and filled in later in `env.sh`. The scripts are still what installs everything;
