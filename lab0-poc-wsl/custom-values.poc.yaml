@@ -1,0 +1,18 @@
+# ------------------------------------------------------------------------------------------
+# Lab 0 · Capa POC de DX: recursos reducidos para un solo nodo con ~15 GiB (WSL2)
+# La añade common/dx-helm.sh al final de las capas cuando DX_POC=1 (env.sh).
+#
+# Solo se bajan las RESERVAS (requests), que es lo que Kubernetes suma para decidir si un pod cabe;
+# los LÍMITES se mantienen. Las reservas por defecto del chart (~10,4 GiB solo el DX base) están
+# pensadas para producción y quedan muy por encima del uso real en una demo (el Web Engine usa
+# ~2,7 GiB). NO usar en producción.
+# ------------------------------------------------------------------------------------------
+resources:
+  webEngine:
+    requests: { cpu: "1000m", memory: "3072Mi" }      # por defecto 2000m / 4096Mi
+  imageProcessor:
+    requests: { cpu: "100m", memory: "512Mi" }        # por defecto 200m / 2048Mi
+  digitalAssetManagement:
+    requests: { cpu: "250m", memory: "1024Mi" }       # por defecto 500m / 1536Mi
+  persistenceNode:
+    requests: { cpu: "250m", memory: "768Mi" }        # por defecto 500m / 1024Mi

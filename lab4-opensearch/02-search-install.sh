@@ -15,8 +15,9 @@ for s in search-admin-cert search-node-cert search-client-cert; do
   kubectl -n "$DX_NS" get secret "$s" >/dev/null 2>&1 || die "Falta el secret $s: ./01-certs.sh"
 done
 
+POC=(); [[ "${DX_POC:-}" == 1 ]] && POC=(-f ../lab0-poc-wsl/custom-search-values.poc.yaml)   # Lab 0: un nodo
 helm upgrade --install "$SEARCH_RELEASE" "$SEARCH_CHART_TGZ" -n "$DX_NS" \
-  -f custom-search-values.yaml -f admin-dn.rendered.yaml --timeout 20m "$HELM_WAIT" "$@"
+  -f custom-search-values.yaml -f admin-dn.rendered.yaml "${POC[@]}" --timeout 20m "$HELM_WAIT" "$@"
 
 kubectl -n "$DX_NS" get pods,pvc | grep -E "NAME|${SEARCH_RELEASE}"
 echo "Siguiente: ./03-dx-enable-search.sh"

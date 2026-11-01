@@ -1,16 +1,26 @@
 # HCL DX Compose desde cero en Kubernetes (CF238)
 
 Laboratorios del webinar **"Instalar HCL Digital Experience Compose paso a paso"**. Se parte de un
-clúster vacío y se construye la plataforma en tres laboratorios, cada uno sobre el anterior:
+clúster vacío y se construye la plataforma en cuatro laboratorios, cada uno sobre el anterior:
 
 | Lab | Qué se hace | ⏱ Ejecución |
 |---|---|---|
+| [Lab 0 · PoC en tu PC](lab0-poc-wsl/GUIA.md) *(opcional)* | **Solo si no puedes acceder a ningún clúster Kubernetes**, local o en la nube: k3s de un nodo en una distro nueva de WSL2, con las StorageClasses simuladas, el Ingress y recursos reducidos. Entorno de PoC, no de referencia | ~10 min |
 | [Lab 1 · DX base](lab1-dx-base/GUIA.md) | Requisitos, namespaces, secrets, Helm chart desde el Harbor de HCL, instalación y acceso externo | ~10 min |
 | [Lab 2 · LDAP y PostgreSQL](lab2-ldap-postgres/GUIA.md) | **2A**: autenticación contra un OpenLDAP. **2B**: transferencia de la base de datos del Web Engine de Derby a PostgreSQL | ~27 min (2A ~10 · 2B ~17) |
 | ↳ [Lab 2 · rama empresarial](lab2-ldap-postgres/GUIA-empresa.md) *(opcional)* | Las mismas iteraciones contra **Active Directory** (con `configOverrideFiles`) y **Oracle** (TCPS), habituales en empresas corporativas | referencia |
 | [Lab 3 · IQ con OpenRouter](lab3-iq-openrouter/GUIA.md) | **3A**: asistente de IA de DX (IQ) usando LiteLLM como proxy hacia OpenRouter (Claude). **3B**: MCP Server propio de EUROPESIP (servicios, soporte, laboratorios y la herramienta figma&web-to-dx) | ~13 min (3A ~10 · 3B ~3) |
 | [Lab 4 · Búsqueda con OpenSearch](lab4-opensearch/GUIA.md) | Search V2: OpenSearch + Search Middleware (`hcl-dx-search` 2.36.0), certificados y `adminDN`, rastreo de WCM, portal y JCR y búsqueda por API | ~10 min |
 | | **Total de ejecución** | **~60 min** |
+
+> ⚠️ **Laboratorios para aprender, no para producción.** Al terminar los labs se obtiene una
+> instalación de HCL DX Compose **funcional**, pero están pensados como **PoC**: para entender y
+> practicar los pasos de una instalación real. En un entorno productivo hay **muchos ajustes de
+> *tuning* y de parametrización** (dimensionado de recursos y réplicas, alta disponibilidad,
+> almacenamiento, rendimiento de la JVM y de las bases de datos, caché, seguridad, TLS interno,
+> copias de seguridad, monitorización...) que permiten sacar el máximo partido al sistema y que,
+> para no complicar los labs, **se han omitido**. Para un proyecto real, recomendamos contar
+> siempre con un **partner de HCL** o con los **servicios especializados de HCL**.
 
 Versiones: **HCL DX Compose 9.5 CF238**, charts `hcl-dx-deployment` **2.49.0**, `hcl-dx-iq`
 **1.0.2** y `hcl-dx-search` **2.36.0**. Documentación oficial:
@@ -96,6 +106,7 @@ Después sigue las guías en orden. Cada paso es un script numerado que se puede
 ejecutarlo; las guías explican qué hace cada uno y el comando equivalente a mano.
 
 ```
+lab0-poc-wsl/              Lab 0 (opcional): POC de un nodo con k3s en WSL2
 common/                    pasos comunes y utilidades
   00-check-prereqs.sh        comprueba herramientas, clúster, StorageClasses, DNS y credenciales
   01-namespaces.sh           crea dx-demo y dx-shared (con anotaciones SCC si es OpenShift)
@@ -128,6 +139,12 @@ antes de ejecutarlo. Cada capa se puede leer de un vistazo y explica exactamente
 
 ## Requisitos
 
+> **¿No puedes acceder a ningún clúster Kubernetes, ni en local ni en la nube?** Solo en ese caso,
+> empieza por el [Lab 0 · PoC en tu PC](lab0-poc-wsl/GUIA.md): monta k3s de un nodo en una distro
+> nueva de WSL2 (Windows 10/11, también Home), sin tocar tus otras distros, y permite hacer los
+> cuatro labs. Es un entorno **simplificado y "trucado"** (StorageClasses simuladas y recursos
+> rebajados) cuyo único objetivo es comprobar los pasos de la instalación.
+
 Resumen (detalle en [docs/requisitos.md](docs/requisitos.md)):
 
 - **Cuenta en el Harbor de HCL** (`hclcr.io`) con derecho a DX Compose: usuario y *CLI secret*.
@@ -139,6 +156,9 @@ Resumen (detalle en [docs/requisitos.md](docs/requisitos.md)):
 
 ## Avisos
 
+- **PoC, no producción.** Ver el aviso del principio: instalación funcional, sin el *tuning* ni la
+  parametrización de un entorno productivo. Para un proyecto real, un partner de HCL o los servicios
+  especializados de HCL.
 - **Material licenciado.** Los charts e imágenes de HCL no están en este repositorio: cada asistente
   los descarga con su cuenta. `charts/` y los `.tgz` están en `.gitignore`.
 - **Web Engine sobre PostgreSQL (Lab 2B) no está soportado todavía por HCL en CF238** (sí DB2,

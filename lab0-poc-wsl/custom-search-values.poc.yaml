@@ -1,0 +1,9 @@
+# Lab 0 · Capa POC de la búsqueda (hcl-dx-search): reservas reducidas para un solo nodo.
+# La añade lab4-opensearch/02-search-install.sh cuando DX_POC=1. Límites sin cambios.
+resources:
+  openSearchManager:
+    requests: { cpu: "500m", memory: "1536Mi" }       # por defecto 1000m / 2048Mi (JVM -Xmx1024M)
+  fileProcessor:
+    requests: { cpu: "250m", memory: "512Mi" }        # por defecto 1000m / 2048Mi
+  searchMiddlewareQuery:
+    requests: { cpu: "250m", memory: "512Mi" }        # por defecto 500m / 768Mi

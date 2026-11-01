@@ -32,6 +32,9 @@ export LITELLM_RELEASE="${LITELLM_RELEASE:-litellm}"
 # FQDN con el que se accede a DX. Debe resolver al Ingress (k8s) o al router (OpenShift).
 export DX_HOST="${DX_HOST:-dx-demo.apps.promox.europesip-lab.com}"   # <<<
 export INGRESS_CLASS="${INGRESS_CLASS:-nginx}"     # solo PLATFORM=kubernetes
+# POC en un solo nodo (Lab 0, k3s en WSL2): 1 = reservas de recursos reducidas para que los
+# cuatro labs quepan en ~15 GiB. Vacío en un clúster normal.
+export DX_POC="${DX_POC:-}"
 
 # --- Harbor oficial de HCL (hclcr.io) -----------------------------------------------------
 # Usuario: el e-mail de tu cuenta de HCL. Token: "CLI secret" de tu perfil en https://hclcr.io

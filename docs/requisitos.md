@@ -1,5 +1,10 @@
 # Requisitos previos
 
+> ⚠️ Estos labs dejan una instalación **funcional** de HCL DX Compose, pero son una **PoC** para
+> aprender los pasos, no una instalación de producción: el *tuning* y la parametrización de un
+> entorno productivo se han omitido. Para un proyecto real, recomendamos un **partner de HCL** o los
+> **servicios especializados de HCL**.
+
 Lo que tiene que estar listo **antes** del Lab 1. Casi todo es responsabilidad del administrador del
 clúster; `common/00-check-prereqs.sh` lo comprueba sin modificar nada.
 
@@ -18,6 +23,12 @@ openrouter.ai, repositorios de charts):
 | opcionales: `jq`, `stern`, `k9s` | diagnóstico |
 
 ## 2. Clúster
+
+> **Solo si no es viable acceder a un entorno Kubernetes**, ni en local ni en la nube: el
+> [Lab 0 · PoC en tu PC](../lab0-poc-wsl/GUIA.md) monta un clúster de un nodo (k3s) en una distro de
+> WSL2 con todo lo de esta página resuelto. Es un entorno **de PoC**, con las StorageClasses
+> simuladas y los recursos rebajados, pensado solo para comprobar los pasos; no sirve como
+> referencia de una instalación real.
 
 - **Kubernetes 1.26 a 1.36** (CF238), certificado CNCF, o **Red Hat OpenShift**. Nodos **x86-64**.
 - **Recursos libres** (requests medidos con los values de este repositorio):

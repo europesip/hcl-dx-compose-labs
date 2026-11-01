@@ -12,6 +12,7 @@
 #     o empresa/oracle/custom-values.oracle.yaml          + secret dx-oracle-ca            (rama empresarial)
 #   lab3-iq-openrouter/custom-values.iq.yaml               servicio <IQ_RELEASE>-integrator (Lab 3)
 #   lab4-opensearch/custom-values.search.yaml             servicio <SEARCH_RELEASE>-search-middleware-query (Lab 4)
+#   lab0-poc-wsl/custom-values.poc.yaml                   DX_POC=1 en env.sh (POC en un nodo, Lab 0)
 #
 # Así cada "helm upgrade" lleva la configuración COMPLETA y no se usa --reuse-values (que arrastra
 # valores antiguos y es la causa más habitual de sorpresas en los upgrades).
@@ -45,6 +46,9 @@ kubectl -n "$DX_NS" get svc "${IQ_RELEASE}-integrator" >/dev/null 2>&1 \
   && layers+=("$REPO_ROOT/lab3-iq-openrouter/custom-values.iq.yaml")
 kubectl -n "$DX_NS" get svc "${SEARCH_RELEASE}-search-middleware-query" >/dev/null 2>&1 \
   && layers+=("$REPO_ROOT/lab4-opensearch/custom-values.search.yaml")
+
+# Lab 0 · POC en un solo nodo (WSL2): reservas de recursos reducidas, siempre la última capa
+[[ "${DX_POC:-}" == 1 ]] && layers+=("$REPO_ROOT/lab0-poc-wsl/custom-values.poc.yaml")
 
 args=(upgrade --install "$DX_RELEASE" "$DX_CHART_TGZ" -n "$DX_NS")
 for l in "${layers[@]}"; do args+=(-f "$l"); done
