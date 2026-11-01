@@ -19,7 +19,7 @@ total=$(q -d dx_core -c "select count(*) from pg_tables where schemaname in ('re
 ((total > 400)) && ok "$total tablas: transferencia completada" || warn "$total tablas: ¿la transferencia no ha terminado todavía?"
 
 info "Conexiones del Web Engine"
-q -c "select usename, datname, count(*) from pg_stat_activity where usename='wpsuser' group by 1,2"
+q -c "select usename, datname, count(*) from pg_stat_activity where usename='dxuser' group by 1,2"
 
 info "Configuración en DX"
 helm -n "$DX_NS" get values "$DX_RELEASE" --all -o json | python3 -c '

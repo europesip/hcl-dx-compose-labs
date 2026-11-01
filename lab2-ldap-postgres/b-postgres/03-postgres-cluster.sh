@@ -5,7 +5,7 @@ source "$(dirname "$0")/../../common/lib.sh"
 require_vars SHARED_NS PG_CLUSTER
 cd "$(dirname "$0")"
 
-kubectl -n "$SHARED_NS" get secret dx-pg-superuser dx-pg-wpsuser >/dev/null \
+kubectl -n "$SHARED_NS" get secret dx-pg-superuser dx-pg-dxuser >/dev/null \
   || die "Faltan los secrets de PostgreSQL: ejecuta ./02-secrets-postgres.sh"
 [[ -f setup-postgres-dx.sql ]] \
   || die "Falta setup-postgres-dx.sql en $(pwd): es el script de preparación de dx_core (ver GUIA, Lab 2B paso 3)"

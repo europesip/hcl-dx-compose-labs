@@ -37,27 +37,27 @@ spec:
   # Tablespaces que usa el JCR de DX. CNPG los crea de forma declarativa, cada uno en su PVC.
   tablespaces:
     - name: icmlfq32
-      owner: { name: wpsuser }
+      owner: { name: dxuser }
       storage: { storageClass: dx-deploy-rwo, size: 2Gi }
     - name: icmlnf32
-      owner: { name: wpsuser }
+      owner: { name: dxuser }
       storage: { storageClass: dx-deploy-rwo, size: 1Gi }
     - name: icmvfq04
-      owner: { name: wpsuser }
+      owner: { name: dxuser }
       storage: { storageClass: dx-deploy-rwo, size: 1Gi }
     - name: icmsfq04
-      owner: { name: wpsuser }
+      owner: { name: dxuser }
       storage: { storageClass: dx-deploy-rwo, size: 2Gi }
     - name: icmlsndx
-      owner: { name: wpsuser }
+      owner: { name: dxuser }
       storage: { storageClass: dx-deploy-rwo, size: 1Gi }
 
   bootstrap:
     initdb:
       database: dx_core
-      owner: wpsuser
+      owner: dxuser
       secret:
-        name: dx-pg-wpsuser
+        name: dx-pg-dxuser
       encoding: UTF8
       localeCollate: en_US.UTF-8
       localeCType: en_US.UTF-8

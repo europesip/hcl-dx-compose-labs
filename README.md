@@ -68,10 +68,18 @@ Todo funciona en **Kubernetes estándar** y en **OpenShift** (ver
  └───────────────────────────────────────────────────────────┘   └──────────────────────────────┘
 ```
 
-- **`dx-demo`**: solo lo que instalan los charts de HCL (DX Compose e IQ). Es lo que soporta HCL.
-- **`dx-shared`**: infraestructura común que no es de HCL (directorio, base de datos, proxy de IA).
-  En un cliente suele ser infraestructura corporativa ya existente; separarla deja claro qué es
-  de DX y qué no, permite dar permisos distintos y reutilizarla entre entornos.
+- **`dx-demo`**: solo lo que instalan los charts de HCL (DX Compose, IQ y la búsqueda). Es lo que
+  soporta HCL.
+- **`dx-shared`**: hemos creado este namespace **para todas las herramientas externas a HCL** que
+  añadimos en los labs. En un cliente suelen ser infraestructura corporativa ya existente;
+  separarlas deja claro qué es de DX y qué no, permite dar permisos distintos y reutilizarlas.
+
+| En `dx-shared` | Lab | Por qué no es de HCL y qué hemos hecho |
+|---|---|---|
+| **OpenLDAP** | 2A | Directorio de usuarios de laboratorio (chart comunitario). En un cliente sería su LDAP o Active Directory |
+| **PostgreSQL 18** (operador CloudNativePG) | 2B | HCL distribuye un PostgreSQL **16** (el *Persistence Node*), que se instala como persistencia de **DAM**. Para el Web Engine hemos preferido **nuestra propia versión, PostgreSQL 18**: por usar una más moderna y para ponernos en el caso de una instalación que **ya tuviera su PostgreSQL** |
+| **LiteLLM** | 3A | **HCL no lo suministra**, aunque recomienda usarlo como proxy entre IQ y los modelos de IA. Nos hemos bajado y usado el **chart oficial de LiteLLM** (BerriAI) |
+| **MCP Server de EUROPESIP** | 3B | Es **nuestro propio** servidor MCP, no el que viene con HCL (ese, `dx-iq-mcp-server`, va con IQ en `dx-demo`). Por eso corre en el namespace aparte |
 
 ## Cómo usar este repositorio
 
@@ -137,5 +145,5 @@ Resumen (detalle en [docs/requisitos.md](docs/requisitos.md)):
   Oracle y SQL Server). HCL lo está validando; el lab sirve para aprender el proceso de
   transferencia.
 - **OpenRouter no está validado por HCL** (LiteLLM sí). El Lab 3 explica las desviaciones.
-- Los LDAP, PostgreSQL y LiteLLM de `dx-shared` están dimensionados para un laboratorio (una
+- El OpenLDAP, el PostgreSQL, LiteLLM y el MCP propio de `dx-shared` están dimensionados para un laboratorio (una
   réplica, sin TLS interno y sin copias de seguridad).

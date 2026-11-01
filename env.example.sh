@@ -71,7 +71,7 @@ export LDAP_USERS_PASSWORD="${LDAP_USERS_PASSWORD:-EuropeS1P}"    # Lab 2A: usua
 # Cuentas técnicas (no se usan para entrar en DX)
 export LDAP_ADMIN_PASSWORD="${LDAP_ADMIN_PASSWORD:-EuropeS1P}"      # Lab 2A: cn=admin del OpenLDAP (bind de DX)
 export PG_SUPERUSER_PASSWORD="${PG_SUPERUSER_PASSWORD:-EuropeS1P}"  # Lab 2B: postgres
-export WPSUSER_PASSWORD="${WPSUSER_PASSWORD:-EuropeS1P}"            # Lab 2B: wpsuser (BD del Web Engine)
+export DXUSER_PASSWORD="${DXUSER_PASSWORD:-EuropeS1P}"              # Lab 2B: dxuser (dueño de dx_core, BD del Web Engine)
 export IQ_DB_PASSWORD="${IQ_DB_PASSWORD:-EuropeS1P}"                # Lab 2B/3: dx_iq_db_user (opcional en Lab 3)
 
 # --- Lab 3: IQ con OpenRouter -------------------------------------------------------------

@@ -25,7 +25,8 @@
 | **2A · LDAP** | Los usuarios se autentican contra un directorio LDAP | OpenLDAP | `a-ldap/custom-values.ldap.yaml` |
 | **2B · PostgreSQL** | La BD del Web Engine pasa de Derby (embebida, no válida en producción) a PostgreSQL | PostgreSQL 18 (CloudNativePG) | `b-postgres/custom-values.postgres.yaml` |
 
-El software de terceros (OpenLDAP, PostgreSQL y su operador) va en **`dx-shared`**. En DX solo
+El OpenLDAP, el PostgreSQL y su operador no son software de HCL: van en **`dx-shared`**, el
+namespace que hemos creado para todas las herramientas externas a HCL. En `dx-demo` (DX) solo
 cambia la configuración: `common/dx-helm.sh` añade la capa de cada iteración al
 `custom-values.yaml` del Lab 1.
 
@@ -225,9 +226,25 @@ Documentación de HCL:
                                                     feedback, likeminds  (~465 tablas)
 ```
 
-**Por qué no el Persistence Node de DX.** DX ya trae un PostgreSQL (el Persistence Node), pero es
-el de DAM: versión 16, gestionado por DX (repmgr, pool, Runtime Controller) y no pensado para uso
-general. El Web Engine necesita su propia BD externa.
+**Por qué nuestro propio PostgreSQL 18 (y no el de HCL).** HCL distribuye un PostgreSQL: el
+*Persistence Node* (`dx-deployment-persistence-node-0`, en `dx-demo`), que se instala como
+**persistencia de DAM** y que hoy es **PostgreSQL 16** (16.15 en este clúster). Lo gestiona el
+propio DX (repmgr, pool de conexiones, Runtime Controller) y no está pensado como base de datos de
+propósito general. Para el Web Engine hemos preferido **nuestra propia versión, PostgreSQL 18**
+(18.6), por dos motivos:
+
+- **Usar una versión más moderna**, la misma con la que HCL está validando el Web Engine sobre
+  PostgreSQL.
+- **Ponernos en el caso de una instalación que ya tuviera su PostgreSQL**: en un cliente, la base
+  de datos suele ser corporativa y externa a DX. Por eso va en **`dx-shared`**, fuera del
+  namespace de HCL, y DX se conecta a ella como lo haría a la de la empresa.
+
+| | PostgreSQL de HCL (Persistence Node) | Nuestro PostgreSQL |
+|---|---|---|
+| Versión | 16 | **18** |
+| Namespace | `dx-demo` (lo instala el chart de DX) | **`dx-shared`** (lo instalamos nosotros con CloudNativePG) |
+| Uso | DAM (y People Service / IQ interno) | **Web Engine** (`dx_core`) |
+| Quién lo gestiona | DX | Nosotros (o el DBA de la empresa) |
 
 ### Paso 1 · Operador CloudNativePG
 
@@ -245,7 +262,7 @@ de forma declarativa: base de datos, roles, tablespaces y réplicas se describen
 lab2-ldap-postgres/b-postgres/02-secrets-postgres.sh
 ```
 
-Secrets `basic-auth` en `dx-shared` para `postgres` (superusuario), `wpsuser` (dueño de la BD del
+Secrets `basic-auth` en `dx-shared` para `postgres` (superusuario), `dxuser` (dueño de la BD del
 Web Engine) y `dx_iq_db_user` (lo usa el apéndice del Lab 3).
 
 ### Paso 3 · Cluster PostgreSQL 18 y preparación de la base de datos
@@ -266,8 +283,8 @@ La preparación tiene dos partes:
 | Elemento | Valor | Por qué |
 |---|---|---|
 | Imagen | `ghcr.io/cloudnative-pg/postgresql:18.6-standard-trixie` | Versión menor fijada |
-| BD | `dx_core`, dueño `wpsuser`, UTF8, `en_US.UTF-8` | Una sola BD con un esquema por dominio de DX |
-| Tablespaces | `icmlfq32`, `icmlnf32`, `icmvfq04`, `icmsfq04`, `icmlsndx`, de `wpsuser` | Los usa el JCR de DX; CNPG da a cada uno su PVC |
+| BD | `dx_core`, dueño `dxuser`, UTF8, `en_US.UTF-8` | Una sola BD con un esquema por dominio de DX |
+| Tablespaces | `icmlfq32`, `icmlnf32`, `icmvfq04`, `icmsfq04`, `icmlsndx`, de `dxuser` | Los usa el JCR de DX; CNPG da a cada uno su PVC |
 | `max_connections` / `max_prepared_transactions` | 500 / 500 | DX usa transacciones XA (2PC); en PostgreSQL `max_prepared_transactions` vale 0 por defecto |
 | Rol `dx_iq_db_user` | con login | Para el apéndice del Lab 3 (sesiones de IQ en PostgreSQL) |
 
@@ -280,13 +297,13 @@ ConfigMap `dx-pg-setup-sql` y CNPG lo ejecuta al crear el cluster
 |---|---|---|
 | Extensiones | `uuid-ossp`, `pgcrypto` | Funciones de UUID y criptografía (incluidas en la preparación de PostgreSQL del laboratorio original) |
 | Parámetros de `dx_core` | `ALTER DATABASE dx_core SET standard_conforming_strings = off` (y `escape_string_warning = off`) | El OpenJPA del Web Engine escribe `ESCAPE '\'` (estilo DB2/Oracle); con el valor por defecto (`on`) PostgreSQL lo rechaza con "invalid escape string" |
-| Esquemas | `release`, `community`, `customization`, `jcr`, `feedback`, `likeminds`, propiedad de `wpsuser` | Un esquema por dominio de DX (los `DbSchema` de las properties del paso 4) |
-| Permisos de `wpsuser` | `GRANT ALL` sobre la BD y los esquemas, y `ALTER DEFAULT PRIVILEGES` para tablas y secuencias | Que `wpsuser` sea dueño de todo lo que cree el Web Engine |
+| Esquemas | `release`, `community`, `customization`, `jcr`, `feedback`, `likeminds`, propiedad de `dxuser` | Un esquema por dominio de DX (los `DbSchema` de las properties del paso 4) |
+| Permisos de `dxuser` | `GRANT ALL` sobre la BD y los esquemas, y `ALTER DEFAULT PRIVILEGES` para tablas y secuencias | Que `dxuser` sea dueño de todo lo que cree el Web Engine |
 | Roles de DX | `WP_BASE_*`, `WP_JCR_*`, `WP_PZN_*` (`CONFIG` y `RUNTIME`) | Los `DbConfigRoleName`/`DbRuntimeRoleName` de las properties |
-| Permisos de los roles | `release`/`community`/`customization` → `WP_BASE_CONFIG_USERS`; `jcr` → `WP_JCR_CONFIG_USERS`; `feedback`/`likeminds` → `WP_PZN_CONFIG_USERS`; `wpsuser` miembro de los seis | El reparto de dominios que usa DX |
+| Permisos de los roles | `release`/`community`/`customization` → `WP_BASE_CONFIG_USERS`; `jcr` → `WP_JCR_CONFIG_USERS`; `feedback`/`likeminds` → `WP_PZN_CONFIG_USERS`; `dxuser` miembro de los seis | El reparto de dominios que usa DX |
 
 > **PostgreSQL corporativo ya existente.** Si la base de datos la gestiona un DBA, él crea antes
-> la BD `dx_core`, el usuario `wpsuser`, los tablespaces y los parámetros XA, y ejecuta el mismo
+> la BD `dx_core`, el usuario `dxuser`, los tablespaces y los parámetros XA, y ejecuta el mismo
 > script: `psql -U postgres -d dx_core -f setup-postgres-dx.sql`. En ese caso no se usan los pasos
 > 1 a 3 de esta guía (operador y cluster CNPG) y las properties del paso 4 apuntan a su servidor.
 
@@ -311,7 +328,7 @@ release.DbName=dx_core
 release.DbSchema=release
 release.DataSourceName=wpreldbDS
 release.DbUrl=jdbc:postgresql://dx-pg-rw.dx-shared.svc.cluster.local:5432/dx_core?sslmode=disable
-release.DbUser=wpsuser
+release.DbUser=dxuser
 release.DbConfigRoleName=WP_BASE_CONFIG_USERS
 release.DbRuntimeRoleName=WP_BASE_RUNTIME_USERS
 ...
@@ -357,7 +374,7 @@ lab2-ldap-postgres/b-postgres/99-verify.sh
 ```
 
 - ~465 tablas en `dx_core` (release ≈182, jcr ≈96, community ≈75, customization ≈51, feedback ≈48,
-  likeminds ≈13) y conexiones abiertas de `wpsuser`.
+  likeminds ≈13) y conexiones abiertas de `dxuser`.
 - En el portal: la **página de prueba del Lab 1 sigue ahí** y `andres` sigue entrando (el LDAP no
   depende de la BD).
 

@@ -50,7 +50,15 @@ nada. Si algo sale en `FALLO`, ver [docs/requisitos.md](../docs/requisitos.md).
 common/01-namespaces.sh
 ```
 
-Crea `dx-demo` (software de HCL) y `dx-shared` (software de terceros, se usa en los Labs 2 y 3).
+Crea los dos namespaces del webinar:
+
+| Namespace | Qué va dentro |
+|---|---|
+| `dx-demo` | **Solo software de HCL**: DX Compose (este lab), IQ (Lab 3) y la búsqueda (Lab 4) |
+| `dx-shared` | **Todas las herramientas externas a HCL** que añadimos en los labs: OpenLDAP (2A), **nuestro PostgreSQL 18** (2B; HCL distribuye un PostgreSQL 16 solo como persistencia de DAM), **LiteLLM** (3A; HCL no lo suministra, aunque recomienda usarlo como proxy) y **nuestro propio MCP Server** (3B) |
+
+Separarlos deja claro qué es de HCL (y, por tanto, lo que soporta HCL) y qué es infraestructura
+propia o corporativa. En este lab `dx-shared` queda vacío: se usa a partir del Lab 2.
 
 | Plataforma | Qué hace |
 |---|---|

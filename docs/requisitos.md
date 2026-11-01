@@ -83,7 +83,7 @@ tenerla preparada **antes** de la transferencia, igual que la StorageClass o el 
 
 | Base de datos | Qué debe dejar preparado el DBA | Referencia |
 |---|---|---|
-| PostgreSQL | BD `dx_core` (UTF8), usuario `wpsuser`, tablespaces del JCR, `max_prepared_transactions > 0`, y ejecutar `setup-postgres-dx.sql` (esquemas, roles, permisos, parámetros) | [GUIA.md · 2B paso 3](../lab2-ldap-postgres/GUIA.md) |
+| PostgreSQL | BD `dx_core` (UTF8), usuario `dxuser`, tablespaces del JCR, `max_prepared_transactions > 0`, y ejecutar `setup-postgres-dx.sql` (esquemas, roles, permisos, parámetros) | [GUIA.md · 2B paso 3](../lab2-ldap-postgres/GUIA.md) |
 | Oracle 19c/21c | PDB en AL32UTF8, y ejecutar `setup-oracle-dx.sql` (usuarios, esquemas, roles, tablespaces) | [GUIA-empresa.md · ORA-1](../lab2-ldap-postgres/GUIA-empresa.md) |
 
 En los dos casos **las tablas no se crean a mano**: las crea el Web Engine durante la

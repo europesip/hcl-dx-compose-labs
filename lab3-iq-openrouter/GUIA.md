@@ -33,9 +33,13 @@ Documentación de HCL: [IQ installation (CF238)](https://help.hcl-software.com/d
 
 | Componente | Namespace | Quién lo da |
 |---|---|---|
-| IQ Integrator y MCP Server | `dx-demo` | Chart `hcl-dx-iq` 1.0.2 de HCL |
-| LiteLLM | `dx-shared` | Chart público de BerriAI (HCL lo trata como requisito previo) |
+| IQ Integrator y MCP Server de HCL | `dx-demo` | Chart `hcl-dx-iq` 1.0.2 de HCL |
+| LiteLLM | **`dx-shared`** | **No lo suministra HCL**: chart oficial de LiteLLM (BerriAI) |
+| MCP Server de EUROPESIP (3B) | **`dx-shared`** | Nuestro propio servidor MCP |
 | Modelos | Internet | OpenRouter (clave `OPENROUTER_API_KEY`) |
+
+Como en el resto de labs, todo lo que **no es de HCL** va en **`dx-shared`**, el namespace que
+hemos creado para las herramientas externas a HCL; en `dx-demo` solo están los charts de HCL.
 
 IQ siempre pide dos modelos lógicos, `iq-general-purpose` e `iq-summary`; LiteLLM decide a qué
 proveedor y modelo real van. Cambiar de modelo no requiere tocar IQ.
@@ -68,6 +72,12 @@ master key. Cada secret está en el namespace de quien lo lee.
 ```bash
 lab3-iq-openrouter/02-litellm-install.sh
 ```
+
+> **LiteLLM no lo suministra HCL.** El chart `hcl-dx-iq` solo despliega el Integrator y el MCP
+> Server de HCL. HCL **recomienda usar LiteLLM como proxy** entre IQ y los modelos de IA (y
+> documenta cómo instalarlo), pero no lo distribuye: nos hemos **bajado y usado el chart oficial de
+> LiteLLM** (BerriAI, `oci://ghcr.io/berriai/litellm-helm`). Por eso va en **`dx-shared`**, y su
+> versión, parches y configuración son responsabilidad nuestra, no del soporte de HCL.
 
 Instala `oci://ghcr.io/berriai/litellm-helm` 1.106.5 en `dx-shared` con
 [litellm-values.yaml](litellm-values.yaml). Lo importante:
@@ -199,7 +209,11 @@ la solución de EUROPESIP para generar componentes de DX a partir de diseños.
    (dx-demo)                    └─► europesip-mcp.dx-shared:3000     (propio, dx-shared) 4 herramientas
 ```
 
-Es software propio, no de HCL, así que va en **`dx-shared`**.
+**¿Por qué en `dx-shared`?** IQ ya trae un MCP Server, el de HCL (`dx-iq-mcp-server`), que el
+chart `hcl-dx-iq` instala junto al Integrator en `dx-demo`. El que añadimos aquí es **un MCP
+Server nuevo, nuestro propio**, no el que viene con HCL: por eso lo corremos en un namespace aparte,
+`dx-shared`, con el resto de herramientas externas a HCL. El Integrator lo alcanza por su nombre
+completo de servicio (`europesip-mcp.dx-shared.svc.cluster.local`).
 
 > **Soporte.** HCL documenta `MCP_SERVER_LIST` para su propio MCP Server; añadir servidores propios
 > no está documentado ni soportado en IQ 1.0.2. Funciona con el procedimiento de abajo.

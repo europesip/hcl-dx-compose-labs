@@ -6,11 +6,11 @@
 set -euo pipefail
 source "$(dirname "$0")/../../common/lib.sh"
 require_cmd envsubst
-require_vars DX_NS PG_HOST WPSUSER_PASSWORD
+require_vars DX_NS PG_HOST DXUSER_PASSWORD
 cd "$(dirname "$0")"
 
 umask 077
-render dx_dbdomain.properties.template '$PG_HOST $WPSUSER_PASSWORD' > dx_dbdomain.properties
+render dx_dbdomain.properties.template '$PG_HOST $DXUSER_PASSWORD' > dx_dbdomain.properties
 trap 'rm -f dx_dbdomain.properties' EXIT    # no dejamos la contraseña en claro en disco
 
 apply_secret "$DX_NS" generic custom-credentials-webengine-dbtype-secret   --from-file=dx_dbtype.properties

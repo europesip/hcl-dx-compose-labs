@@ -34,7 +34,7 @@ Para cualquier problema: `common/collect-logs.sh` deja estado, eventos y logs en
 | La transferencia falla con errores de XA / prepared transactions | `max_prepared_transactions` a 0 | Viene a 500 en `cluster-dx-pg.yaml`; compruébalo con `./99-verify.sh` |
 | `ERROR: invalid escape string` en `WCM_USER_SHORTCUT` | `standard_conforming_strings=on` en `dx_core` (OpenJPA usa `ESCAPE '\\'`) | `cluster-dx-pg.yaml` ya lo pone a `off`. En un cluster creado antes: `ALTER DATABASE dx_core SET standard_conforming_strings = off` y reinicia el Web Engine |
 | Avisos `DSRA8020E: ... property 'driverType' does not exist ... org.postgresql` | Liberty aplica una propiedad propia de DB2 al datasource | **Normal**, es un aviso (`W`): se ignora |
-| `password authentication failed for user "wpsuser"` | Contraseña distinta en el secret de CNPG y en las properties | Mismo `WPSUSER_PASSWORD` en `02-secrets-postgres.sh` y `04-secrets-webengine.sh` (repite ambos y reinicia el Web Engine) |
+| `password authentication failed for user "dxuser"` | Contraseña distinta en el secret de CNPG y en las properties | Mismo `DXUSER_PASSWORD` en `02-secrets-postgres.sh` y `04-secrets-webengine.sh` (repite ambos y reinicia el Web Engine) |
 | La transferencia no se repite tras un error | El Web Engine ya registró un intento | Corrige la causa; si dx_core quedó con tablas, `dropDatabaseTables: true` solo para ese upgrade y vuelve a `false` |
 
 ## Lab 3 · IQ
