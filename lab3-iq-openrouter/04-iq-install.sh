@@ -1,23 +1,31 @@
 #!/usr/bin/env bash
-# Lab 3 · Paso 4 · Instala o actualiza IQ (Integrator + MCP Server) en dx-demo.
-# Uso:  ./04-iq-install.sh                                        (sesiones en SQLite en memoria)
-#       ./04-iq-install.sh -f custom-iq-values.db-external.yaml   (apéndice: sesiones en PostgreSQL)
+# Lab 3 · Step 4 · Install or upgrade IQ (Integrator + MCP Server) in the DX namespace.
+# Usage:  ./04-iq-install.sh                                        (sessions in in-memory SQLite)
+#         ./04-iq-install.sh -f custom-iq-values.db-external.yaml   (appendix: sessions in PostgreSQL)
 set -euo pipefail
 source "$(dirname "$0")/../common/lib.sh"
 require_cmd helm
-require_vars DX_NS IQ_RELEASE IQ_CHART_TGZ DX_RELEASE DX_HOST
+require_vars DX_NS SHARED_NS IQ_RELEASE IQ_CHART_TGZ DX_RELEASE DX_HOST LITELLM_URL_INTERNAL
 cd "$(dirname "$0")"
 
-[[ -f "$IQ_CHART_TGZ" ]] || die "No está $IQ_CHART_TGZ: ejecuta common/02-pull-hcl-charts.sh"
-kubectl -n "$DX_NS" get secret iq-litellm-api-secret >/dev/null 2>&1 || die "Falta iq-litellm-api-secret: ./01-secrets.sh"
-helm -n "$DX_NS" status "$DX_RELEASE" >/dev/null 2>&1 || die "DX ($DX_RELEASE) no está instalado en $DX_NS"
+[[ -f "$IQ_CHART_TGZ" ]] || die "$IQ_CHART_TGZ not found: run common/02-pull-hcl-charts.sh"
+kubectl -n "$DX_NS" get secret iq-litellm-api-secret >/dev/null 2>&1 || die "iq-litellm-api-secret is missing: ./01-secrets.sh"
+helm -n "$DX_NS" status "$DX_RELEASE" >/dev/null 2>&1 || die "DX ($DX_RELEASE) is not installed in $DX_NS"
 
-helm upgrade --install "$IQ_RELEASE" "$IQ_CHART_TGZ" -n "$DX_NS" -f custom-iq-values.yaml "$@" \
+# The LiteLLM URL appears twice in custom-iq-values.yaml (litellm.liteLlmUrl and the
+# LITELLM_BASE_URL variable, inside a list that --set cannot address): a temporary copy gets the
+# value from env.sh.
+VALUES=$(mktemp --suffix=.yaml); trap 'rm -f "$VALUES"' EXIT
+sed "s|http://litellm.dx-shared.svc.cluster.local:4000|${LITELLM_URL_INTERNAL}|g" custom-iq-values.yaml > "$VALUES"
+EXTRA=()
+[[ " $* " == *custom-iq-values.db-external.yaml* ]] && EXTRA+=(--set-string configuration.database.dbHost="$PG_HOST")
+
+helm upgrade --install "$IQ_RELEASE" "$IQ_CHART_TGZ" -n "$DX_NS" -f "$VALUES" "$@" "${EXTRA[@]}" \
   --set-string configuration.dx.releaseName="$DX_RELEASE" \
   --set-string configuration.dx.externalHost="$DX_HOST"
 
-# Lab 3B: el chart regenera la lista de MCP Servers con solo el de HCL. Si existe el MCP propio
-# en dx-shared, se vuelve a añadir (ver mcp-propio/03-iq-register.sh).
+# Lab 3B: the chart regenerates the MCP Server list with only the HCL one. If the custom MCP exists
+# in the shared namespace, it is added back (see custom-mcp/03-iq-register.sh).
 if kubectl -n "$SHARED_NS" get svc europesip-mcp >/dev/null 2>&1; then
   LIST="http://${IQ_RELEASE}-mcp-server:3000,http://europesip-mcp.${SHARED_NS}.svc.cluster.local:3000"
   kubectl -n "$DX_NS" patch configmap "${IQ_RELEASE}-integrator" --type merge \
@@ -25,11 +33,11 @@ if kubectl -n "$SHARED_NS" get svc europesip-mcp >/dev/null 2>&1; then
   info "MCP Servers: $LIST"
 fi
 
-# Helm no reinicia los pods si solo cambian secrets: reiniciamos los dos.
-# Primero el MCP Server (el Integrator lee su lista de herramientas al arrancar).
+# Helm does not restart the pods if only secrets change: restart both.
+# First the MCP Server (the Integrator reads its tool list when it starts).
 kubectl -n "$DX_NS" rollout restart deployment/"$IQ_RELEASE"-mcp-server
 kubectl -n "$DX_NS" rollout status  deployment/"$IQ_RELEASE"-mcp-server --timeout=300s
 kubectl -n "$DX_NS" rollout restart deployment/"$IQ_RELEASE"-integrator
 kubectl -n "$DX_NS" rollout status  deployment/"$IQ_RELEASE"-integrator --timeout=300s
 kubectl -n "$DX_NS" get pods | grep -E "^${IQ_RELEASE}-"
-echo "Siguiente: ./05-dx-enable-iq.sh (habilita IQ en DX)"
+echo "Next: ./05-dx-enable-iq.sh (enables IQ in DX)"

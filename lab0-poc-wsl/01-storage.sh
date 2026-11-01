@@ -1,28 +1,31 @@
 #!/usr/bin/env bash
-# Lab 0 · Paso 3 · StorageClasses dx-deploy-rwo / dx-deploy-rwx y el volumen RWX de DAM.
-# Idempotente. Ejecútalo también después de common/99-cleanup.sh: al borrar DX, el volumen de DAM
-# queda "Released" (Retain) y aquí se recrea vacío para la siguiente instalación.
+# Lab 0 · Step 3 · StorageClasses $SC_RWO / $SC_RWX and the DAM RWX volume.
+# Idempotent. Run it also after common/99-cleanup.sh: when DX is deleted, the DAM volume is left
+# "Released" (Retain) and it is recreated empty here for the next installation.
 set -euo pipefail
+source "$(dirname "$0")/../common/lib.sh"
+require_vars SC_RWO SC_RWX
 cd "$(dirname "$0")"
-kubectl apply -f storage-poc.yaml
+VARS='$SC_RWO $SC_RWX'
+render storage-poc.yaml "$VARS" | kubectl apply -f -
 
 phase=$(kubectl get pv dx-poc-dam-binaries -o jsonpath='{.status.phase}' 2>/dev/null || true)
 CLEAN=""
 if [[ "$phase" == "Released" || "$phase" == "Failed" ]]; then
-  echo "dx-poc-dam-binaries estaba $phase: se recrea vacío"
+  echo "dx-poc-dam-binaries was $phase: recreating it empty"
   kubectl delete pv dx-poc-dam-binaries --wait=true
   CLEAN='rm -rf /d/* /d/.[!.]* 2>/dev/null; '
 fi
-kubectl apply -f dam-binaries-pv.yaml
+render dam-binaries-pv.yaml "$VARS" | kubectl apply -f -
 
-# Kubernetes crea el directorio hostPath como root (755) y con hostPath no se aplica el fsGroup
-# del pod: DAM, que corre como uid 1000 / gid 1001, no podría escribir ("EACCES ... /opt/app/upload"
-# y DAM nunca queda Ready). Un pod efímero (sin sudo) lo deja como 1000:1001 con permisos 2775.
+# Kubernetes creates the hostPath directory as root (755) and the pod fsGroup is not applied to
+# hostPath: DAM, which runs as uid 1000 / gid 1001, could not write ("EACCES ... /opt/app/upload"
+# and DAM never becomes Ready). An ephemeral pod (no sudo needed) sets it to 1000:1001 with 2775.
 kubectl delete pod dx-poc-prepare-dam --ignore-not-found >/dev/null
 kubectl run dx-poc-prepare-dam --rm -i --restart=Never --quiet --image=busybox:1.36 --overrides="{
   \"spec\":{\"containers\":[{\"name\":\"c\",\"image\":\"busybox:1.36\",
   \"command\":[\"sh\",\"-c\",\"${CLEAN}chown 1000:1001 /d && chmod 2775 /d && ls -ld /d\"],
   \"volumeMounts\":[{\"name\":\"d\",\"mountPath\":\"/d\"}]}],
-  \"volumes\":[{\"name\":\"d\",\"hostPath\":{\"path\":\"/var/lib/dx-poc/dam-binaries\",\"type\":\"DirectoryOrCreate\"}}]}}"
-kubectl get sc dx-deploy-rwo dx-deploy-rwx
+  \"volumes\":[{\"name\":\"d\",\"hostPath\":{\"path\":\"/var/lib/dx-poc/dam-binaries\",\"type\":\"DirectoryOrCreate\"}}]}}" </dev/null
+kubectl get sc "$SC_RWO" "$SC_RWX"
 kubectl get pv dx-poc-dam-binaries

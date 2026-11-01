@@ -1,57 +1,58 @@
 # ------------------------------------------------------------------------------------------
 # Lab 4 · custom-search-values.yaml · chart hcl-dx-search 2.36.0 (CF238) · release dx-search
-# Solo lo que cambia respecto a los valores por defecto (charts/values-search-default-2.36.0.yaml).
-# El adminDN no está aquí: lo genera 01-certs.sh en admin-dn.rendered.yaml.
+# Only what changes compared to the default values (charts/values-search-default-2.36.0.yaml).
+# The adminDN is not here: 01-certs.sh generates it in admin-dn.rendered.yaml.
+# Set from env.sh by 02-search-install.sh: the StorageClass (SC_RWO) and the DX release (DX_RELEASE).
 #
-# hcl-dx-search es software de HCL: va en dx-demo, en el MISMO namespace que DX. Así:
-#   - HAProxy de DX enruta /dx/api/search y /dx/ui/search a <release>-search-middleware-query
-#   - la búsqueda detecta sola el HAProxy de DX para las consultas de permisos (ACL)
-#   - los dos charts comparten la credencial push-admin (DAM empuja sus activos al índice)
+# hcl-dx-search is HCL software: it goes in the DX namespace, the SAME namespace as DX. So:
+#   - the DX HAProxy routes /dx/api/search and /dx/ui/search to <release>-search-middleware-query
+#   - search finds the DX HAProxy by itself for the permission (ACL) queries
+#   - both charts share the push-admin credential (DAM pushes its assets to the index)
 # ------------------------------------------------------------------------------------------
 images:
   repository: "hclcr.io"
   imagePullSecrets:
     - name: regcred
-  # nombres (dx-compose/dx-opensearch, ...) y tags de CF238: los del chart
+  # names (dx-compose/dx-opensearch, ...) and CF238 tags: the chart ones
 
 volumes:
   openSearchManager:
     data:
-      storageClassName: "dx-deploy-rwo"   # el chart trae "manual" por defecto
+      storageClassName: "dx-deploy-rwo"   # the chart default is "manual"
       requests:
         storage: "5Gi"
 
 applications:
   openSearch: true
   searchMiddleware: true
-  # Extrae el texto de documentos (Office, PDF...) de DAM para indexarlo (1 CPU / 2 GiB).
-  # El chart lo trae desactivado, pero el Search Middleware de CF238 lo busca igualmente y, sin él,
-  # registra "Could not connect to file processor" cada 3 segundos: lo activamos.
+  # Extracts the text of DAM documents (Office, PDF...) to index it (1 CPU / 2 GiB).
+  # The chart ships it disabled, but the CF238 Search Middleware looks for it anyway and, without
+  # it, logs "Could not connect to file processor" every 3 seconds: we enable it.
   fileProcessor: true
 
 security:
-  # searchadmin y pushadmin: contraseñas vacías -> el chart las genera y las guarda en secrets.
-  # pushadmin debe coincidir con la de DX: con las releases dx-deployment / dx-search en el mismo
-  # namespace, los dos charts convergen solos en el mismo secret (por eso no se crean a mano).
+  # searchadmin and pushadmin: empty passwords -> the chart generates them and stores them in secrets.
+  # pushadmin must match the DX one: with the dx-deployment / dx-search releases in the same
+  # namespace, both charts converge on the same secret by themselves (so they are not created by hand).
   pushAdministration:
     deploymentReleaseName: "dx-deployment"   # = DX_RELEASE
 
 configuration:
   containerTimezone: "Europe/Madrid"
   automatedSetup:
-    # Release de DX en el mismo namespace: crea las fuentes de contenido y los rastreadores
+    # DX release in the same namespace: creates the content sources and the crawlers
     dxDeploymentName: "dx-deployment"        # = DX_RELEASE
-    # Protocolo con el que los rastreadores y las consultas de permisos (ACL) llaman al HAProxy de
-    # DX. Por defecto "http" (puerto 80), pero el HAProxy de DX solo escucha en 443 con TLS
-    # (networking.haproxy.ssl: true, el valor por defecto): sin esto, timeout y 0 documentos.
+    # Protocol the crawlers and the permission (ACL) queries use to call the DX HAProxy.
+    # The default is "http" (port 80), but the DX HAProxy only listens on 443 with TLS
+    # (networking.haproxy.ssl: true, the default): without this, timeout and 0 documents.
     haproxyProtocol: "https"
     digitalAssetManagement:
       enabled: true
     wcm:
-      enabled: true          # rastreo cada 15 minutos (crawlerSchedule)
+      enabled: true          # crawled every 15 minutes (crawlerSchedule)
     jcr:
       enabled: true
     portal:
       enabled: true
     people:
-      enabled: false         # People Service no está instalado en el webinar
+      enabled: false         # People Service is not installed in these labs

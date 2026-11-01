@@ -1,52 +1,52 @@
 #!/usr/bin/env bash
-# Paso 0 · Comprueba (solo lectura) que la estación de trabajo y el clúster cumplen los requisitos.
+# Step 0 · Read-only check that the workstation and the cluster meet the requirements.
 set -uo pipefail
 source "$(dirname "$0")/lib.sh"
 
-info "Herramientas de la estación de trabajo"
+info "Workstation tools"
 for c in kubectl helm openssl envsubst curl python3; do
-  if command -v "$c" >/dev/null 2>&1; then ok "$c"; else fail "$c no está instalado"; fi
+  if command -v "$c" >/dev/null 2>&1; then ok "$c"; else fail "$c is not installed"; fi
 done
-is_openshift && { command -v oc >/dev/null 2>&1 && ok "oc" || fail "oc no está instalado"; }
+is_openshift && { command -v oc >/dev/null 2>&1 && ok "oc" || fail "oc is not installed"; }
 helm version --short 2>/dev/null | sed 's/^/          helm /'
 
-info "Acceso al clúster"
+info "Cluster access"
 if kubectl version -o json >/dev/null 2>&1; then
-  ok "contexto: $(kubectl config current-context)"
-  kubectl version -o json | python3 -c 'import sys,json; print("          servidor:", json.load(sys.stdin)["serverVersion"]["gitVersion"])'
+  ok "context: $(kubectl config current-context)"
+  kubectl version -o json | python3 -c 'import sys,json; print("          server:", json.load(sys.stdin)["serverVersion"]["gitVersion"])'
 else
-  fail "kubectl no llega al clúster"; exit 1
+  fail "kubectl cannot reach the cluster"; exit 1
 fi
 
-info "Nodos (HCL: solo x86-64)"
-kubectl get nodes -o custom-columns='NODO:.metadata.name,ARQ:.status.nodeInfo.architecture,CPU:.status.allocatable.cpu,MEM:.status.allocatable.memory' 2>/dev/null
-kubectl top nodes 2>/dev/null || warn "metrics-server no disponible: no se puede medir el uso actual"
-echo "          El DX base (Lab 1) reserva ~5 CPU y ~11 GiB (requests). Labs 2 y 3 añaden ~1 CPU / 2,5 GiB."
+info "Nodes (HCL: x86-64 only)"
+kubectl get nodes -o custom-columns='NODE:.metadata.name,ARCH:.status.nodeInfo.architecture,CPU:.status.allocatable.cpu,MEM:.status.allocatable.memory' 2>/dev/null
+kubectl top nodes 2>/dev/null || warn "metrics-server not available: current usage cannot be measured"
+echo "          The DX base (Lab 1) requests ~5 CPU and ~11 GiB. Labs 2 and 3 add ~1 CPU / 2.5 GiB."
 
-info "StorageClasses requeridas (se usan en custom-values.yaml y en el cluster PostgreSQL)"
-for sc in dx-deploy-rwo dx-deploy-rwx; do
+info "Required StorageClasses (SC_RWO / SC_RWX in env.sh)"
+for sc in "$SC_RWO" "$SC_RWX"; do
   if kubectl get sc "$sc" >/dev/null 2>&1; then
     ok "$sc ($(kubectl get sc "$sc" -o jsonpath='{.provisioner}'))"
   else
-    fail "falta la StorageClass $sc (referencia: common/storageclasses-longhorn.yaml)"
+    fail "StorageClass $sc is missing (reference: common/storageclasses-longhorn.yaml; no cluster? lab0-poc-wsl)"
   fi
 done
 
-info "Acceso externo"
+info "External access"
 if is_openshift; then
-  ok "OpenShift: se usará una Route passthrough"
+  ok "OpenShift: a passthrough Route will be used"
 else
   kubectl get ingressclass "$INGRESS_CLASS" >/dev/null 2>&1 && ok "IngressClass $INGRESS_CLASS" \
-    || fail "no existe la IngressClass $INGRESS_CLASS (ajusta INGRESS_CLASS en env.sh)"
+    || fail "IngressClass $INGRESS_CLASS does not exist (set INGRESS_CLASS in env.sh)"
 fi
 if getent hosts "$DX_HOST" >/dev/null 2>&1; then ok "DNS: $DX_HOST -> $(getent hosts "$DX_HOST" | awk '{print $1}')"
-else fail "DNS: $DX_HOST no resuelve"; fi
+else fail "DNS: $DX_HOST does not resolve"; fi
 
-info "Credenciales de Harbor (hclcr.io)"
-[[ -n "${HCL_HARBOR_USER:-}" && -n "${HCL_HARBOR_TOKEN:-}" ]] && ok "HCL_HARBOR_USER y HCL_HARBOR_TOKEN definidas" \
-  || fail "define HCL_HARBOR_USER y HCL_HARBOR_TOKEN en env.sh"
+info "HCL Harbor credentials (hclcr.io)"
+[[ -n "${HCL_HARBOR_USER:-}" && -n "${HCL_HARBOR_TOKEN:-}" ]] && ok "HCL_HARBOR_USER and HCL_HARBOR_TOKEN are set" \
+  || fail "set HCL_HARBOR_USER and HCL_HARBOR_TOKEN in env.sh"
 
-info "Namespaces del webinar"
+info "Lab namespaces"
 for n in "$DX_NS" "$SHARED_NS"; do
-  kubectl get ns "$n" >/dev/null 2>&1 && warn "$n ya existe (¿instalación previa? ver docs/limpieza.md)" || ok "$n no existe todavía"
+  kubectl get ns "$n" >/dev/null 2>&1 && warn "$n already exists (previous install? see docs/cleanup.md)" || ok "$n does not exist yet"
 done

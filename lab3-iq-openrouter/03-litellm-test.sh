@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Lab 3 · Paso 3 · Prueba LiteLLM -> OpenRouter -> Claude ANTES de instalar IQ.
-# Usa un port-forward local: la clave no aparece en ningún pod ni en la línea de comandos remota.
+# Lab 3 · Step 3 · Test LiteLLM -> OpenRouter -> Claude BEFORE installing IQ.
+# Uses a local port-forward: the key never appears in any pod nor on a remote command line.
 set -euo pipefail
 source "$(dirname "$0")/../common/lib.sh"
 require_cmd curl python3
@@ -13,11 +13,11 @@ for _ in $(seq 1 20); do curl -s "http://localhost:$PORT/health/liveliness" >/de
 
 H=(-H "Authorization: Bearer ${KEY}" -H "Content-Type: application/json")
 info "readiness";  curl -s "http://localhost:$PORT/health/readiness"; echo
-info "modelos publicados"
+info "published models"
 curl -s "${H[@]}" "http://localhost:$PORT/v1/models" | python3 -c 'import sys,json; print("  ", [m["id"] for m in json.load(sys.stdin)["data"]])'
 for m in iq-general-purpose iq-summary; do
-  info "chat con $m"
+  info "chat with $m"
   curl -s "${H[@]}" "http://localhost:$PORT/v1/chat/completions" \
-    -d "{\"model\":\"$m\",\"max_tokens\":60,\"messages\":[{\"role\":\"user\",\"content\":\"Responde solo: listo\"}]}" \
-  | python3 -c 'import sys,json; d=json.load(sys.stdin); print("  ", d["choices"][0]["message"]["content"].strip(), "| modelo:", d.get("model")) if "choices" in d else print("  ERROR:", json.dumps(d)[:400])'
+    -d "{\"model\":\"$m\",\"max_tokens\":60,\"messages\":[{\"role\":\"user\",\"content\":\"Answer only: ready\"}]}" \
+  | python3 -c 'import sys,json; d=json.load(sys.stdin); print("  ", d["choices"][0]["message"]["content"].strip(), "| model:", d.get("model")) if "choices" in d else print("  ERROR:", json.dumps(d)[:400])'
 done

@@ -1,36 +1,38 @@
-# Lab 3 · LiteLLM (chart público de BerriAI litellm-helm 1.106.5) en dx-shared
-# LiteLLM NO es software de HCL: el chart hcl-dx-iq solo despliega el Integrator y el MCP Server, y
-# HCL trata LiteLLM como requisito previo. Versión, parches y configuración son responsabilidad
-# de quien lo instala.
+# Lab 3 · LiteLLM (public BerriAI chart litellm-helm 1.106.5) in the shared namespace
+# LiteLLM is NOT HCL software: the hcl-dx-iq chart only deploys the Integrator and the MCP Server,
+# and HCL treats LiteLLM as a prerequisite. Version, patches and configuration are the
+# responsibility of whoever installs it.
 #
-# Publica los dos modelos lógicos que pide IQ y los enruta a OpenRouter:
-#   iq-general-purpose -> preguntas generales y uso de herramientas (MCP)   -> Claude Sonnet 4.6
-#   iq-summary         -> resumen de la conversación para reducir contexto  -> Claude Haiku 4.5
-# Son los modelos que valida HCL, con su ID de OpenRouter. Para cambiarlos: cambia el ID
-# (https://openrouter.ai/models) y vuelve a ejecutar 02-litellm-install.sh. IQ no se toca.
+# It publishes the two logical models IQ asks for and routes them to OpenRouter:
+#   iq-general-purpose -> general questions and tool use (MCP)            -> Claude Sonnet 4.6
+#   iq-summary         -> conversation summary to reduce the context      -> Claude Haiku 4.5
+# They are the models HCL validates, with their OpenRouter ID. To change them: change the ID
+# (https://openrouter.ai/models) and run 02-litellm-install.sh again. IQ is not touched.
 #
-# Proveedor "anthropic/" contra el endpoint Anthropic de OpenRouter (y NO "openrouter/"):
-#   el MCP Server de HCL publica herramientas con puntos en el nombre (dam.mime-type.tool...).
-#   El proveedor anthropic/ sanea esos nombres al formato que exige Claude y los traduce de vuelta;
-#   openrouter/ (formato OpenAI) los envía tal cual y Claude rechaza la petición (HTTP 400).
-#   Formato: model "anthropic/<id OpenRouter>", api_base https://openrouter.ai/api
+# Why OpenRouter and not AWS Bedrock (the HCL guides use Bedrock): see GUIDE.md, section 3.
 #
-# No uses modelos de razonamiento de OpenAI (gpt-5.x): inyectan reasoning_effort y rompen las
-# herramientas de IQ. Con modelos que no sean Claude, HCL indica desactivar enableDam en IQ.
+# "anthropic/" provider against the OpenRouter Anthropic endpoint (and NOT "openrouter/"):
+#   the HCL MCP Server publishes tools with dots in the name (dam.mime-type.tool...).
+#   The anthropic/ provider sanitises those names to the format Claude requires and maps them back;
+#   openrouter/ (OpenAI format) sends them as they are and Claude rejects the request (HTTP 400).
+#   Format: model "anthropic/<OpenRouter id>", api_base https://openrouter.ai/api
+#
+# Do not use OpenAI reasoning models (gpt-5.x): they inject reasoning_effort and break the IQ
+# tools. With non-Claude models, HCL says to disable enableDam in IQ.
 replicaCount: 1
 
 image:
   repository: ghcr.io/berriai/litellm
-  tag: "1.106.5"            # fijada (= appVersion del chart); el chart usa pullPolicy Always por defecto
+  tag: "1.106.5"            # pinned (= chart appVersion); the chart uses pullPolicy Always by default
   pullPolicy: IfNotPresent
 
-# Master key y clave de OpenRouter en el secret litellm-env (01-secrets.sh)
+# Master key and OpenRouter key in the litellm-env secret (01-secrets.sh)
 masterkeySecretName: litellm-env
 masterkeySecretKey: PROXY_MASTER_KEY
 environmentSecrets:
   - litellm-env
 
-# Sin base de datos: por defecto el chart despliega su propio PostgreSQL (deployStandalone: true)
+# No database: by default the chart deploys its own PostgreSQL (deployStandalone: true)
 db:
   deployStandalone: false
   useExisting: false
@@ -44,9 +46,9 @@ proxy_config:
         model: anthropic/anthropic/claude-sonnet-4.6
         api_base: https://openrouter.ai/api
         api_key: os.environ/OPENROUTER_API_KEY
-        # Prompt caching: marca el system prompt como fin de la parte cacheable. Anthropic cachea
-        # por prefijo (herramientas -> system -> mensajes): cubre las ~53 herramientas y el prompt,
-        # que son la mayor parte de los tokens de cada petición de IQ.
+        # Prompt caching: marks the system prompt as the end of the cacheable part. Anthropic caches
+        # by prefix (tools -> system -> messages): it covers the ~53 tools and the prompt, which
+        # are most of the tokens of every IQ request.
         cache_control_injection_points:
           - location: message
             role: system
@@ -59,7 +61,7 @@ proxy_config:
           - location: message
             role: system
   litellm_settings:
-    drop_params: true       # HCL: imprescindible; descarta parámetros que el proveedor no admite
+    drop_params: true       # HCL: essential; drops parameters the provider does not accept
     json_logs: true
   general_settings:
     master_key: os.environ/PROXY_MASTER_KEY

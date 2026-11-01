@@ -1,14 +1,15 @@
-# Lab 0 · StorageClasses para la POC en un solo nodo (k3s en WSL2). Lo aplica 01-storage.sh.
+# Lab 0 · StorageClasses for the single-node PoC (k3s on WSL2). Applied by 01-storage.sh, which
+# replaces ${SC_RWO} / ${SC_RWX} with the names in env.sh (dx-deploy-rwo / dx-deploy-rwx by default).
 #
-#   dx-deploy-rwo  -> aprovisionador local-path que trae k3s (dinámico: crea un directorio por PVC)
-#   dx-deploy-rwx  -> ESTÁTICA (no-provisioner): el local-path de k3s solo admite ReadWriteOnce y el
-#                     chart de DX pide ReadWriteMany para los binarios de DAM. En un solo nodo, un
-#                     PersistentVolume hostPath sí es RWX de verdad (todos los pods ven el mismo disco):
-#                     01-storage.sh lo crea con el nombre dx-poc-dam-binaries.
+#   RWO -> local-path provisioner shipped with k3s (dynamic: one directory per PVC)
+#   RWX -> STATIC (no-provisioner): k3s local-path only supports ReadWriteOnce and the DX chart
+#          asks for ReadWriteMany for the DAM binaries. On a single node a hostPath
+#          PersistentVolume really is RWX (every pod sees the same disk): 01-storage.sh creates
+#          it with the name dx-poc-dam-binaries.
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: dx-deploy-rwo
+  name: ${SC_RWO}
 provisioner: rancher.io/local-path
 reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
@@ -16,7 +17,7 @@ volumeBindingMode: WaitForFirstConsumer
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: dx-deploy-rwx
+  name: ${SC_RWX}
 provisioner: kubernetes.io/no-provisioner
 reclaimPolicy: Retain
 volumeBindingMode: WaitForFirstConsumer

@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
-# Lab 3 · Apéndice · Prepara la BD iqdb en dx-pg (dx-shared) y el secret de IQ en dx-demo.
-# El rol dx_iq_db_user ya lo crea CNPG (spec.managed.roles del cluster del Lab 2B).
-# IQ crea sus propias tablas al arrancar: no hay script de esquema.
+# Lab 3 · Appendix · Prepare the iqdb database in $PG_CLUSTER (shared namespace) and the IQ secret
+# in the DX namespace. The dx_iq_db_user role is already created by CNPG (spec.managed.roles of the
+# Lab 2B cluster). IQ creates its own tables when it starts: there is no schema script.
 set -euo pipefail
 source "$(dirname "$0")/../common/lib.sh"
 require_vars SHARED_NS DX_NS PG_CLUSTER IQ_DB_PASSWORD
 
 POD=$(kubectl -n "$SHARED_NS" get pod -l cnpg.io/cluster="$PG_CLUSTER",cnpg.io/instanceRole=primary -o name | head -1)
-[[ -n "$POD" ]] || die "No hay cluster $PG_CLUSTER en $SHARED_NS: haz antes el Lab 2B"
+[[ -n "$POD" ]] || die "No cluster $PG_CLUSTER in $SHARED_NS: do Lab 2B first"
 
-info "Base de datos iqdb"
-if kubectl -n "$SHARED_NS" exec -i "$POD" -c postgres -- psql -U postgres -Atc "select 1 from pg_database where datname='iqdb'" | grep -q 1; then
-  ok "iqdb ya existe"
+info "iqdb database"
+if kubectl -n "$SHARED_NS" exec -i "$POD" -c postgres -- psql -U postgres -Atc "select 1 from pg_database where datname='iqdb'" </dev/null | grep -q 1; then
+  ok "iqdb already exists"
 else
   kubectl -n "$SHARED_NS" exec -i "$POD" -c postgres -- psql -U postgres -v ON_ERROR_STOP=1 <<'SQL'
 CREATE DATABASE iqdb OWNER dx_iq_db_user;
@@ -20,9 +20,9 @@ GRANT CONNECT, TEMPORARY ON DATABASE iqdb TO dx_iq_db_user;
 SQL
 fi
 
-info "Secret custom-external-db-credentials en $DX_NS"
+info "Secret custom-external-db-credentials in $DX_NS"
 apply_secret "$DX_NS" generic custom-external-db-credentials \
   --from-literal=username=dx_iq_db_user --from-literal=password="$IQ_DB_PASSWORD"
 
-echo "Siguiente:  ./04-iq-install.sh -f custom-iq-values.db-external.yaml"
-echo "Tras abrir un chat:  kubectl -n $SHARED_NS exec -i ${POD#pod/} -c postgres -- psql -U postgres -d iqdb -c '\\dt'"
+echo "Next:  ./04-iq-install.sh -f custom-iq-values.db-external.yaml"
+echo "After opening a chat:  kubectl -n $SHARED_NS exec -i ${POD#pod/} -c postgres -- psql -U postgres -d iqdb -c '\\dt'"

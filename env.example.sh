@@ -1,104 +1,113 @@
 #!/usr/bin/env bash
 # ------------------------------------------------------------------------------------------
-# Configuración de los laboratorios. Úsalo así:
+# Lab configuration. Two ways to create your env.sh:
 #
-#   cp env.example.sh env.sh      # env.sh está en .gitignore: tus credenciales no se suben
-#   vi env.sh                     # rellena al menos las variables marcadas con  # <<<
-#   source ./env.sh               # hay que CARGARLO (source), no ejecutarlo
+#   a) By hand:
+#        cp env.example.sh env.sh      # env.sh is in .gitignore: your credentials are never committed
+#        vi env.sh                     # fill in at least the variables marked with  # <<<
+#   b) With the OPTIONAL configuration wizard (a static web page, see README.md): it generates an
+#      env.sh that sets your values and then loads this file for every other default.
 #
-# Todos los scripts de los labs lo cargan automáticamente si no lo has hecho tú.
-# Cualquier variable que ya tengas exportada en tu shell se respeta.
+#   source ./env.sh                    # it must be LOADED (source), not executed
+#
+# Every lab script loads env.sh automatically if you have not done it yourself.
+# Any variable already exported in your shell is respected.
 # ------------------------------------------------------------------------------------------
 
 export REPO_ROOT="${REPO_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 
-# --- Plataforma ---------------------------------------------------------------------------
-# kubernetes : k3s, RKE2, EKS, AKS, GKE... (es la que usamos en el webinar: k3s)
-# openshift  : Red Hat OpenShift (namespaces con anotaciones SCC y Route en vez de Ingress)
+# --- Platform -----------------------------------------------------------------------------
+# kubernetes : k3s, RKE2, EKS, AKS, GKE... (the reference environment of the labs is k3s)
+# openshift  : Red Hat OpenShift (namespaces with SCC annotations and a Route instead of an Ingress)
 export PLATFORM="${PLATFORM:-kubernetes}"
 
 # --- Namespaces ---------------------------------------------------------------------------
-export DX_NS="${DX_NS:-dx-demo}"            # software de HCL: DX Compose e IQ
-export SHARED_NS="${SHARED_NS:-dx-shared}"  # software de terceros: OpenLDAP, PostgreSQL, LiteLLM
+export DX_NS="${DX_NS:-dx-demo}"            # HCL software: DX Compose, IQ, search
+export SHARED_NS="${SHARED_NS:-dx-shared}"  # everything that is not HCL: OpenLDAP, PostgreSQL, LiteLLM, own MCP
 
-# --- Releases de Helm ---------------------------------------------------------------------
-export DX_RELEASE="${DX_RELEASE:-dx-deployment}"   # hcl-dx-deployment (pods dx-deployment-*)
-export IQ_RELEASE="${IQ_RELEASE:-dx-iq}"           # hcl-dx-iq (servicio dx-iq-integrator)
-export SEARCH_RELEASE="${SEARCH_RELEASE:-dx-search}"  # hcl-dx-search (el chart de DX espera "dx-search")
-export LDAP_RELEASE="${LDAP_RELEASE:-openldap}"    # OpenLDAP (servicio openldap)
+# --- Helm releases ------------------------------------------------------------------------
+export DX_RELEASE="${DX_RELEASE:-dx-deployment}"      # hcl-dx-deployment (pods dx-deployment-*)
+export IQ_RELEASE="${IQ_RELEASE:-dx-iq}"              # hcl-dx-iq (service dx-iq-integrator)
+export SEARCH_RELEASE="${SEARCH_RELEASE:-dx-search}"  # hcl-dx-search (the DX chart expects "dx-search")
+export LDAP_RELEASE="${LDAP_RELEASE:-openldap}"       # OpenLDAP (service openldap)
 export LITELLM_RELEASE="${LITELLM_RELEASE:-litellm}"
 
-# --- Acceso externo a DX ------------------------------------------------------------------
-# FQDN con el que se accede a DX. Debe resolver al Ingress (k8s) o al router (OpenShift).
-export DX_HOST="${DX_HOST:-dx-demo.apps.promox.europesip-lab.com}"   # <<<
-export INGRESS_CLASS="${INGRESS_CLASS:-nginx}"     # solo PLATFORM=kubernetes
-# POC en un solo nodo (Lab 0, k3s en WSL2): 1 = reservas de recursos reducidas para que los
-# cuatro labs quepan en ~15 GiB. Vacío en un clúster normal.
+# --- Storage ------------------------------------------------------------------------------
+# DX needs one ReadWriteOnce and one ReadWriteMany StorageClass (docs/requirements.md).
+export SC_RWO="${SC_RWO:-dx-deploy-rwo}"   # Web Engine, Persistence Node, PostgreSQL, OpenLDAP, OpenSearch
+export SC_RWX="${SC_RWX:-dx-deploy-rwx}"   # DAM binaries (shared by the DAM pods)
+
+# --- External access to DX ----------------------------------------------------------------
+# FQDN used to reach DX. It must resolve to the Ingress (Kubernetes) or the router (OpenShift).
+export DX_HOST="${DX_HOST:-dx-demo.example.com}"   # <<<
+export INGRESS_CLASS="${INGRESS_CLASS:-nginx}"     # PLATFORM=kubernetes only
+# Single-node PoC (Lab 0, k3s on WSL2): 1 = reduced resource requests so that the four labs fit
+# in ~15 GiB. Leave empty on a normal cluster.
 export DX_POC="${DX_POC:-}"
 
-# --- Harbor oficial de HCL (hclcr.io) -----------------------------------------------------
-# Usuario: el e-mail de tu cuenta de HCL. Token: "CLI secret" de tu perfil en https://hclcr.io
-# (User Profile -> CLI secret). Se usa para descargar los charts y para el imagePullSecret.
+# --- Official HCL Harbor (hclcr.io) -------------------------------------------------------
+# User: the e-mail of your HCL account. Token: the "CLI secret" of your profile on https://hclcr.io
+# (User Profile -> CLI secret). Used to download the charts and for the imagePullSecret.
 export HCL_REGISTRY="${HCL_REGISTRY:-hclcr.io}"
 export HCL_HARBOR_USER="${HCL_HARBOR_USER:-}"      # <<<
 export HCL_HARBOR_TOKEN="${HCL_HARBOR_TOKEN:-}"    # <<<
 
-# --- Versiones (HCL DX Compose CF238) -----------------------------------------------------
+# --- Versions (HCL DX Compose CF238) ------------------------------------------------------
 export DX_CHART="${DX_CHART:-oci://${HCL_REGISTRY}/dx-compose/hcl-dx-deployment}"
 export DX_CHART_VERSION="${DX_CHART_VERSION:-2.49.0}"
 export IQ_CHART="${IQ_CHART:-oci://${HCL_REGISTRY}/dx/hcl-dx-iq}"
 export IQ_CHART_VERSION="${IQ_CHART_VERSION:-1.0.2}"
+export SEARCH_CHART="${SEARCH_CHART:-oci://${HCL_REGISTRY}/dx-compose/hcl-dx-search}"   # Lab 4
+export SEARCH_CHART_VERSION="${SEARCH_CHART_VERSION:-2.36.0}"
 export CHARTS_DIR="${CHARTS_DIR:-$REPO_ROOT/charts}"
 export DX_CHART_TGZ="${DX_CHART_TGZ:-$CHARTS_DIR/hcl-dx-deployment-${DX_CHART_VERSION}.tgz}"
 export IQ_CHART_TGZ="${IQ_CHART_TGZ:-$CHARTS_DIR/hcl-dx-iq-${IQ_CHART_VERSION}.tgz}"
-export SEARCH_CHART="${SEARCH_CHART:-oci://${HCL_REGISTRY}/dx-compose/hcl-dx-search}"   # Lab 4
-export SEARCH_CHART_VERSION="${SEARCH_CHART_VERSION:-2.36.0}"
 export SEARCH_CHART_TGZ="${SEARCH_CHART_TGZ:-$CHARTS_DIR/hcl-dx-search-${SEARCH_CHART_VERSION}.tgz}"
 
-# Software de terceros (versiones fijadas y probadas)
+# Third-party software (pinned, tested versions)
 export LDAP_CHART_VERSION="${LDAP_CHART_VERSION:-4.3.3}"        # helm-openldap/openldap-stack-ha
-export CNPG_CHART_VERSION="${CNPG_CHART_VERSION:-0.29.1}"       # cnpg/cloudnative-pg (operador 1.30.1)
+export CNPG_CHART_VERSION="${CNPG_CHART_VERSION:-0.29.1}"       # cnpg/cloudnative-pg (operator 1.30.1)
 export LITELLM_CHART="${LITELLM_CHART:-oci://ghcr.io/berriai/litellm-helm}"
 export LITELLM_CHART_VERSION="${LITELLM_CHART_VERSION:-1.106.5}"
 
-# --- Contraseñas --------------------------------------------------------------------------
-# Por defecto TODAS las contraseñas del laboratorio son "EuropeS1P": los usuarios con los que se
-# entra en DX (wpsadmin y los 7 del LDAP: andres, eduardo, macarena, enrique, jordi, patricia,
-# german) y las cuentas técnicas (admin del OpenLDAP, PostgreSQL, base de datos de IQ).
-# Es una contraseña de LABORATORIO y es pública (está en este repositorio): cámbiala en cualquier
-# entorno que no sea una demo.
-# Deben ser ESTABLES: si cambias una después de crear su secret, vuelve a ejecutar el script
-# que lo crea. Evita los caracteres  ' " \ $ & |  (se usan en ficheros de propiedades y LDIF).
-export WPSADMIN_PASSWORD="${WPSADMIN_PASSWORD:-EuropeS1P}"        # Lab 1: wpsadmin de DX
-export LDAP_USERS_PASSWORD="${LDAP_USERS_PASSWORD:-EuropeS1P}"    # Lab 2A: usuarios de demo del LDAP
-# Cuentas técnicas (no se usan para entrar en DX)
-export LDAP_ADMIN_PASSWORD="${LDAP_ADMIN_PASSWORD:-EuropeS1P}"      # Lab 2A: cn=admin del OpenLDAP (bind de DX)
+# --- Passwords ----------------------------------------------------------------------------
+# By default ALL lab passwords are "EuropeS1P": the users that log in to DX (wpsadmin and the 7
+# LDAP users: andres, eduardo, macarena, enrique, jordi, patricia, german) and the technical
+# accounts (OpenLDAP admin, PostgreSQL, IQ database).
+# It is a LAB password and it is public (it is in this repository): change it anywhere that is
+# not a test environment.
+# They must be STABLE: if you change one after its secret was created, run the script that creates
+# it again. Avoid the characters  ' " \ $ & |  (used in properties files and LDIF).
+export WPSADMIN_PASSWORD="${WPSADMIN_PASSWORD:-EuropeS1P}"        # Lab 1: DX wpsadmin
+export LDAP_USERS_PASSWORD="${LDAP_USERS_PASSWORD:-EuropeS1P}"    # Lab 2A: LDAP demo users
+# Technical accounts (not used to log in to DX)
+export LDAP_ADMIN_PASSWORD="${LDAP_ADMIN_PASSWORD:-EuropeS1P}"      # Lab 2A: OpenLDAP cn=admin (DX bind user)
 export PG_SUPERUSER_PASSWORD="${PG_SUPERUSER_PASSWORD:-EuropeS1P}"  # Lab 2B: postgres
-export DXUSER_PASSWORD="${DXUSER_PASSWORD:-EuropeS1P}"              # Lab 2B: dxuser (dueño de dx_core, BD del Web Engine)
-export IQ_DB_PASSWORD="${IQ_DB_PASSWORD:-EuropeS1P}"                # Lab 2B/3: dx_iq_db_user (opcional en Lab 3)
+export DXUSER_PASSWORD="${DXUSER_PASSWORD:-EuropeS1P}"              # Lab 2B: dxuser (owner of dx_core, Web Engine DB)
+export IQ_DB_PASSWORD="${IQ_DB_PASSWORD:-EuropeS1P}"                # Lab 2B/3: dx_iq_db_user (optional in Lab 3)
 
-# --- Lab 3: IQ con OpenRouter -------------------------------------------------------------
+# --- Lab 3: IQ with OpenRouter ------------------------------------------------------------
 export OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}"        # <<< Lab 3: sk-or-v1-...
-# Clave maestra de LiteLLM (debe empezar por "sk-"). Si la dejas vacía, 01-secrets.sh del Lab 3
-# reutiliza la que ya esté en el clúster o genera una nueva.
+# LiteLLM master key (must start with "sk-"). If empty, Lab 3 01-secrets.sh reuses the one already
+# in the cluster or generates a new one.
 export LITELLM_MASTER_KEY="${LITELLM_MASTER_KEY:-}"
 
-# --- Lab 2 · Rama empresarial (opcional): Active Directory y Oracle -------------------------
-# Solo si sigues lab2-ldap-postgres/GUIA-empresa.md en lugar de OpenLDAP / PostgreSQL.
-export AD_HOST="${AD_HOST:-}"                    # dc01.empresa.local
+# --- Lab 2 · Enterprise path (optional): Active Directory and Oracle ----------------------
+# Only if you follow lab2-ldap-postgres/GUIDE-enterprise.md instead of OpenLDAP / PostgreSQL.
+export AD_HOST="${AD_HOST:-}"                    # dc01.company.local
 export AD_PORT="${AD_PORT:-389}"                 # 389 LDAP · 636 LDAPS
-export AD_SSL="${AD_SSL:-false}"                 # true con 636 (y AD_CA_FILE)
-export AD_BASE_DN="${AD_BASE_DN:-}"              # DC=empresa,DC=local
-export AD_BIND_USER="${AD_BIND_USER:-}"          # svc-dx@empresa.local (solo lectura)
+export AD_SSL="${AD_SSL:-false}"                 # true with 636 (and AD_CA_FILE)
+export AD_BASE_DN="${AD_BASE_DN:-}"              # DC=company,DC=local
+export AD_BIND_USER="${AD_BIND_USER:-}"          # svc-dx@company.local (read-only)
 export AD_BIND_PASSWORD="${AD_BIND_PASSWORD:-}"
-export AD_CA_FILE="${AD_CA_FILE:-}"              # CA del AD en PEM (LDAPS)
-export AD_ADMIN_GROUP_DN="${AD_ADMIN_GROUP_DN:-}" # (referencia) CN=DX-Admins,OU=Grupos,DC=empresa,DC=local
-export ORACLE_JDBC_URL="${ORACLE_JDBC_URL:-}"    # jdbc:oracle:thin:@tcps://oracle.empresa.local:2484/WPSDB
+export AD_CA_FILE="${AD_CA_FILE:-}"              # AD CA in PEM (LDAPS)
+export AD_ADMIN_GROUP_DN="${AD_ADMIN_GROUP_DN:-}" # (reference) CN=DX-Admins,OU=Groups,DC=company,DC=local
+export ORACLE_JDBC_URL="${ORACLE_JDBC_URL:-}"    # jdbc:oracle:thin:@tcps://oracle.company.local:2484/WPSDB
 export ORACLE_DX_USER="${ORACLE_DX_USER:-wpsuser}"
 export ORACLE_DX_PASSWORD="${ORACLE_DX_PASSWORD:-}"
-export ORACLE_CA_FILE="${ORACLE_CA_FILE:-}"      # CA del listener TCPS en PEM
+export ORACLE_CA_FILE="${ORACLE_CA_FILE:-}"      # TCPS listener CA in PEM
 
-# --- Derivadas (no tocar) -----------------------------------------------------------------
+# --- Derived values (do not change) -------------------------------------------------------
 export PG_CLUSTER="${PG_CLUSTER:-dx-pg}"
 export PG_HOST="${PG_HOST:-${PG_CLUSTER}-rw.${SHARED_NS}.svc.cluster.local}"
 export LDAP_HOST="${LDAP_HOST:-${LDAP_RELEASE}.${SHARED_NS}.svc.cluster.local}"

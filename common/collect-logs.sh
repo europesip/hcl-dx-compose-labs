@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Recoge el estado y los logs de DX (y de dx-shared) en ./logs-<fecha>/ para analizar un problema
-# o enviarlo a soporte. Solo lectura.
+# Collect the status and logs of DX (and dx-shared) into ./logs-<date>/ to analyse a problem or
+# send it to support. Read-only.
 set -uo pipefail
 source "$(dirname "$0")/lib.sh"
 
 OUT="./logs-$(date +%Y%m%d-%H%M%S)"
 mkdir -p "$OUT"
-info "Recogiendo en $OUT"
+info "Collecting into $OUT"
 
 for n in "$DX_NS" "$SHARED_NS"; do
   kubectl -n "$n" get pods -o wide        > "$OUT/$n-pods.txt" 2>&1
@@ -17,12 +17,12 @@ done
 kubectl top nodes > "$OUT/top-nodes.txt" 2>&1
 helm list -n "$DX_NS" > "$OUT/helm-list.txt" 2>&1
 helm list -n "$SHARED_NS" >> "$OUT/helm-list.txt" 2>&1
-# Values efectivos (los secretos referenciados no aparecen: solo sus nombres)
+# Effective values (referenced secrets do not appear: only their names)
 helm -n "$DX_NS" get values "$DX_RELEASE" > "$OUT/dx-user-values.yaml" 2>&1
 
-# Logs de todos los contenedores de la release (actuales y del arranque anterior)
+# Logs of every container of the release (current and previous start)
 kubectl -n "$DX_NS" logs -l release="$DX_RELEASE" --all-containers --prefix --tail=-1 > "$OUT/dx-current.log" 2>&1
 kubectl -n "$DX_NS" logs -l release="$DX_RELEASE" --all-containers --prefix --tail=-1 --previous > "$OUT/dx-previous.log" 2>&1
 
 ls -lh "$OUT"
-echo "Revisa los ficheros antes de compartirlos: pueden contener nombres de usuario y hosts internos."
+echo "Review the files before sharing them: they may contain user names and internal host names."

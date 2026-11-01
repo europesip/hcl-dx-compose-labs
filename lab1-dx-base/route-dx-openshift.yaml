@@ -1,5 +1,5 @@
-# OpenShift (PLATFORM=openshift) · Route de DX con TLS passthrough. Lo aplica 03-expose.sh.
-# El router de OpenShift no descifra el tráfico: el TLS lo termina HAProxy de DX con dx-tls-cert.
+# OpenShift (PLATFORM=openshift) · DX Route with TLS passthrough. Applied by 03-expose.sh.
+# The OpenShift router does not decrypt the traffic: TLS is terminated by the DX HAProxy with dx-tls-cert.
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:

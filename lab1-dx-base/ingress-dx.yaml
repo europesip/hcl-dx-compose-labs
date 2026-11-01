@@ -1,13 +1,13 @@
-# Kubernetes (PLATFORM=kubernetes) · Ingress de DX con ingress-nginx. Lo aplica 03-expose.sh
-# sustituyendo las variables de env.sh.
+# Kubernetes (PLATFORM=kubernetes) · DX Ingress with ingress-nginx. Applied by 03-expose.sh,
+# which replaces the env.sh variables.
 #
-# El TLS se termina en el Ingress con el mismo certificado dx-tls-cert y el Ingress vuelve a
-# cifrar hacia HAProxy (backend-protocol HTTPS), que es el único punto de entrada de DX.
-# Se publica "/" entero: DX usa /wps, /dx (API, DAM, IQ), /hcl, /ibm y /adminCenter.
+# TLS is terminated at the Ingress with the same dx-tls-cert certificate and the Ingress
+# re-encrypts towards HAProxy (backend-protocol HTTPS), the only entry point of DX.
+# The whole "/" is published: DX uses /wps, /dx (API, DAM, IQ), /hcl, /ibm and /adminCenter.
 #
-# k3s trae Traefik por defecto; el clúster del webinar usa ingress-nginx. Con Traefik, quita las
-# anotaciones nginx, usa ingressClassName: traefik y un ServersTransport con insecureSkipVerify
-# (HAProxy sirve un certificado autofirmado) o una IngressRouteTCP con passthrough.
+# k3s ships Traefik by default; the reference lab cluster uses ingress-nginx. With Traefik, remove
+# the nginx annotations, use ingressClassName: traefik and a ServersTransport with
+# insecureSkipVerify (HAProxy serves a self-signed certificate) or an IngressRouteTCP with passthrough.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -15,8 +15,8 @@ metadata:
   namespace: ${DX_NS}
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"          # subidas grandes a DAM
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"     # respuestas largas de IQ
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"          # large uploads to DAM
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"     # long IQ responses
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
 spec:
   ingressClassName: ${INGRESS_CLASS}

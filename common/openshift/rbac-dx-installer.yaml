@@ -1,14 +1,14 @@
-# Solo OpenShift, y solo si la instalación la hace un usuario sin cluster-admin (p. ej. "dxadmin").
-# En el webinar (k3s) trabajamos con el kubeconfig de administrador y este fichero no se usa.
+# OpenShift only, and only if the installation is done by a user without cluster-admin (e.g. "dxadmin").
+# In the reference lab environment (k3s) we use the admin kubeconfig and this file is not used.
 #
-# Como cluster-admin:
+# As cluster-admin:
 #   oc adm policy add-role-to-user admin dxadmin -n dx-demo
 #   oc adm policy add-role-to-user admin dxadmin -n dx-shared
 #   oc apply -f common/openshift/rbac-dx-installer.yaml
 #   oc adm policy add-role-to-user dx-installer-extra-perms dxadmin -n dx-demo
 #
-# El rol "admin" de OpenShift no incluye EndpointSlices ni endpoints/restricted, que el chart de DX
-# necesita gestionar. Este ClusterRole (asignado solo en el namespace) añade esos permisos.
+# The OpenShift "admin" role does not include EndpointSlices or endpoints/restricted, which the DX
+# chart needs to manage. This ClusterRole (bound only in the namespace) adds those permissions.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:

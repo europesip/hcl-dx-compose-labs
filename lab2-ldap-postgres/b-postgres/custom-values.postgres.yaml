@@ -1,18 +1,18 @@
 # ------------------------------------------------------------------------------------------
-# Lab 2B · Capa de DX: Web Engine sobre el PostgreSQL de dx-shared (transferencia desde Derby)
-# La añade common/dx-helm.sh en cuanto existe el secret custom-credentials-webengine-dbdomain-secret.
+# Lab 2B · DX layer: Web Engine on the PostgreSQL in the shared namespace (transfer from Derby)
+# Added by common/dx-helm.sh as soon as the custom-credentials-webengine-dbdomain-secret exists.
 #
-# Documentación: DX Compose CF238 > Configuring an external database and database transfer.
-# ⚠️ PostgreSQL aún no está soportado por HCL para el Web Engine (ver GUIA, apartado 2B).
+# Documentation: DX Compose CF238 > Configuring an external database and database transfer.
+# ⚠️ PostgreSQL is not yet supported by HCL for the Web Engine (see GUIDE, section 2B).
 # ------------------------------------------------------------------------------------------
 configuration:
   webEngine:
-    # true = en el siguiente arranque el Web Engine transfiere UNA vez los datos de Derby a la BD
-    # externa. Lo registra al terminar, así que reinicios y upgrades posteriores no la repiten.
+    # true = on the next start the Web Engine transfers the Derby data to the external database
+    # ONCE. It records it when finished, so later restarts and upgrades do not repeat it.
     useExternalDatabase: true
     customDbTypePropertiesSecret: custom-credentials-webengine-dbtype-secret
     customDbDomainPropertiesSecret: custom-credentials-webengine-dbdomain-secret
-    # false: la BD de destino está vacía (recién creada por CNPG). Solo se pone a true si hay que
-    # rehacer la transferencia sobre una BD con tablas (BORRA su contenido); en ese caso, vuelve a
-    # false en cuanto termine (recomendación de HCL).
+    # false: the target database is empty (just created by CNPG). Set it to true only to redo
+    # the transfer over a database that already has tables (it DELETES its content); in that
+    # case, set it back to false as soon as it finishes (HCL recommendation).
     dropDatabaseTables: false

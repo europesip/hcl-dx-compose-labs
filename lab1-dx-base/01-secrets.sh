@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
-# Lab 1 · Paso 3 · Crea en dx-demo los tres secrets que referencia custom-values.yaml:
-#   regcred            docker-registry de hclcr.io (pull de las imágenes de HCL)
-#   dx-tls-cert        certificado TLS de HAProxy (autofirmado, salvo que aportes el tuyo)
-#   web-engine-secret  usuario y contraseña de wpsadmin
+# Lab 1 · Step 3 · Create in the DX namespace the three secrets referenced by custom-values.yaml:
+#   regcred            docker-registry for hclcr.io (pull of the HCL images)
+#   dx-tls-cert        HAProxy TLS certificate (self-signed, unless you provide your own)
+#   web-engine-secret  wpsadmin user and password
 #
-# Certificado corporativo: exporta TLS_CERT (cadena completa: servidor -> intermedia -> raíz)
-# y TLS_KEY (clave privada sin contraseña) antes de ejecutar el script.
+# Corporate certificate: export TLS_CERT (full chain: server -> intermediate -> root)
+# and TLS_KEY (private key without passphrase) before running the script.
 set -euo pipefail
 source "$(dirname "$0")/../common/lib.sh"
 require_cmd kubectl openssl
 require_vars DX_NS DX_HOST HCL_REGISTRY HCL_HARBOR_USER HCL_HARBOR_TOKEN WPSADMIN_PASSWORD
 cd "$(dirname "$0")"
 
-info "regcred (imagePullSecret de $HCL_REGISTRY)"
+info "regcred (imagePullSecret for $HCL_REGISTRY)"
 apply_secret "$DX_NS" docker-registry regcred \
   --docker-server="$HCL_REGISTRY" \
   --docker-username="$HCL_HARBOR_USER" \
@@ -21,13 +21,13 @@ apply_secret "$DX_NS" docker-registry regcred \
 
 info "dx-tls-cert"
 if [[ -n "${TLS_CERT:-}" && -n "${TLS_KEY:-}" ]]; then
-  echo "  usando el certificado aportado: $TLS_CERT"
+  echo "  using the provided certificate: $TLS_CERT"
   CERT="$TLS_CERT"; KEY="$TLS_KEY"
 else
   CERT=dx-tls.crt; KEY=dx-tls.key
   if [[ ! -f "$CERT" ]]; then
-    echo "  generando certificado autofirmado para $DX_HOST (válido 365 días)"
-    # Con subjectAltName: los navegadores actuales ignoran el CN
+    echo "  generating a self-signed certificate for $DX_HOST (valid for 365 days)"
+    # With subjectAltName: current browsers ignore the CN
     openssl req -x509 -newkey rsa:2048 -nodes -sha256 -days 365 \
       -keyout "$KEY" -out "$CERT" \
       -subj "/CN=${DX_HOST}" -addext "subjectAltName=DNS:${DX_HOST}" 2>/dev/null

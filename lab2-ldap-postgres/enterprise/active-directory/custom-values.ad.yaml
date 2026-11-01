@@ -1,0 +1,81 @@
+# ------------------------------------------------------------------------------------------
+# Lab 2 · Enterprise branch · DX layer: authentication against Microsoft Active Directory
+# Added by common/dx-helm.sh as soon as the dx-ad-bind secret exists (01-secrets-ad.sh).
+# It replaces the OpenLDAP layer (a-ldap/custom-values.ldap.yaml): the two are never used together.
+#
+# Unlike the OpenLDAP branch (native configuration.webEngine.ldap block), here the configuration
+# is written by hand with configOverrideFiles: the native chart block generates OpenLDAP filters
+# (inetOrgPerson / groupOfUniqueNames) and AD needs its own (sAMAccountName, objectCategory,
+# memberOf). Documentation: DX Compose CF238 > "Configuration changes using overrides"
+# (Configuring LDAP section).
+#
+# The AD data is NOT in this file: it arrives as environment variables from the dx-ad-bind secret
+# (customSecrets) and Open Liberty replaces them in the XML (${AD_HOST}, ...).
+# ------------------------------------------------------------------------------------------
+configuration:
+  webEngine:
+    # Environment variables AD_HOST, AD_PORT, AD_BASE_DN, AD_BIND_USER, AD_BIND_PASSWORD, AD_SSL
+    customSecrets:
+      ad-config: "dx-ad-bind"
+
+    # LDAPS (port 636): create the secret with the AD CA and uncomment (see GUIDE-enterprise.md)
+    # customTruststoreSecrets:
+    #   ad-ca: "dx-ad-ca"
+
+    configOverrideFiles:
+      ad-registry.xml: |
+        <server description="DX Web Engine - Microsoft Active Directory">
+          <ldapRegistry id="ad" realm="ActiveDirectoryRealm"
+              host="${AD_HOST}" port="${AD_PORT}"
+              baseDN="${AD_BASE_DN}"
+              bindDN="${AD_BIND_USER}" bindPassword="${AD_BIND_PASSWORD}"
+              ldapType="Microsoft Active Directory"
+              sslEnabled="${AD_SSL}"
+              ignoreCase="true"
+              referral="ignore"
+              recursiveSearch="false"
+              bindAuthMechanism="simple"
+              returnToPrimaryServer="true"
+              allUserAttributes="true"
+              searchPageSize="500"
+              searchTimeLimit="15s"
+              readTimeout="30s"
+              connectTimeout="10s">
+
+            <!-- Login by sAMAccountName (the "Windows user"); groups by memberOf/member -->
+            <activedFilters
+                userFilter="(&amp;(sAMAccountName=%v)(objectcategory=person))"
+                groupFilter="(&amp;(cn=%v)(objectcategory=group))"
+                userIdMap="user:sAMAccountName"
+                groupIdMap="*:cn"
+                groupMemberIdMap="memberOf:member"/>
+
+            <attributeConfiguration>
+              <attribute name="sAMAccountName" propertyName="uid" entityType="PersonAccount"/>
+              <attribute name="mail" propertyName="ibm-primaryEmail" entityType="PersonAccount"/>
+              <attribute name="title" propertyName="ibm-jobTitle" entityType="PersonAccount"/>
+            </attributeConfiguration>
+
+            <ldapEntityType name="PersonAccount">
+              <objectClass>person</objectClass>
+            </ldapEntityType>
+            <ldapEntityType name="Group">
+              <objectClass>group</objectClass>
+            </ldapEntityType>
+
+            <groupProperties>
+              <memberAttribute name="member" scope="direct" objectClass="group"/>
+              <membershipAttribute name="memberOf" scope="direct"/>
+            </groupProperties>
+
+            <loginProperty name="uid">uid</loginProperty>
+          </ldapRegistry>
+
+          <!-- Joins the chart basic registry (wpsadmin) and the AD in a single realm -->
+          <federatedRepository>
+            <primaryRealm name="FederatedRealm" allowOpIfRepoDown="true">
+              <participatingBaseEntry name="o=defaultWIMFileBasedRealm"/>
+              <participatingBaseEntry name="${AD_BASE_DN}"/>
+            </primaryRealm>
+          </federatedRepository>
+        </server>

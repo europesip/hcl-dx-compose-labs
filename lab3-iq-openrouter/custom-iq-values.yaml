@@ -1,64 +1,65 @@
 # ------------------------------------------------------------------------------------------
-# Lab 3 · custom-iq-values.yaml · chart hcl-dx-iq 1.0.2 (CF238) · release dx-iq · namespace dx-demo
-# Sin secretos. Se usa siempre con helm upgrade -f (nunca --reuse-values).
-# configuration.dx.releaseName y externalHost los pasa 04-iq-install.sh desde env.sh.
+# Lab 3 · custom-iq-values.yaml · chart hcl-dx-iq 1.0.2 (CF238) · release dx-iq · DX namespace
+# No secrets. Always used with helm upgrade -f (never --reuse-values).
+# Set from env.sh by 04-iq-install.sh: configuration.dx.releaseName, externalHost and the
+# LiteLLM URL (both occurrences of http://litellm.dx-shared...:4000 below).
 #
-# Desviaciones respecto a la documentación de HCL (necesarias en IQ 1.0.2, ver GUIA, apartado 3):
-#   - LITELLM_BASE_URL: variable no documentada pero imprescindible.
-#   - LiteLLM detrás de OpenRouter: HCL no valida OpenRouter (sí LiteLLM).
+# Deviations from the HCL documentation (needed in IQ 1.0.2, see GUIDE, section 3):
+#   - LITELLM_BASE_URL: undocumented but essential variable.
+#   - LiteLLM in front of OpenRouter: HCL does not validate OpenRouter (it does validate LiteLLM).
 # ------------------------------------------------------------------------------------------
 images:
   repository: "hclcr.io"
   imagePullSecrets:
     - name: regcred
-  # Sin tags: el chart trae las imágenes compatibles con CF238
+  # No tags: the chart ships the images compatible with CF238
 
 configuration:
   dx:
     releaseName: "dx-deployment"   # = DX_RELEASE
-    externalHost: ""               # = DX_HOST; el LLM lo usa para construir los enlaces que devuelve
-    # Vacío = se entra por HAProxy de DX (https://<releaseName>-haproxy:443)
+    externalHost: ""               # = DX_HOST; the LLM uses it to build the links it returns
+    # Empty = enter through the DX HAProxy (https://<releaseName>-haproxy:443)
     internalHost: ""
     port: 443
     ssl: true
 
-  # Sesiones de chat en SQLite en memoria (se pierden al reiniciar el pod). Para guardarlas en el
-  # PostgreSQL de dx-shared, ver el apéndice de la GUIA (custom-iq-values.db-external.yaml).
+  # Chat sessions in in-memory SQLite (lost when the pod restarts). To store them in the
+  # PostgreSQL of the shared namespace, see the GUIDE appendix (custom-iq-values.db-external.yaml).
   database:
     enabled: false
 
   mcpServer:
     standaloneMode: false
     enableWcm: true
-    # Funciona con Claude gracias al proveedor anthropic/ de LiteLLM (ver litellm-values.yaml).
-    # Con un proveedor que no corrija los nombres de herramienta con puntos -> enableDam: false
+    # Works with Claude thanks to the LiteLLM anthropic/ provider (see litellm-values.yaml).
+    # With a provider that does not fix tool names containing dots -> enableDam: false
     enableDam: true
 
-  # LiteLLM vive en otro namespace: se usa el FQDN del servicio (= LITELLM_URL_INTERNAL)
+  # LiteLLM lives in another namespace: the service FQDN is used (= LITELLM_URL_INTERNAL)
   litellm:
     liteLlmUrl: "http://litellm.dx-shared.svc.cluster.local:4000"
 
   licensing:
-    deploymentKey: ""        # vacío: clave estática de iq-litellm-api-secret (sin KMS)
+    deploymentKey: ""        # empty: static key from iq-litellm-api-secret (no KMS)
 
 environment:
   pod:
     integrator:
       - name: "DX_CONTEXT_ROOT"
         value: "/wps"
-      # Tope de tokens de respuesta, por debajo del máximo de los dos modelos (Haiku 4.5: 64k)
+      # Response token cap, below the maximum of both models (Haiku 4.5: 64k)
       - name: "LLM_MAX_TOKENS"
         value: "16384"
-      # No documentada pero imprescindible en el Integrator 1.0.2: es la URL que usa realmente el
-      # adaptador LLM. Sin ella llama a una URL interna de HCL. Mismo valor que litellm.liteLlmUrl.
+      # Undocumented but essential in Integrator 1.0.2: it is the URL the LLM adapter really
+      # uses. Without it, it calls an internal HCL URL. Same value as litellm.liteLlmUrl.
       - name: "LITELLM_BASE_URL"
         value: "http://litellm.dx-shared.svc.cluster.local:4000"
-      # LITELLM_URL y LITELLM_API_KEY NO van aquí: el chart las redefine. La clave llega con el
-      # secret iq-litellm-api-secret (01-secrets.sh).
+      # LITELLM_URL and LITELLM_API_KEY do NOT go here: the chart redefines them. The key comes
+      # from the iq-litellm-api-secret secret (01-secrets.sh).
 
 scaling:
   replicas:
-    integrator: 1            # con SQLite en memoria debe ser 1 (multi-pod requiere PostgreSQL)
+    integrator: 1            # with in-memory SQLite it must be 1 (multi-pod requires PostgreSQL)
     mcpServer: 1
 
 resources:
@@ -72,7 +73,7 @@ resources:
 logging:
   integrator:
     level:
-      - "api:server-v1:*=info"     # "api:*=debug" solo mientras depuras
+      - "api:server-v1:*=info"     # "api:*=debug" only while debugging
   mcpServer:
     level:
       - "api:server-v1:*=info"

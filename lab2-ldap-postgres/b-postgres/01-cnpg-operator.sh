@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Lab 2B · Paso 1 · Instala el operador CloudNativePG (CNPG) en dx-shared.
-# CNPG es un proyecto CNCF: imágenes oficiales de PostgreSQL con versiones fijadas, y bases de
-# datos, roles y tablespaces declarativos. El operador vigila todo el clúster (clusterWide) y
-# sus CRD (Cluster, Backup...) son globales.
+# Lab 2B · Step 1 · Install the CloudNativePG (CNPG) operator in the shared namespace.
+# CNPG is a CNCF project: official PostgreSQL images with pinned versions, and declarative
+# databases, roles and tablespaces. The operator watches the whole cluster (clusterWide) and its
+# CRDs (Cluster, Backup...) are global.
 #
-# OpenShift: en lugar de este chart, instala "CloudNativePG" desde OperatorHub (operador
-# certificado), en el namespace openshift-operators o en dx-shared.
+# OpenShift: instead of this chart, install "CloudNativePG" from OperatorHub (certified operator),
+# in the openshift-operators namespace or in dx-shared.
 set -euo pipefail
 source "$(dirname "$0")/../../common/lib.sh"
 require_cmd helm kubectl

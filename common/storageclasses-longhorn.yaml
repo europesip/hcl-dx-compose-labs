@@ -1,19 +1,20 @@
-# REFERENCIA · StorageClasses del clúster del webinar (k3s + Longhorn 1.12).
+# REFERENCE · StorageClasses of the reference lab cluster (k3s + Longhorn 1.12).
 #
-# DX necesita dos StorageClasses (los nombres se usan en lab1-dx-base/custom-values.yaml y en
-# lab2-ldap-postgres/b-postgres/03-cluster-dx-pg.yaml):
+# DX needs two StorageClasses. Their names are set in env.sh (SC_RWO / SC_RWX) and the scripts
+# pass them to every chart:
 #   dx-deploy-rwo  ReadWriteOnce  -> Web Engine (customization, log), Persistence Node, License Manager,
-#                                    PostgreSQL (CNPG) y OpenLDAP
-#   dx-deploy-rwx  ReadWriteMany  -> binarios de DAM (compartidos entre pods de DAM)
+#                                    PostgreSQL (CNPG), OpenLDAP and OpenSearch
+#   dx-deploy-rwx  ReadWriteMany  -> DAM binaries (shared by the DAM pods)
 #
-# Crear o adaptar las StorageClasses es tarea del administrador del clúster. Si las tuyas se llaman
-# de otra forma, cambia los nombres en esos dos ficheros.
+# Creating or adapting the StorageClasses is the cluster administrator's job. If yours have other
+# names, just set SC_RWO / SC_RWX in env.sh.
 #
-# Longhorn sirve RWX con un "share-manager" NFS: los nodos necesitan el cliente NFS
-# (Ubuntu: apt install nfs-common). En OpenShift lo habitual es ODF (ocs-storagecluster-ceph-rbd
-# para RWO y ocs-storagecluster-cephfs para RWX) o un aprovisionador NFS.
+# Longhorn serves RWX with an NFS "share-manager": nodes need the NFS client
+# (Ubuntu: apt install nfs-common). On OpenShift the usual choice is ODF (ocs-storagecluster-ceph-rbd
+# for RWO and ocs-storagecluster-cephfs for RWX) or an NFS provisioner.
+# No cluster at all? Lab 0 (lab0-poc-wsl) builds a single-node one on WSL2.
 #
-# Aplicar (solo si no existen):   kubectl apply -f common/storageclasses-longhorn.yaml
+# Apply (only if they do not exist):   kubectl apply -f common/storageclasses-longhorn.yaml
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:

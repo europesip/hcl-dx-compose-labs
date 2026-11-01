@@ -1,16 +1,17 @@
-# Lab 0 · Volumen RWX de los binarios de DAM para la POC (hostPath en el único nodo).
-# Lo crea 01-storage.sh. Capacidad = volumes.digitalAssetManagement.binaries del Lab 1 (10Gi).
+# Lab 0 · RWX volume for the DAM binaries in the PoC (hostPath on the only node).
+# Created by 01-storage.sh (which replaces ${SC_RWX}). Capacity = volumes.digitalAssetManagement.binaries
+# of Lab 1 (10Gi).
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: dx-poc-dam-binaries
-  labels: { webinar: hcl-dx-compose }
+  labels: { lab: hcl-dx-compose }
 spec:
   capacity:
     storage: 10Gi
   accessModes: [ReadWriteMany]
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: dx-deploy-rwx
+  storageClassName: ${SC_RWX}
   hostPath:
     path: /var/lib/dx-poc/dam-binaries
     type: DirectoryOrCreate

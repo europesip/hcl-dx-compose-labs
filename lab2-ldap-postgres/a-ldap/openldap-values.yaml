@@ -1,29 +1,29 @@
-# Lab 2A · OpenLDAP de laboratorio en dx-shared (software de terceros, no de HCL)
-# Chart comunitario helm-openldap/openldap-stack-ha 4.3.3 (OpenLDAP 2.6.9, imagen jpgouin/openldap).
-# En un cliente real se usaría su directorio corporativo (OpenLDAP, Active Directory, etc.) y este
-# paso desaparece: solo cambian host, puerto, sufijo y usuario de bind en custom-values.ldap.yaml.
+# Lab 2A · Lab OpenLDAP in the shared namespace (third-party software, not HCL)
+# Community chart helm-openldap/openldap-stack-ha 4.3.3 (OpenLDAP 2.6.9, image jpgouin/openldap).
+# With a real customer you would use their corporate directory (OpenLDAP, Active Directory, etc.)
+# and this step disappears: only host, port, suffix and bind user change in custom-values.ldap.yaml.
 #
-# Resultado:
-#   servicio  openldap.dx-shared.svc.cluster.local:389 (ldap) y :636 (ldaps)
-#   sufijo    dc=dxdemo,dc=com
-#   admin     cn=admin,dc=dxdemo,dc=com  (contraseña en el secret openldap-admin)
-#   usuarios  ou=users,dc=dxdemo,dc=com: andres, enrique, jordi, macarena, german
+# Result:
+#   service   openldap.dx-shared.svc.cluster.local:389 (ldap) and :636 (ldaps)
+#   suffix    dc=dxdemo,dc=com
+#   admin     cn=admin,dc=dxdemo,dc=com  (password in the openldap-admin secret)
+#   users     ou=users,dc=dxdemo,dc=com: andres, eduardo, macarena, enrique, jordi, patricia, german
 
 global:
   ldapDomain: "dc=dxdemo,dc=com"
-  # Contraseñas en un secret creado por 01-ldap-install.sh (no en este fichero)
+  # Passwords in a secret created by 01-ldap-install.sh (not in this file)
   existingSecret: openldap-admin
 
 replicaCount: 1
 replication:
-  enabled: false             # un solo nodo: sin replicación multi-master
+  enabled: false             # single node: no multi-master replication
 
 persistence:
   enabled: true
-  storageClass: dx-deploy-rwo
+  storageClass: dx-deploy-rwo   # overridden by 01-ldap-install.sh with ${SC_RWO}
   size: 1Gi
 
-# Estructura y usuarios de demo. Se cargan SOLO en el primer arranque (PVC vacío).
+# Demo structure and users. Loaded ONLY on the first start (empty PVC).
 customLdifCm: openldap-demo-ldif
 
 ltb-passwd:
@@ -35,8 +35,8 @@ resources:
   requests: { cpu: 50m, memory: 128Mi }
   limits:   { cpu: 500m, memory: 512Mi }
 
-# OpenShift: la SCC restricted-v2 no permite el runAsUser/fsGroup fijos del chart. Descomenta
-# para que OpenShift asigne el UID del rango del namespace:
+# OpenShift: the restricted-v2 SCC does not allow the fixed runAsUser/fsGroup of the chart.
+# Uncomment so that OpenShift assigns a UID from the namespace range:
 # podSecurityContext:
 #   enabled: false
 # containerSecurityContext:
