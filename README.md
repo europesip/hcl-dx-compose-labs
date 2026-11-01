@@ -3,18 +3,29 @@
 **English** · [Español](README.es.md) · [Configuration wizard (optional, experimental)](https://europesip.github.io/hcl-dx-compose-labs/about.html)
 
 Hands-on labs to **install HCL Digital Experience Compose step by step**, as a proof of concept
-(PoC). You start from an empty cluster and build the platform in four labs, each one on top of the
-previous one:
+(PoC). You start from an existing Kubernetes or OpenShift cluster, without DX, and build the platform
+in four labs, each one on top of the previous one.
+
+> **Where to start.** The ideal path is to **start with Lab 1**, on a Kubernetes or OpenShift
+> cluster that is **already installed** and meets the [base requirements](docs/requirements.md)
+> (resources, two StorageClasses, an Ingress or router and DNS), local or in the cloud.
+> Lab 0 is **not** part of that path: see *No cluster?* below the table.
 
 | Lab | What you do | ⏱ Run time |
 |---|---|---|
-| [Lab 0 · PoC on your PC](lab0-poc-wsl/GUIDE.md) *(optional)* | **Only if you cannot access any Kubernetes cluster**, local or in the cloud: single-node k3s in a new WSL2 distro, with simulated StorageClasses, the Ingress and reduced resources. A PoC environment, not a reference one | ~10 min |
-| [Lab 1 · Base DX](lab1-dx-base/GUIDE.md) | Requirements, namespaces, secrets, Helm chart from the HCL Harbor, installation and external access | ~10 min |
+| ▶ [Lab 1 · Base DX](lab1-dx-base/GUIDE.md) · **start here** | The start of the installation: a **minimal, working base installation** of DX Compose. It checks the base requirements and covers namespaces, secrets, the Helm chart from the HCL Harbor, the installation and external access. The other labs are built on top of it | ~10 min |
 | [Lab 2 · LDAP and PostgreSQL](lab2-ldap-postgres/GUIDE.md) | **2A**: authentication against OpenLDAP. **2B**: transfer of the Web Engine database from Derby to PostgreSQL | ~27 min (2A ~10 · 2B ~17) |
 | ↳ [Lab 2 · enterprise branch](lab2-ldap-postgres/GUIDE-enterprise.md) *(optional)* | The same iterations against **Active Directory** (with `configOverrideFiles`) and **Oracle** (TCPS), common in corporate environments | reference |
 | [Lab 3 · IQ with OpenRouter](lab3-iq-openrouter/GUIDE.md) | **3A**: the DX AI assistant (IQ) using LiteLLM as a proxy to OpenRouter (Claude) instead of AWS Bedrock. **3B**: EUROPESIP custom MCP Server (services, support, labs and the figma&web-to-dx tool) | ~13 min (3A ~10 · 3B ~3) |
 | [Lab 4 · Search with OpenSearch](lab4-opensearch/GUIDE.md) | Search V2: OpenSearch + Search Middleware (`hcl-dx-search` 2.36.0), certificates and `adminDN`, crawling of WCM, portal and JCR, and search through the API | ~10 min |
-| | **Total run time** | **~60 min** |
+| | **Total run time** (Labs 1 to 4) | **~60 min** |
+
+> **No cluster? Lab 0 (optional).** Only if you have **no Kubernetes environment already deployed**
+> where you can do the PoC and you want to **emulate one on your own PC**: [Lab 0 · PoC on your
+> PC](lab0-poc-wsl/GUIDE.md) builds a single-node k3s in a new WSL2 distro (Windows 10/11), with
+> simulated StorageClasses, the Ingress and reduced resources (~10 min). Then you continue with Lab 1
+> as everybody else. It is a simplified PoC environment, not a reference one: if you can use a real
+> cluster, skip it.
 
 > ⚠️ **Labs for learning, not for production.** At the end of the labs you have a **working**
 > HCL DX Compose installation, but they are designed as a **PoC**: to understand and practise the

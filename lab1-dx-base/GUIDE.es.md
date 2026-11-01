@@ -2,7 +2,11 @@
 
 [English](GUIDE.md) · **Español**
 
-**Objetivo:** instalar HCL DX Compose CF238 en el namespace `dx-demo` desde el Harbor oficial de
+**Punto de partida:** un clúster Kubernetes u OpenShift ya instalado que cumpla los
+[requisitos base](../docs/requirements.es.md) (o la PoC de un nodo del [Lab 0](../lab0-poc-wsl/GUIDE.es.md),
+solo si no tienes clúster). Aquí empieza la instalación.
+
+**Objetivo:** una **instalación base mínima y funcional**: instalar HCL DX Compose CF238 en el namespace `dx-demo` desde el Harbor oficial de
 HCL y acceder al portal en `https://$DX_HOST/wps/portal`.
 
 **⏱ Tiempo estimado: ~10 minutos** (+ la descarga de imágenes la primera vez).
