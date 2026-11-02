@@ -11,6 +11,7 @@ Issues found while preparing this PoC with HCL DX Compose CF238 (`hcl-dx-deploym
 |---|---|---|---|
 | **CS1479102** | 2026-11-02 | IQ: the MCP server list set as documented is ignored | Open, being reproduced by HCL |
 | **CS1479139** | 2026-11-02 | IQ: the system prompt describes an active RAG memory while RAG is disabled | Open |
+| **CS1479178** | 2026-11-02 | IQ: requests to the LLM cannot use prompt caching, so every call pays full price for a ~30,000-token prefix | Open |
 
 ### CS1479102 · IQ ignores `MCP_SERVER_LIST`
 
@@ -40,26 +41,7 @@ Issues found while preparing this PoC with HCL DX Compose CF238 (`hcl-dx-deploym
 - **Solution in the labs.** None for now: it does not block IQ, and the section is part of the product
   prompt. Waiting for HCL.
 
-## Issues not reported (no case opened)
-
-### HCL is aware: expected in a future release
-
-| Issue | Solution in the labs |
-|---|---|
-| **The Web Engine on PostgreSQL is not supported in CF238** (DB2, Oracle and SQL Server are). HCL is validating PostgreSQL for the Web Engine (its tests work with PostgreSQL 18). In our tests, the Web Engine (OpenJPA) generates `LIKE … ESCAPE '\'` (DB2/Oracle style), which PostgreSQL rejects with "invalid escape string" with its default settings | Lab 2B is presented as a learning exercise, not as a supported configuration. The PostgreSQL preparation script sets `standard_conforming_strings = off` (and `escape_string_warning = off`) on `dx_core` |
-
-### IQ (hcl-dx-iq 1.0.2)
-
-| Issue | Solution in the labs | Case? |
-|---|---|---|
-| **`LITELLM_BASE_URL` is undocumented but required.** With only the documented `configuration.litellm.liteLlmUrl`, the Integrator's LLM adapter does not send the requests to our LiteLLM | `LITELLM_BASE_URL` set in `environment.pod.integrator` with the same URL (`custom-iq-values.yaml`) | Candidate for a case |
-| **`LITELLM_URL` and `LITELLM_API_KEY` cannot be overridden** through `environment.pod.integrator`: the chart defines them again | The URL goes in `configuration.litellm.liteLlmUrl` (+ `LITELLM_BASE_URL`); the key in the `iq-litellm-api-secret` secret | To be added as a comment to CS1479102 |
-| **MCP tool names contain dots** (`dam.mime-type…`), which the Anthropic and OpenAI APIs reject (`[a-zA-Z0-9_-]` only): with a provider that does not adapt them, the whole request fails with HTTP 400 | LiteLLM uses its `anthropic/` provider against the Anthropic-compatible endpoint of OpenRouter, which sanitises the names. HCL recommends `enableDam: false` with non-Claude models | No (improvement request) |
-| **The Integrator reads the MCP tools only when it starts.** If it starts before the MCP Server is ready (normal on a fresh install), it has no tools until it is restarted | The install waits for the MCP Server and then restarts the Integrator (`04-iq-install.sh`) | No |
-| **OpenRouter is not validated by HCL** (the HCL guides use AWS Bedrock) | Documented in Lab 3: OpenRouter is used through LiteLLM to avoid the AWS Bedrock account set-up | No (by design) |
-| **IQ does not request prompt caching** (details below) | LiteLLM adds the cache mark (`cache_control_injection_points` in `litellm-values.yaml`) | No (improvement request) |
-
-#### IQ does not request prompt caching
+### CS1479178 · IQ requests cannot use prompt caching
 
 - **Problem.** Every request from the Integrator carries the same large fixed prefix: the MCP tool
   definitions and the system prompt. Measured in the LiteLLM debug log (58 tools, CF238): **29,654
@@ -81,17 +63,36 @@ Issues found while preparing this PoC with HCL DX Compose CF238 (`hcl-dx-deploym
   $20 a day (≈ $4,800 a month saved). The cache lives 5 minutes, so the saving depends on traffic:
   with very sparse use most calls pay the write (+25 %), and with steady use almost all read.
   Bedrock prices and caching rules for Claude are similar, and the HCL reference configuration
-  (LiteLLM + Bedrock) has the same problem unless the gateway adds the mark.
+  (LiteLLM + Bedrock) should have the same problem unless the gateway adds the mark (not tested).
+  Evidence sent with the case (LiteLLM without the workaround): 2 questions from 2 different IQ
+  sessions, 4 model calls, identical ~30,000-token prefix, `cache_read_input_tokens=0` on every call.
 - **Solution in the labs (workaround).** LiteLLM injects the mark at the end of the system message
   for both models (`cache_control_injection_points: [{location: message, role: system}]` in
   `lab3-iq-openrouter/litellm-values.yaml`). Tools and system prompt go before it, so the whole
   prefix is cached. Verified in the LiteLLM log: first call `cache_creation_input_tokens=29654`,
   second call `cache_read_input_tokens=29654`. The conversation history after the system prompt is
   not cached; that is a small part of each request.
-- **Why an improvement request and not a bug.** IQ works and its answers are correct; caching is a
-  cost and latency optimisation the product does not promise. The request to HCL would be: mark the
-  cacheable prefix in the requests (or document the gateway setting above as part of the
-  recommended LiteLLM configuration).
+- **Reported as a defect** because of its business impact: the excessive cost of every IQ call. The
+  case asks HCL to mark the cacheable prefix in the Integrator requests and, until then, to document
+  the gateway configuration.
+
+## Issues not reported (no case opened)
+
+### HCL is aware: expected in a future release
+
+| Issue | Solution in the labs |
+|---|---|
+| **The Web Engine on PostgreSQL is not supported in CF238** (DB2, Oracle and SQL Server are). HCL is validating PostgreSQL for the Web Engine (its tests work with PostgreSQL 18). In our tests, the Web Engine (OpenJPA) generates `LIKE … ESCAPE '\'` (DB2/Oracle style), which PostgreSQL rejects with "invalid escape string" with its default settings | Lab 2B is presented as a learning exercise, not as a supported configuration. The PostgreSQL preparation script sets `standard_conforming_strings = off` (and `escape_string_warning = off`) on `dx_core` |
+
+### IQ (hcl-dx-iq 1.0.2)
+
+| Issue | Solution in the labs | Case? |
+|---|---|---|
+| **`LITELLM_BASE_URL` is undocumented but required.** With only the documented `configuration.litellm.liteLlmUrl`, the Integrator's LLM adapter does not send the requests to our LiteLLM | `LITELLM_BASE_URL` set in `environment.pod.integrator` with the same URL (`custom-iq-values.yaml`) | Candidate for a case |
+| **`LITELLM_URL` and `LITELLM_API_KEY` cannot be overridden** through `environment.pod.integrator`: the chart defines them again | The URL goes in `configuration.litellm.liteLlmUrl` (+ `LITELLM_BASE_URL`); the key in the `iq-litellm-api-secret` secret | To be added as a comment to CS1479102 |
+| **MCP tool names contain dots** (`dam.mime-type…`), which the Anthropic and OpenAI APIs reject (`[a-zA-Z0-9_-]` only): with a provider that does not adapt them, the whole request fails with HTTP 400 | LiteLLM uses its `anthropic/` provider against the Anthropic-compatible endpoint of OpenRouter, which sanitises the names. HCL recommends `enableDam: false` with non-Claude models | No (improvement request) |
+| **The Integrator reads the MCP tools only when it starts.** If it starts before the MCP Server is ready (normal on a fresh install), it has no tools until it is restarted | The install waits for the MCP Server and then restarts the Integrator (`04-iq-install.sh`) | No |
+| **OpenRouter is not validated by HCL** (the HCL guides use AWS Bedrock) | Documented in Lab 3: OpenRouter is used through LiteLLM to avoid the AWS Bedrock account set-up | No (by design) |
 
 ### Search V2 (hcl-dx-search 2.36.0)
 

@@ -11,6 +11,7 @@ Problemas encontrados al preparar esta PoC con HCL DX Compose CF238 (`hcl-dx-dep
 |---|---|---|---|
 | **CS1479102** | 2026-11-02 | IQ: la lista de servidores MCP configurada como dice la documentación se ignora | Abierto, HCL lo está reproduciendo |
 | **CS1479139** | 2026-11-02 | IQ: el *system prompt* describe una memoria RAG activa aunque el RAG está desactivado | Abierto |
+| **CS1479178** | 2026-11-02 | IQ: las peticiones al LLM no pueden usar *prompt caching*, así que cada llamada paga a precio completo un prefijo de ~30.000 tokens | Abierto |
 
 ### CS1479102 · IQ ignora `MCP_SERVER_LIST`
 
@@ -41,26 +42,7 @@ Problemas encontrados al preparar esta PoC con HCL DX Compose CF238 (`hcl-dx-dep
 - **Solución en los labs.** Ninguna de momento: no bloquea IQ y la sección forma parte del *prompt* del
   producto. Pendiente de HCL.
 
-## Problemas no reportados (sin case abierto)
-
-### HCL lo conoce: previsto para una versión futura
-
-| Problema | Solución en los labs |
-|---|---|
-| **El Web Engine sobre PostgreSQL no está soportado en CF238** (sí DB2, Oracle y SQL Server). HCL está validando PostgreSQL para el Web Engine (sus pruebas funcionan con PostgreSQL 18). En nuestras pruebas, el Web Engine (OpenJPA) genera `LIKE … ESCAPE '\'` (estilo DB2/Oracle), que PostgreSQL rechaza con «invalid escape string» con su configuración por defecto | El Lab 2B se presenta como ejercicio de aprendizaje, no como configuración soportada. El script de preparación de PostgreSQL pone `standard_conforming_strings = off` (y `escape_string_warning = off`) en `dx_core` |
-
-### IQ (hcl-dx-iq 1.0.2)
-
-| Problema | Solución en los labs | ¿Case? |
-|---|---|---|
-| **`LITELLM_BASE_URL` no está documentada pero es imprescindible.** Con solo el valor documentado `configuration.litellm.liteLlmUrl`, el adaptador LLM del Integrator no envía las peticiones a nuestro LiteLLM | `LITELLM_BASE_URL` en `environment.pod.integrator` con la misma URL (`custom-iq-values.yaml`) | Candidato a case |
-| **`LITELLM_URL` y `LITELLM_API_KEY` no se pueden sobrescribir** con `environment.pod.integrator`: el chart las vuelve a definir | La URL va en `configuration.litellm.liteLlmUrl` (+ `LITELLM_BASE_URL`); la clave, en el secret `iq-litellm-api-secret` | Pendiente de añadir como comentario al CS1479102 |
-| **Los nombres de las herramientas MCP llevan puntos** (`dam.mime-type…`), que las APIs de Anthropic y OpenAI rechazan (solo `[a-zA-Z0-9_-]`): con un proveedor que no los adapte, la petición entera falla con HTTP 400 | LiteLLM usa su proveedor `anthropic/` contra el endpoint compatible con Anthropic de OpenRouter, que adapta los nombres. HCL recomienda `enableDam: false` con modelos que no sean Claude | No (petición de mejora) |
-| **El Integrator solo lee las herramientas MCP al arrancar.** Si arranca antes de que el MCP Server esté listo (lo normal en una instalación nueva), se queda sin herramientas hasta que se reinicia | La instalación espera al MCP Server y después reinicia el Integrator (`04-iq-install.sh`) | No |
-| **OpenRouter no está validado por HCL** (las guías de HCL usan AWS Bedrock) | Documentado en el Lab 3: se usa OpenRouter a través de LiteLLM para evitar preparar una cuenta de AWS Bedrock | No (decisión de diseño) |
-| **IQ no pide *prompt caching*** (detalle debajo) | LiteLLM añade la marca de caché (`cache_control_injection_points` en `litellm-values.yaml`) | No (petición de mejora) |
-
-#### IQ no pide *prompt caching*
+### CS1479178 · Las peticiones de IQ no pueden usar *prompt caching*
 
 - **Problema.** Todas las peticiones del Integrator llevan el mismo prefijo fijo y grande: las
   definiciones de las herramientas MCP y el *system prompt*. Medido en el log de LiteLLM en modo
@@ -84,18 +66,37 @@ Problemas encontrados al preparar esta PoC con HCL DX Compose CF238 (`hcl-dx-dep
   unos 180 $ a unos 20 $ diarios (≈ 4.800 $ al mes de ahorro). La caché dura 5 minutos, así que el
   ahorro depende del tráfico: con un uso muy esporádico casi todas las llamadas pagan la escritura
   (+25 %), y con uso continuo casi todas leen. Los precios y las reglas de caché de Claude en Bedrock
-  son parecidos, y la configuración de referencia de HCL (LiteLLM + Bedrock) tiene el mismo problema
-  si la pasarela no añade la marca.
+  son parecidos, y la configuración de referencia de HCL (LiteLLM + Bedrock) debería tener el mismo problema
+  si la pasarela no añade la marca (sin probar).
+  Evidencia enviada con el case (LiteLLM sin el workaround): 2 preguntas desde 2 sesiones de IQ
+  distintas, 4 llamadas al modelo, el mismo prefijo de ~30.000 tokens y `cache_read_input_tokens=0` en todas.
 - **Solución en los labs (workaround).** LiteLLM inyecta la marca al final del mensaje de sistema en
   los dos modelos (`cache_control_injection_points: [{location: message, role: system}]` en
   `lab3-iq-openrouter/litellm-values.yaml`). Las herramientas y el *system prompt* van antes, así que
   se guarda todo el prefijo. Comprobado en el log de LiteLLM: primera llamada
   `cache_creation_input_tokens=29654`, segunda `cache_read_input_tokens=29654`. El historial de la
   conversación, que va después del *system prompt*, no se guarda; es una parte pequeña de cada petición.
-- **Por qué petición de mejora y no bug.** IQ funciona y responde bien; la caché es una optimización
-  de coste y latencia que el producto no promete. Lo que se pediría a HCL: marcar el prefijo cacheable
-  en las peticiones (o documentar el ajuste anterior de la pasarela como parte de la configuración
-  recomendada de LiteLLM).
+- **Reportado como defecto** por su impacto en el negocio: el coste excesivo de cada llamada de IQ.
+  El case pide a HCL que el Integrator marque el prefijo cacheable en sus peticiones y, mientras tanto,
+  que documente la configuración de la pasarela.
+
+## Problemas no reportados (sin case abierto)
+
+### HCL lo conoce: previsto para una versión futura
+
+| Problema | Solución en los labs |
+|---|---|
+| **El Web Engine sobre PostgreSQL no está soportado en CF238** (sí DB2, Oracle y SQL Server). HCL está validando PostgreSQL para el Web Engine (sus pruebas funcionan con PostgreSQL 18). En nuestras pruebas, el Web Engine (OpenJPA) genera `LIKE … ESCAPE '\'` (estilo DB2/Oracle), que PostgreSQL rechaza con «invalid escape string» con su configuración por defecto | El Lab 2B se presenta como ejercicio de aprendizaje, no como configuración soportada. El script de preparación de PostgreSQL pone `standard_conforming_strings = off` (y `escape_string_warning = off`) en `dx_core` |
+
+### IQ (hcl-dx-iq 1.0.2)
+
+| Problema | Solución en los labs | ¿Case? |
+|---|---|---|
+| **`LITELLM_BASE_URL` no está documentada pero es imprescindible.** Con solo el valor documentado `configuration.litellm.liteLlmUrl`, el adaptador LLM del Integrator no envía las peticiones a nuestro LiteLLM | `LITELLM_BASE_URL` en `environment.pod.integrator` con la misma URL (`custom-iq-values.yaml`) | Candidato a case |
+| **`LITELLM_URL` y `LITELLM_API_KEY` no se pueden sobrescribir** con `environment.pod.integrator`: el chart las vuelve a definir | La URL va en `configuration.litellm.liteLlmUrl` (+ `LITELLM_BASE_URL`); la clave, en el secret `iq-litellm-api-secret` | Pendiente de añadir como comentario al CS1479102 |
+| **Los nombres de las herramientas MCP llevan puntos** (`dam.mime-type…`), que las APIs de Anthropic y OpenAI rechazan (solo `[a-zA-Z0-9_-]`): con un proveedor que no los adapte, la petición entera falla con HTTP 400 | LiteLLM usa su proveedor `anthropic/` contra el endpoint compatible con Anthropic de OpenRouter, que adapta los nombres. HCL recomienda `enableDam: false` con modelos que no sean Claude | No (petición de mejora) |
+| **El Integrator solo lee las herramientas MCP al arrancar.** Si arranca antes de que el MCP Server esté listo (lo normal en una instalación nueva), se queda sin herramientas hasta que se reinicia | La instalación espera al MCP Server y después reinicia el Integrator (`04-iq-install.sh`) | No |
+| **OpenRouter no está validado por HCL** (las guías de HCL usan AWS Bedrock) | Documentado en el Lab 3: se usa OpenRouter a través de LiteLLM para evitar preparar una cuenta de AWS Bedrock | No (decisión de diseño) |
 
 ### Search V2 (hcl-dx-search 2.36.0)
 
