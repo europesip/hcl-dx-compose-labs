@@ -102,8 +102,8 @@ Problemas encontrados al preparar esta PoC con HCL DX Compose CF238 (`hcl-dx-dep
 
 | Problema | Solución en los labs | ¿Case? |
 |---|---|---|
-| **`automatedSetup.haproxyProtocol` vale `http` por defecto** (puerto 80), pero el HAProxy de DX solo escucha en 443 con TLS por defecto: los rastreadores agotan el tiempo e indexan 0 documentos | `haproxyProtocol: https` en `custom-search-values.yaml` | Candidato a case |
-| **El File Processor viene desactivado por defecto**, pero el Search Middleware lo busca igualmente y registra «Could not connect to file processor» cada 3 segundos | `applications.fileProcessor: true` | Candidato (junto con el anterior) |
+| **Con DX publicado mediante un Ingress o una Route, los rastreadores usan `http` e indexan 0 documentos.** `automatedSetup.haproxyProtocol` viene vacío por defecto, y entonces el chart elige el protocolo según el tipo del Service del HAProxy de DX: `https` si es `LoadBalancer` (el valor por defecto del chart de DX) y `http` en cualquier otro caso. No mira `networking.haproxy.ssl`, que es lo que decide si HAProxy usa TLS. Con los valores por defecto de los dos charts funciona. Pero publicar DX con un Ingress (Kubernetes) o una Route (OpenShift) implica `serviceType: ClusterIP`, normalmente con el SSL activado: Search llama entonces al HAProxy por el puerto 80, donde no escucha nadie, y los rastreadores agotan el tiempo. La regla solo aparece en un comentario del `values.yaml` del chart de Search; la página de HCL «Installing the Search V2 backend» no la menciona | `haproxyProtocol: https` en `custom-search-values.yaml`, que conviene fijar siempre de forma explícita cuando el HAProxy es `ClusterIP` o `NodePort` con SSL | No (configuración nuestra; como mucho, una sugerencia de documentación) |
+| **El File Processor viene desactivado por defecto**, pero el Search Middleware lo busca igualmente y registra «Could not connect to file processor» cada 3 segundos | `applications.fileProcessor: true` | Candidato a case |
 
 ### Instalación con Helm 4
 
