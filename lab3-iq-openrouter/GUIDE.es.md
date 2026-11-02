@@ -252,7 +252,7 @@ la solución de EUROPESIP para generar componentes de DX a partir de diseños.
 ```
                                 ┌─► dx-iq-mcp-server:3000            (HCL, dx-demo)    53 herramientas
  IQ Integrator ── tools/list ───┤
-   (dx-demo)                    └─► europesip-mcp.dx-shared:3000     (propio, dx-shared) 4 herramientas
+   (dx-demo)                    └─► europesip-mcp.dx-shared:3000     (propio, dx-shared) 5 herramientas
 ```
 
 **¿Por qué en `dx-shared`?** IQ ya trae un MCP Server, el de HCL (`dx-iq-mcp-server`), que el
@@ -266,14 +266,15 @@ completo de servicio (`europesip-mcp.dx-shared.svc.cluster.local`).
 
 ### El servidor
 
-[custom-mcp/server.py](custom-mcp/server.py): unas 180 líneas de Python con el SDK oficial de MCP
-(`FastMCP`). Publica cuatro herramientas:
+[custom-mcp/server.py](custom-mcp/server.py): unas 190 líneas de Python con el SDK oficial de MCP
+(`FastMCP`). Publica cinco herramientas:
 
 | Herramienta | IQ la usa cuando el usuario... | Devuelve |
 |---|---|---|
 | `europesip_services()` | pregunta quién es EUROPESIP o qué servicios ofrece | Empresa especializada en productos de HCL e IBM, con amplia experiencia en portales y Domino, fuertes conocimientos en IA (herramientas propias que facilitan su uso y aceleran el desarrollo) y énfasis en la soberanía digital. Remite a https://www.europesip.com |
 | `europesip_faq(topic)` | pregunta por el soporte, la IA, la soberanía digital, los laboratorios, la web o el contacto | El tema pedido. Para "laboratorios", el enlace a este repositorio (https://github.com/europesip/hcl-dx-compose-labs) |
 | `figma_web_to_dx(source)`, mostrada como **figma&web-to-dx** | quiere crear una página o un componente de WCM / Blueprint a partir de Figma, un pantallazo o la URL de un sitio | Que EUROPESIP tiene una herramienta MCP integrada con HCL DX IQ para acelerar el desarrollo de componentes Blueprint desde URLs de Figma, pantallazos o URLs de sitios, y que contacten con EUROPESIP |
+| `europesip_whoami()` | pregunta quién es o con qué usuario ha entrado | **Quién es el usuario que pregunta**, leído de DX con la sesión de ese mismo usuario (ver *Usar la sesión de DX del usuario*, más abajo) |
 | `europesip_echo(text)` | pide expresamente probar el eco | Diagnóstico |
 
 Las respuestas del servidor están en inglés: IQ las traduce al idioma del usuario al contestar.
@@ -323,7 +324,7 @@ ConfigMap con `server.py` + Deployment `python:3.12-slim` (instala `mcp` al arra
 lab3-iq-openrouter/custom-mcp/02-mcp-test.sh
 ```
 
-Desde un pod de `dx-demo` habla MCP como lo hará el Integrator: `initialize`, `tools/list` (las 4
+Desde un pod de `dx-demo` habla MCP como lo hará el Integrator: `initialize`, `tools/list` (las 5
 herramientas) y `tools/call` de `europesip_faq(topic="support")`, que devuelve el horario.
 
 ### Paso 3B-3 · Registrarlo en IQ
@@ -345,8 +346,8 @@ En el log del Integrator:
 
 ```
 Fetched 53 tools from http://dx-iq-mcp-server:3000
-Fetched 4 tools from http://europesip-mcp.dx-shared.svc.cluster.local:3000
-Total tools: 57
+Fetched 5 tools from http://europesip-mcp.dx-shared.svc.cluster.local:3000
+Total tools: 58
 ```
 
 > Cada `helm upgrade` de IQ regenera el ConfigMap. `04-iq-install.sh` vuelve a añadir el servidor
@@ -397,7 +398,34 @@ TOOL europesip_faq topic='support'
 > usuario**, pero también significa que un MCP propio es código de confianza: revisa qué hace, no
 > registres sus valores (este solo registra los nombres) y protege su acceso.
 
-> **Coste.** Las herramientas añadidas viajan en todas las peticiones (estas cuatro, unos 2.600 caracteres ≈ 800-900 tokens)
+#### Usar la sesión de DX del usuario: `europesip_whoami`
+
+`europesip_whoami` muestra cómo un MCP propio puede actuar **como el usuario que pregunta**:
+
+1. Lee la cookie `LtpaToken2` que el Integrator reenvía en el `tools/call`
+   (en FastMCP, `ctx.request_context.request.cookies`).
+2. Llama a DX por dentro del clúster, a través del HAProxy de DX (`DX_URL` en
+   [europesip-mcp.yaml](custom-mcp/europesip-mcp.yaml)), con esa cookie:
+   `GET /wps/mycontenthandler/um/secure/currentuser/profile` (API REST de gestión de usuarios de DX).
+3. DX responde con el perfil de **ese** usuario, así que la herramienta solo ve lo que ese usuario
+   puede ver. Devuelve el nombre distinguido (DN), el `uid`, el nombre y el correo, y nunca el
+   atributo `password` (DX incluye en el perfil el hash del LDAP). El token nunca se registra en el log.
+
+```bash
+IQ_USER=macarena IQ_PASSWORD=EuropeS1P IQ_LANG=es lab3-iq-openrouter/06-iq-chat-test.sh "¿Quién soy?"
+```
+
+```
+  [  1.9s] tool_call: 562b68ed_europesip_whoami Voy a identificarte...
+---- final IQ answer (6.6s) ----
+¡Hola, Macarena! ... uid: macarena · Macarena Demo · uid=macarena,ou=users,dc=dxdemo,dc=com
+```
+
+Cada usuario obtiene su propia identidad (pruébalo con `andres` y con `macarena`). La misma
+técnica permite que un MCP propio lea o cambie contenido de DX **con los permisos del usuario que
+pregunta**, en lugar de con una cuenta administrativa.
+
+> **Coste.** Las herramientas añadidas viajan en todas las peticiones (estas cinco, unos 3.000 caracteres ≈ 800-900 tokens)
 > y cambiar la lista invalida la caché de prompts hasta la siguiente petición.
 
 Para quitarlo: `kubectl -n dx-shared delete deploy/europesip-mcp svc/europesip-mcp cm/europesip-mcp-code`

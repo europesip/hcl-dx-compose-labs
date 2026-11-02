@@ -1,13 +1,16 @@
 """Lab 3B · EUROPESIP custom MCP Server for HCL DX IQ.
 
 An MCP Server is a service that publishes "tools" (functions with a name, a description and
-parameters) that the LLM can decide to call. This one exposes four, over "streamable" HTTP at /mcp
+parameters) that the LLM can decide to call. This one exposes five, over "streamable" HTTP at /mcp
 (the same transport as the HCL MCP Server):
   - europesip_services(): who EUROPESIP is and which services it offers.
   - europesip_faq(topic): support, AI, digital sovereignty, labs, contact...
     Information the model cannot know by itself.
   - figma_web_to_dx(source) -> shown as "figma&web-to-dx": presents the EUROPESIP tool that
     generates WCM / Blueprint components from Figma, screenshots or URLs.
+  - europesip_whoami(): who the user asking IQ is. It uses the user's own DX session: the IQ
+    Integrator forwards the DX session cookies (LtpaToken2...) on every tools/call, and the tool
+    calls DX with them, so it only sees what that user is allowed to see.
   - europesip_echo(text): diagnostics.
 
 Technical names only use [a-zA-Z0-9_-] (required by IQ/Claude); the display name goes in "title".
@@ -15,11 +18,12 @@ The answers are in English; IQ translates them to the user's language when it re
 Every request is logged: method, path and the NAMES of headers and cookies (never their values),
 to see what the IQ Integrator sends. Official MCP SDK for Python (FastMCP).
 """
-import logging, os
+import logging, os, ssl, urllib.error, urllib.request
+import xml.etree.ElementTree as ET
 import uvicorn
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import Context, FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -27,6 +31,8 @@ log = logging.getLogger("europesip-mcp")
 
 WEB = "https://www.europesip.com"
 LABS_REPO = "https://github.com/europesip/hcl-dx-compose-labs"
+# DX entry point inside the cluster (the DX HAProxy service), set in europesip-mcp.yaml
+DX_URL = os.getenv("DX_URL", "https://dx-deployment-haproxy.dx-demo.svc.cluster.local").rstrip("/")
 
 SERVICES = (
     "EUROPESIP is a company specialised in HCL and IBM products, with broad experience in "
@@ -119,6 +125,43 @@ def figma_web_to_dx(source: str = "") -> str:
     return ("EUROPESIP has an MCP tool, figma&web-to-dx, that integrates with HCL DX IQ to make "
             "building Blueprint components easier and faster from simple Figma URLs, website "
             f"screenshots or site URLs. For more information, contact EUROPESIP: {WEB}." + STICK)
+
+# DX User Management REST API: profile of the user that owns the session
+PROFILE_PATH = "/wps/mycontenthandler/um/secure/currentuser/profile?expandRefs=true"
+UM = "{http://www.ibm.com/xmlns/prod/websphere/um.xsd}"
+SHOW = ["uid", "cn", "givenName", "sn", "displayName", "mail", "ibm-primaryEmail", "ibm-jobTitle"]   # never "password"
+TLS = ssl._create_unverified_context()   # lab: the DX HAProxy serves a self-signed certificate
+
+@mcp.tool()
+def europesip_whoami(ctx: Context) -> str:
+    """Tells who the current DX user is (the person asking), using their own DX session: user id,
+    name and distinguished name. Use it when the user asks who they are, which user they are logged
+    in as, or what DX knows about them."""
+    request = ctx.request_context.request
+    token = request.cookies.get("LtpaToken2") if request is not None else None
+    log.info("TOOL europesip_whoami session=%s", "yes" if token else "no")   # never log the token
+    if not token:
+        return "No DX session was received with this call, so the current user cannot be identified."
+    req = urllib.request.Request(DX_URL + PROFILE_PATH, headers={"Cookie": "LtpaToken2=" + token})
+    try:
+        with urllib.request.urlopen(req, context=TLS, timeout=10) as r:   # follows DX's /!ut/p/digest redirect
+            root = ET.fromstring(r.read())
+    except (urllib.error.URLError, ET.ParseError) as e:
+        log.warning("europesip_whoami: DX profile call failed: %s", e)
+        return "DX did not return the profile of the current user (the session may have expired)."
+    dn, found = "", {}
+    for el in root.iter():
+        if el.tag == UM + "profile":
+            dn = el.get("identifier", "")
+        elif el.tag == UM + "attribute" and el.get("name") in SHOW:
+            values = [v.text for v in el if v.tag == UM + "attributeValue" and v.text]
+            if values:
+                found[el.get("name")] = ", ".join(values)
+    if not dn and not found:
+        return "DX did not return the profile of the current user."
+    lines = [f"- {k}: {found[k]}" for k in SHOW if k in found]
+    return ("The user asking is identified by their own DX session (LtpaToken2):\n"
+            f"- distinguished name: {dn}\n" + "\n".join(lines))
 
 @mcp.tool()
 def europesip_echo(text: str) -> str:
