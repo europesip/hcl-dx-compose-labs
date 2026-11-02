@@ -145,10 +145,13 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
       <label class="f"><span class="n" data-i18n="host">DX host name (FQDN)</span>
         <input type="text" id="DX_HOST" value="dx-demo.apps.promox.europesip-lab.com" placeholder="dx-demo.example.com" spellcheck="false">
         <code>DX_HOST</code></label>
-      <label class="f" id="ingressWrap"><span class="n" data-i18n="ingress">IngressClass</span>
-        <input type="text" id="INGRESS_CLASS" value="nginx" spellcheck="false">
+      <label class="f" id="ingressWrap"><span class="n" data-i18n="ingress">Ingress controller</span>
+        <select id="INGRESS_KIND"><option value="nginx" data-i18n="ingNginx">nginx (ingress-nginx) · reference cluster</option><option value="traefik" data-i18n="ingTraefik">traefik · k3s default</option><option value="other" data-i18n="ingOther">Other IngressClass…</option></select>
+        <input type="text" id="INGRESS_CLASS" class="hidden" style="margin-top:6px" placeholder="IngressClass" spellcheck="false">
         <code>INGRESS_CLASS</code></label>
     </div>
+    <p class="hint" id="ingressHint" data-i18n-html="ingh">With <b>nginx</b> or <b>traefik</b> the labs publish DX ready to use (an Ingress or a Traefik IngressRoute that re-encrypts towards the DX HAProxy).
+      With another controller you get the standard Ingress, whose nginx annotations it will ignore: adapt the HTTPS re-encryption towards HAProxy with your controller's own settings.</p>
     <p class="hint" data-i18n-html="hosth">It must resolve to your Ingress controller or OpenShift router.
       Without DNS, a <code>nip.io</code> name such as <code>dx.192.168.1.50.nip.io</code> works.</p>
     <details><summary data-i18n="tlsS">Corporate TLS certificate (optional)</summary>
@@ -340,7 +343,9 @@ const T = {
     po: "Namespaces con anotaciones SCC y una Route passthrough",
     ppn: "PoC en WSL2 (Lab 0)", pp: "Solo si no tienes clúster: k3s de un nodo en tu PC",
     pocw: 'El Lab 0 es un entorno de PoC simplificado y "trucado" (StorageClass RWX simulada, reservas de recursos rebajadas). No válido para producción.',
-    s2: "2 · Acceso a DX", host: "Nombre de host de DX (FQDN)", ingress: "IngressClass",
+    s2: "2 · Acceso a DX", host: "Nombre de host de DX (FQDN)", ingress: "Ingress controller",
+    ingNginx: "nginx (ingress-nginx) · clúster de referencia", ingTraefik: "traefik · el de k3s por defecto", ingOther: "Otra IngressClass…",
+    ingh: 'Con <b>nginx</b> o <b>traefik</b> los labs publican DX listo para usar (un Ingress o una IngressRoute de Traefik que re-cifra hacia el HAProxy de DX). Con otro controlador se genera el Ingress estándar, cuyas anotaciones de nginx ignorará: adapta el re-cifrado HTTPS hacia HAProxy con la configuración propia de tu controlador.',
     hosth: 'Debe resolver a tu Ingress controller o al router de OpenShift. Sin DNS sirve un nombre <code>nip.io</code> como <code>dx.192.168.1.50.nip.io</code>.',
     tlsS: "Certificado TLS corporativo (opcional)",
     tlsH: "Por defecto el Lab 1 genera un certificado autofirmado. Para usar el tuyo, indica las rutas en tu estación de trabajo.",
@@ -391,6 +396,8 @@ const M = {
     wSearch: "The search release is not dx-search: the DX chart reads the shared push-admin credential from dx-search by default. It works only if you know how to adapt it.",
     wPw: "The password contains characters that break properties/LDIF files: ' \" \\ $ & |",
     wOra: "TCPS JDBC URL without a listener CA file: 01-secrets-oracle.sh will ask for ORACLE_CA_FILE.",
+    eIngress: "Other IngressClass: enter its name.",
+    wIngress: c => `IngressClass ${c}: the generated Ingress carries nginx annotations; adapt the HTTPS re-encryption towards the DX HAProxy for your controller (lab1-dx-base/ingress-dx.yaml).`,
   },
   es: {
     eHost: "Nombre de host de DX: escribe un nombre completo (p. ej. dx-demo.example.com).",
@@ -401,6 +408,8 @@ const M = {
     wSearch: "La release de búsqueda no es dx-search: el chart de DX lee la credencial push-admin compartida de dx-search por defecto. Solo funciona si sabes cómo adaptarlo.",
     wPw: "La contraseña contiene caracteres que rompen los ficheros properties/LDIF: ' \" \\ $ & |",
     wOra: "URL JDBC TCPS sin CA del listener: 01-secrets-oracle.sh pedirá ORACLE_CA_FILE.",
+    eIngress: "Otra IngressClass: escribe su nombre.",
+    wIngress: c => `IngressClass ${c}: el Ingress generado lleva anotaciones de nginx; adapta el re-cifrado HTTPS hacia el HAProxy de DX para tu controlador (lab1-dx-base/ingress-dx.yaml).`,
   }
 };
 let lang = "en";
@@ -433,7 +442,7 @@ function state(){
   const s = {
     platform, poc: platform === "poc", openshift: platform === "openshift",
     DX_HOST: val("DX_HOST") || (platform === "poc" ? "dx-demo.127.0.0.1.nip.io" : ""),
-    INGRESS_CLASS: val("INGRESS_CLASS") || "nginx",
+    INGRESS_CLASS: $("INGRESS_KIND").value === "other" ? val("INGRESS_CLASS") : $("INGRESS_KIND").value,
     TLS_CERT: val("TLS_CERT"), TLS_KEY: val("TLS_KEY"),
     SC_RWO: val("SC_RWO"), SC_RWX: val("SC_RWX"),
     dir: $("dir").value, db: $("db").value,
@@ -461,6 +470,8 @@ function validate(s){
   if (!s.SC_RWO || !s.SC_RWX) err.push(m.eSc);
   if (s.iqdb && (s.db !== "postgres" || !s.lab3)) err.push(m.eIqdb);
   if (s.lab3b && !s.lab3) err.push(m.eMcp);
+  if (!s.openshift && !s.INGRESS_CLASS) err.push(m.eIngress);
+  if (!s.openshift && s.INGRESS_CLASS && !["nginx", "traefik"].includes(s.INGRESS_CLASS)) warn.push(m.wIngress(s.INGRESS_CLASS));
   if (s.SEARCH_RELEASE !== "dx-search" && s.lab4) warn.push(m.wSearch);
   if (/['"\\$&|]/.test(s.LAB_PASSWORD)) warn.push(m.wPw);
   if (s.db === "oracle" && /tcps:\/\//i.test(s.ORACLE_JDBC_URL) && !s.ORACLE_CA_FILE) warn.push(m.wOra);
@@ -1533,13 +1544,15 @@ function update(){
     if (pf === "poc" && $("DX_HOST").value === LAB_HOST) $("DX_HOST").value = POC_HOST;
     if (pf !== "poc" && $("DX_HOST").value === POC_HOST) $("DX_HOST").value = LAB_HOST;
     // Lab 0 uses the Traefik that k3s installs; the reference cluster, ingress-nginx
-    if (pf === "poc" && $("INGRESS_CLASS").value === "nginx") $("INGRESS_CLASS").value = "traefik";
-    if (pf !== "poc" && $("INGRESS_CLASS").value === "traefik") $("INGRESS_CLASS").value = "nginx";
+    if (pf === "poc" && $("INGRESS_KIND").value === "nginx") $("INGRESS_KIND").value = "traefik";
+    if (pf !== "poc" && $("INGRESS_KIND").value === "traefik") $("INGRESS_KIND").value = "nginx";
     lastPlatform = pf;
   }
   const s = state();
   $("pocWarn").classList.toggle("hidden", !s.poc);
   $("ingressWrap").classList.toggle("hidden", s.openshift);
+  $("ingressHint").classList.toggle("hidden", s.openshift);
+  $("INGRESS_CLASS").classList.toggle("hidden", $("INGRESS_KIND").value !== "other");
   $("adBox").classList.toggle("hidden", s.dir !== "ad");
   $("oraBox").classList.toggle("hidden", s.db !== "oracle");
   $("orWrap").classList.toggle("hidden", !s.lab3);
