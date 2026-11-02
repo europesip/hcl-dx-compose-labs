@@ -466,3 +466,7 @@ tokens:
 | 2nd | 0 | 4017 |
 
 The https://openrouter.ai/activity dashboard shows every request and its cost.
+
+> **Tools.** If something fails and you need to open a case with HCL Support:
+> `common/collect-support-data.sh --case <number>` ([support data](../docs/support.md)). To start the
+> installation again from scratch: `common/99-cleanup.sh` ([cleanup](../docs/cleanup.md)).

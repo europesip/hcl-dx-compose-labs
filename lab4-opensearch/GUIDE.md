@@ -235,6 +235,11 @@ In the browser, as wpsadmin:
 > The WCM, JCR and portal crawlers run **every 15 minutes** (`crawlerSchedule`): right after the
 > installation, searches may not return anything yet.
 
+
+> **Tools.** If something fails and you need to open a case with HCL Support:
+> `common/collect-support-data.sh --case <number>` ([support data](../docs/support.md)). To start the
+> installation again from scratch: `common/99-cleanup.sh` ([cleanup](../docs/cleanup.md)).
+
 ---
 
 **Back to the:** [README](../README.md) · **To start from scratch:** [docs/cleanup.md](../docs/cleanup.md)

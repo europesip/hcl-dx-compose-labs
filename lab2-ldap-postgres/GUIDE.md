@@ -383,6 +383,11 @@ lab2-ldap-postgres/b-postgres/99-verify.sh
 - In the portal: the **Lab 1 test page is still there** and `andres` can still log in (the LDAP
   does not depend on the database).
 
+
+> **Tools.** If something fails and you need to open a case with HCL Support:
+> `common/collect-support-data.sh --case <number>` ([support data](../docs/support.md)). To start the
+> installation again from scratch: `common/99-cleanup.sh` ([cleanup](../docs/cleanup.md)).
+
 ---
 
 **Next:** [Lab 3 · IQ with OpenRouter](../lab3-iq-openrouter/GUIDE.md)

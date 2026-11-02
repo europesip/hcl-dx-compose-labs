@@ -17,6 +17,7 @@ END = "// END LAB TEMPLATES"
 # setup-postgres-dx.sql is deliberately NOT here: it is not published.
 FILES = [
     "common/openshift/namespaces.yaml",
+    "common/collect-support-data.sh",
     "lab0-poc-wsl/storage-poc.yaml",
     "lab0-poc-wsl/dam-binaries-pv.yaml",
     "lab0-poc-wsl/custom-values.poc.yaml",

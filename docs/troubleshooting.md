@@ -2,7 +2,7 @@
 
 **English** · [Español](troubleshooting.es.md)
 
-For any problem: `common/collect-logs.sh` saves status, events and logs into `./logs-<date>/`.
+If you need to open a case with HCL Support: `common/collect-support-data.sh --case <number>` collects everything they ask for into a `.tar.gz` (see [support.md](support.md)).
 
 ## Lab 1
 

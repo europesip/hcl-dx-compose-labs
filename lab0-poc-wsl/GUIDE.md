@@ -278,3 +278,7 @@ Everything, including the distro (Windows PowerShell; it deletes the whole distr
 ```powershell
 wsl --unregister dx-poc
 ```
+
+> **Tools.** If something fails and you need to open a case with HCL Support:
+> `common/collect-support-data.sh --case <number>` ([support data](../docs/support.md)). To start the
+> installation again from scratch: `common/99-cleanup.sh` ([cleanup](../docs/cleanup.md)).

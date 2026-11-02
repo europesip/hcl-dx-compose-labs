@@ -467,3 +467,7 @@ a ~10 % del precio. Medido en el laboratorio con dos peticiones iguales de ~4000
 | 2ª | 0 | 4017 |
 
 El panel de https://openrouter.ai/activity muestra cada petición y su coste.
+
+> **Herramientas.** Si algo falla y tienes que abrir un case con HCL Support:
+> `common/collect-support-data.sh --case <número>` ([datos para soporte](../docs/support.es.md)). Para
+> empezar la instalación de cero: `common/99-cleanup.sh` ([limpieza](../docs/cleanup.es.md)).

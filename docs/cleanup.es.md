@@ -6,6 +6,9 @@
 common/99-cleanup.sh
 ```
 
+> Si vas a abrir un case con HCL Support, recoge los datos **antes**
+> (`common/collect-support-data.sh`, ver [support.es.md](support.es.md)): una vez borrado, los logs se pierden.
+
 Pide confirmación (escribe `delete`) y borra, en este orden:
 
 1. Las releases de `dx-demo` (DX, IQ y búsqueda) y sus PVC. Helm no borra los PVC de los StatefulSets

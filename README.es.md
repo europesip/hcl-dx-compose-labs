@@ -193,6 +193,17 @@ con tu clúster. Úsalo en línea en [GitHub Pages](https://europesip.github.io/
 o descárgalo y ábrelo en local (funciona sin conexión). Código fuente: [docs/](docs/) y su propio
 repositorio, [europesip/hcl-dx-compose-labs-wizard](https://github.com/europesip/hcl-dx-compose-labs-wizard).
 
+### Herramientas de soporte y limpieza
+
+Dos herramientas que puedes usar en cualquier momento, estés en el lab que estés:
+
+| Quiero... | Ejecuta | Detalle |
+|---|---|---|
+| **Abrir un case con HCL Support** porque algo falla | `common/collect-support-data.sh --case <número>` | Solo lectura. Recoge lo que pide HCL (technote KB0094817) en un `.tar.gz`, con los secretos enmascarados. [docs/support.es.md](docs/support.es.md) |
+| **Empezar de cero** | `common/99-cleanup.sh` | Borra las releases, los volúmenes y los dos namespaces (pide confirmación). [docs/cleanup.es.md](docs/cleanup.es.md) |
+
+Si necesitas las dos, recoge primero: una vez borrado, los logs se pierden.
+
 ### Qué hay en el repositorio
 
 ```
@@ -202,13 +213,13 @@ common/                    pasos comunes y utilidades
   01-namespaces.sh           crea dx-demo y dx-shared (con anotaciones SCC si es OpenShift)
   02-pull-hcl-charts.sh      login en hclcr.io y descarga de los charts de CF238
   dx-helm.sh                 el ÚNICO helm install/upgrade de DX: base + capas de cada lab
-  collect-logs.sh            recogida de logs para diagnóstico
+  collect-support-data.sh    recoge los datos para un case de HCL Support (.tar.gz)
   99-cleanup.sh              borra todo para repetir los labs desde cero
 lab1-dx-base/              Lab 1
 lab2-ldap-postgres/        Lab 2 (a-ldap/ y b-postgres/; enterprise/ = Active Directory y Oracle)
 lab3-iq-openrouter/        Lab 3 (06-iq-chat-test.sh: pregunta a IQ desde la terminal; custom-mcp/ = 3B)
 lab4-opensearch/           Lab 4 (Search V2 con OpenSearch)
-docs/                      requisitos, Kubernetes vs OpenShift, problemas frecuentes, limpieza
+docs/                      requisitos, Kubernetes vs OpenShift, problemas frecuentes, datos para soporte, limpieza
                            (y el asistente de configuración, servido por GitHub Pages)
 tools/                     mantenimiento (mantiene el asistente sincronizado con los labs, ver CONTRIBUTING.es.md)
 ```

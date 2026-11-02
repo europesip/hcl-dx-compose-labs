@@ -234,6 +234,11 @@ En el navegador, como wpsadmin:
 > Los rastreadores de WCM, JCR y portal se ejecutan **cada 15 minutos** (`crawlerSchedule`): justo
 > después de instalar, las búsquedas pueden no devolver nada todavía.
 
+
+> **Herramientas.** Si algo falla y tienes que abrir un case con HCL Support:
+> `common/collect-support-data.sh --case <número>` ([datos para soporte](../docs/support.es.md)). Para
+> empezar la instalación de cero: `common/99-cleanup.sh` ([limpieza](../docs/cleanup.es.md)).
+
 ---
 
 **Volver al:** [README](../README.es.md) · **Para empezar de cero:** [docs/cleanup.es.md](../docs/cleanup.es.md)

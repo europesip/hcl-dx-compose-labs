@@ -275,3 +275,7 @@ Todo, incluida la distro (PowerShell de Windows; borra la distro entera y sus da
 ```powershell
 wsl --unregister dx-poc
 ```
+
+> **Herramientas.** Si algo falla y tienes que abrir un case con HCL Support:
+> `common/collect-support-data.sh --case <número>` ([datos para soporte](../docs/support.es.md)). Para
+> empezar la instalación de cero: `common/99-cleanup.sh` ([limpieza](../docs/cleanup.es.md)).

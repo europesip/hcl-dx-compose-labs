@@ -6,6 +6,9 @@
 common/99-cleanup.sh
 ```
 
+> If you are going to open a case with HCL Support, collect the data **first**
+> (`common/collect-support-data.sh`, see [support.md](support.md)): once deleted, the logs are gone.
+
 It asks for confirmation (type `delete`) and removes, in this order:
 
 1. The releases in the DX namespace (DX, IQ and search) and their PVCs. Helm does not delete the

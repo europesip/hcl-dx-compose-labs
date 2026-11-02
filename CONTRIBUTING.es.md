@@ -36,7 +36,7 @@ código fuente también está en su propio repositorio,
 [europesip/hcl-dx-compose-labs-wizard](https://github.com/europesip/hcl-dx-compose-labs-wizard):
 **las dos copias tienen que ser idénticas.**
 
-La opción C del asistente (la carpeta autónoma `dx-install/`) lleva **una copia de 28 ficheros de los
+La opción C del asistente (la carpeta autónoma `dx-install/`) lleva **una copia de 29 ficheros de los
 labs** (values, properties, LDIF, servidor MCP...) en el bloque `LAB TEMPLATES` de
 `docs/index.html`, porque los rellena con los valores del usuario en el navegador. Cuando cambies
 alguno de esos ficheros:

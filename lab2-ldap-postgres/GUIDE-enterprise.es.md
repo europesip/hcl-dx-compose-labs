@@ -236,6 +236,11 @@ SELECT owner, COUNT(*) FROM dba_tables
 | `ORA-01950: no privileges on tablespace` | Faltan cuotas en `USERS` o en los tablespaces `ICM*` |
 | Errores XA al arrancar | Falta `SELECT ON DBA_PENDING_TRANSACTIONS` para los roles (lo da el script) |
 
+
+> **Herramientas.** Si algo falla y tienes que abrir un case con HCL Support:
+> `common/collect-support-data.sh --case <número>` ([datos para soporte](../docs/support.es.md)). Para
+> empezar la instalación de cero: `common/99-cleanup.sh` ([limpieza](../docs/cleanup.es.md)).
+
 ---
 
 **Volver a:** [GUIDE.es.md](GUIDE.es.md) (rama demo) · **Siguiente:** [Lab 3 · IQ con OpenRouter](../lab3-iq-openrouter/GUIDE.es.md)

@@ -218,6 +218,11 @@ Open `https://$DX_HOST/wps/portal` and log in with **wpsadmin** / **EuropeS1P** 
 > **For Lab 2:** create a test page or content now (for example a "PoC" page or a WCM library
 > `poc-transfer`). In Lab 2B we will check that it survives the transfer from Derby to PostgreSQL.
 
+
+> **Tools.** If something fails and you need to open a case with HCL Support:
+> `common/collect-support-data.sh --case <number>` ([support data](../docs/support.md)). To start the
+> installation again from scratch: `common/99-cleanup.sh` ([cleanup](../docs/cleanup.md)).
+
 ---
 
 **Next:** [Lab 2 · LDAP and PostgreSQL](../lab2-ldap-postgres/GUIDE.md)

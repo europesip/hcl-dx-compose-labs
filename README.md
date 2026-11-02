@@ -192,6 +192,17 @@ Use it online on [GitHub Pages](https://europesip.github.io/hcl-dx-compose-labs/
 and open it locally (it works offline). Source code: [docs/](docs/) and its own repository,
 [europesip/hcl-dx-compose-labs-wizard](https://github.com/europesip/hcl-dx-compose-labs-wizard).
 
+### Support and cleanup tools
+
+Two tools you can use at any time, whatever the lab you are in:
+
+| I want to... | Run | Details |
+|---|---|---|
+| **Open a case with HCL Support** because something fails | `common/collect-support-data.sh --case <number>` | Read-only. Collects what HCL asks for (technote KB0094817) into a `.tar.gz`, with secrets masked. [docs/support.md](docs/support.md) |
+| **Start again from scratch** | `common/99-cleanup.sh` | Deletes the releases, volumes and both namespaces (asks for confirmation). [docs/cleanup.md](docs/cleanup.md) |
+
+If you need both, collect first: once deleted, the logs are gone.
+
 ### What is in the repository
 
 ```
@@ -201,13 +212,13 @@ common/                    common steps and utilities
   01-namespaces.sh           creates dx-demo and dx-shared (with SCC annotations on OpenShift)
   02-pull-hcl-charts.sh      login to hclcr.io and download of the CF238 charts
   dx-helm.sh                 the ONLY DX helm install/upgrade: base + the layers of each lab
-  collect-logs.sh            log collection for diagnostics
+  collect-support-data.sh    collects the data for an HCL Support case (.tar.gz)
   99-cleanup.sh              deletes everything to repeat the labs from scratch
 lab1-dx-base/              Lab 1
 lab2-ldap-postgres/        Lab 2 (a-ldap/ and b-postgres/; enterprise/ = Active Directory and Oracle)
 lab3-iq-openrouter/        Lab 3 (06-iq-chat-test.sh: ask IQ from the terminal; custom-mcp/ = 3B)
 lab4-opensearch/           Lab 4 (Search V2 with OpenSearch)
-docs/                      requirements, Kubernetes vs OpenShift, troubleshooting, cleanup
+docs/                      requirements, Kubernetes vs OpenShift, troubleshooting, support data, cleanup
                            (and the configuration wizard, served by GitHub Pages)
 tools/                     maintenance (keeps the wizard in sync with the labs, see CONTRIBUTING.md)
 ```

@@ -36,7 +36,7 @@ code is also in its own repository,
 [europesip/hcl-dx-compose-labs-wizard](https://github.com/europesip/hcl-dx-compose-labs-wizard):
 **both copies must stay identical.**
 
-Option C of the wizard (the self-contained `dx-install/` bundle) carries **a copy of 28 lab files**
+Option C of the wizard (the self-contained `dx-install/` bundle) carries **a copy of 29 lab files**
 (values, properties, LDIF, MCP server...) in the `LAB TEMPLATES` block of `docs/index.html`, because it
 renders them with the user's values in the browser. When you change any of those lab files:
 
