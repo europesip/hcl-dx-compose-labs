@@ -1,0 +1,92 @@
+# Problemas conocidos encontrados al montar los labs
+
+[English](issues.md) · **Español**
+
+Problemas encontrados al preparar esta PoC con HCL DX Compose CF238 (`hcl-dx-deployment` 2.49.0,
+`hcl-dx-iq` 1.0.2, `hcl-dx-search` 2.36.0), qué ocurre y cómo los resuelven los labs.
+
+## Problemas reportados a HCL Support
+
+| Case | Abierto | Problema | Estado |
+|---|---|---|---|
+| **CS1479102** | 2026-11-02 | IQ: la lista de servidores MCP configurada como dice la documentación se ignora | Abierto, HCL lo está reproduciendo |
+| **CS1479139** | 2026-11-02 | IQ: el *system prompt* describe una memoria RAG activa aunque el RAG está desactivado | Abierto |
+
+### CS1479102 · IQ ignora `MCP_SERVER_LIST`
+
+- **Problema.** La documentación de HCL («Deploying IQ services») dice que el IQ Integrator lee su
+  lista de servidores MCP de `MCP_SERVER_LIST`, definida en `environment.pod.integrator`. La variable
+  llega al Deployment del Integrator, pero el chart genera además el ConfigMap `<release>-integrator`
+  con su propia lista fija (`dx.config.integrator.mcp_server_list` = solo el MCP Server de HCL), sea
+  cual sea el valor configurado, y esa es la lista que usa el Integrator. No se pueden añadir
+  servidores MCP adicionales, y ni siquiera funciona el uso documentado (apuntar al MCP Server de una
+  release con otro nombre).
+- **Solución en los labs (workaround).** Después de instalar o actualizar IQ se parchea esa clave del
+  ConfigMap con los dos servidores y se reinicia el Integrator
+  (`lab3-iq-openrouter/custom-mcp/03-iq-register.sh`; `04-iq-install.sh` lo vuelve a aplicar tras cada upgrade).
+- **Efecto secundario con Helm 4.** Helm 4 aplica los objetos con *server-side apply*: una vez
+  parcheada la clave, el siguiente `helm upgrade` de IQ falla con `conflict with "kubectl-patch"`. Los
+  labs usan `--force-conflicts` con Helm 4 (`HELM_FORCE_CONFLICTS` en `common/lib.sh`) y vuelven a parchear la clave.
+
+### CS1479139 · Directiva de RAG en el *prompt* con el RAG desactivado
+
+- **Problema.** El Integrator registra `RAG_ENABLED=false` al arrancar, pero cada petición que envía al
+  modelo (vista en el log de LiteLLM en modo *debug*) incluye una sección «PERSISTENT CROSS-SESSION
+  MEMORY DIRECTIVE (pgvector RAG)» que afirma que hay una memoria RAG activa, que el modelo nunca debe
+  decir que no tiene memoria y que los textos etiquetados como «Past conversation note:» o «CRITICAL
+  SYSTEM MEMORY HISTORY» deben tratarse como verdad absoluta. Riesgos: respuestas que aseguran recordar
+  cosas que no existen, una posible vía de inyección de *prompts*, ~250 tokens de más por petición y el
+  estado del RAG registrado como `ERROR`. El case pide además documentación del RAG (configuración, qué
+  se guarda, retención, aislamiento entre usuarios, datos enviados al proveedor de *embeddings*).
+- **Solución en los labs.** Ninguna de momento: no bloquea IQ y la sección forma parte del *prompt* del
+  producto. Pendiente de HCL.
+
+## Problemas no reportados (sin case abierto)
+
+### HCL lo conoce: previsto para una versión futura
+
+| Problema | Solución en los labs |
+|---|---|
+| **El Web Engine sobre PostgreSQL no está soportado en CF238** (sí DB2, Oracle y SQL Server). HCL está validando PostgreSQL para el Web Engine (sus pruebas funcionan con PostgreSQL 18). En nuestras pruebas, el Web Engine (OpenJPA) genera `LIKE … ESCAPE '\'` (estilo DB2/Oracle), que PostgreSQL rechaza con «invalid escape string» con su configuración por defecto | El Lab 2B se presenta como ejercicio de aprendizaje, no como configuración soportada. El script de preparación de PostgreSQL pone `standard_conforming_strings = off` (y `escape_string_warning = off`) en `dx_core` |
+
+### IQ (hcl-dx-iq 1.0.2)
+
+| Problema | Solución en los labs | ¿Case? |
+|---|---|---|
+| **`LITELLM_BASE_URL` no está documentada pero es imprescindible.** Con solo el valor documentado `configuration.litellm.liteLlmUrl`, el adaptador LLM del Integrator no envía las peticiones a nuestro LiteLLM | `LITELLM_BASE_URL` en `environment.pod.integrator` con la misma URL (`custom-iq-values.yaml`) | Candidato a case |
+| **`LITELLM_URL` y `LITELLM_API_KEY` no se pueden sobrescribir** con `environment.pod.integrator`: el chart las vuelve a definir | La URL va en `configuration.litellm.liteLlmUrl` (+ `LITELLM_BASE_URL`); la clave, en el secret `iq-litellm-api-secret` | Pendiente de añadir como comentario al CS1479102 |
+| **Los nombres de las herramientas MCP llevan puntos** (`dam.mime-type…`), que las APIs de Anthropic y OpenAI rechazan (solo `[a-zA-Z0-9_-]`): con un proveedor que no los adapte, la petición entera falla con HTTP 400 | LiteLLM usa su proveedor `anthropic/` contra el endpoint compatible con Anthropic de OpenRouter, que adapta los nombres. HCL recomienda `enableDam: false` con modelos que no sean Claude | No (petición de mejora) |
+| **El Integrator solo lee las herramientas MCP al arrancar.** Si arranca antes de que el MCP Server esté listo (lo normal en una instalación nueva), se queda sin herramientas hasta que se reinicia | La instalación espera al MCP Server y después reinicia el Integrator (`04-iq-install.sh`) | No |
+| **OpenRouter no está validado por HCL** (las guías de HCL usan AWS Bedrock) | Documentado en el Lab 3: se usa OpenRouter a través de LiteLLM para evitar preparar una cuenta de AWS Bedrock | No (decisión de diseño) |
+
+### Search V2 (hcl-dx-search 2.36.0)
+
+| Problema | Solución en los labs | ¿Case? |
+|---|---|---|
+| **`automatedSetup.haproxyProtocol` vale `http` por defecto** (puerto 80), pero el HAProxy de DX solo escucha en 443 con TLS por defecto: los rastreadores agotan el tiempo e indexan 0 documentos | `haproxyProtocol: https` en `custom-search-values.yaml` | Candidato a case |
+| **El File Processor viene desactivado por defecto**, pero el Search Middleware lo busca igualmente y registra «Could not connect to file processor» cada 3 segundos | `applications.fileProcessor: true` | Candidato (junto con el anterior) |
+| **El volumen de OpenSearch usa la StorageClass `manual` por defecto** | `volumes.openSearchManager.data.storageClassName` con la StorageClass RWO | No |
+| Las fuentes de contenido y los rastreadores solo se crean en la primera instalación: cambiar `automatedSetup` después no tiene efecto | Documentado en el Lab 4: desinstalar, borrar el PVC e instalar de nuevo | No |
+
+### Instalación con Helm 4
+
+| Problema | Solución en los labs | ¿Case? |
+|---|---|---|
+| **`--wait` aborta la instalación de DX.** Helm 4 usa la estrategia `watcher`, que falla en cuanto un pod falla; DAM falla de forma normal mientras arranca su PostgreSQL (Persistence Node), así que la release acaba en `failed` aunque DX terminaría arrancando | `--wait=legacy` con Helm 4 (`HELM_WAIT` en `common/lib.sh`), que espera hasta el *timeout* como Helm 3 | No (antes, comprobar si Helm 4 está soportado oficialmente) |
+
+### Configuración de DX (detalles de la documentación)
+
+| Problema | Solución en los labs | ¿Case? |
+|---|---|---|
+| `security.webEngine.webEngineAdminGroup: <grupo LDAP>` no usa el grupo del LDAP: crea un grupo con ese nombre en el registro básico, y con el repositorio federado dos grupos con el mismo nombre pueden hacer fallar Liberty («multiple entities found») | Los permisos de administrador se dan al grupo del LDAP en el portal (Permisos de recursos), o se añaden usuarios del LDAP a `wpsadmins` con un override (Lab 2A, paso 4) | No |
+| XMLAccess y WebDAV están restringidos al grupo de administración del registro básico (`DX_ADMIN_GROUP`) | El mismo override, si los administradores del LDAP necesitan esas herramientas | No (decisión de diseño) |
+| El chart de DX despliega su propio OpenLDAP por defecto (`applications.openLdap: true`) | `openLdap: false` en los values del Lab 1; en el Lab 2 se usa un LDAP externo | No |
+
+### Componentes de terceros (no de HCL)
+
+| Problema | Solución en los labs |
+|---|---|
+| OpenLDAP (`openldap-stack-ha`): un LDIF propio sin la entrada raíz hace fallar el primer `ldapadd` y el LDAP arranca vacío | `demo-users.ldif` incluye `dn: dc=dxdemo,dc=com` |
+| El `local-path` de k3s no admite ReadWriteMany (DAM lo necesita) | Lab 0: StorageClass estática con un volumen `hostPath` |
+| Los volúmenes `hostPath` ignoran el `fsGroup` del pod: DAM (uid 1000/gid 1001) no puede escribir (`EACCES`) | Lab 0: `01-storage.sh` deja el directorio como `1000:1001` |
+| Los modelos de razonamiento de OpenAI (gpt-5.x) inyectan `reasoning_effort` y rompen las herramientas de IQ | Documentado en `litellm-values.yaml`: usar Claude |
