@@ -1070,7 +1070,8 @@ function directSteps(s){
   const chat = q => `curl -sk -c cookies.txt -o /dev/null -H 'Content-Type: application/json' \\
   -d '{"username":"wpsadmin","password":${JSON.stringify(pw).replace(/'/g, "'\\''")}}' https://${H}/dx/api/core/v1/auth/login
 curl -sk -b cookies.txt -c cookies.txt -L -o /dev/null https://${H}/wps/myportal
-python3 -I 3-iq/iq-chat.py ${H} cookies.txt ${sq(q)} ${es ? "es" : "en"}`;
+python3 -I 3-iq/iq-chat.py ${H} cookies.txt ${sq(q)} ${es ? "es" : "en"}
+rm -f cookies.txt     # it holds the DX session`;
 
   if (s.poc) {
     add(L0, "0-1", t("StorageClasses and DAM volume (single node)", "StorageClasses y volumen de DAM (un nodo)"),
@@ -1172,7 +1173,7 @@ kill $PF`, {opt: true});
 kubectl -n ${sh} exec ${s.PG_CLUSTER}-1 -c postgres -- psql -U postgres -c "REVOKE ALL ON DATABASE iqdb FROM PUBLIC" -c "GRANT CONNECT, TEMPORARY ON DATABASE iqdb TO dx_iq_db_user"`);
     add(L3, "3-4", t("Install IQ (Integrator and MCP Server)", "Instalar IQ (Integrator y MCP Server)"), "",
 `helm upgrade --install ${s.IQ_RELEASE} charts/hcl-dx-iq-1.0.2.tgz -n ${ns} \\
-  -f 3-iq/custom-iq-values.yaml${s.iqdb ? " \\\n  -f 3-iq/custom-iq-values.db-external.yaml" : ""}
+  -f 3-iq/custom-iq-values.yaml${s.iqdb ? " \\\n  -f 3-iq/custom-iq-values.db-external.yaml" : ""}${s.helm === "3" ? "" : " \\\n  --force-conflicts     # Helm 4: if run again after 3B-2, the MCP list belongs to kubectl patch"}
 kubectl -n ${ns} rollout status deployment/${s.IQ_RELEASE}-mcp-server --timeout=300s
 kubectl -n ${ns} rollout restart deployment/${s.IQ_RELEASE}-integrator     # it lists the MCP tools when it starts
 kubectl -n ${ns} rollout status deployment/${s.IQ_RELEASE}-integrator --timeout=300s`);

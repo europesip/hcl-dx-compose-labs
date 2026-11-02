@@ -20,7 +20,9 @@ sed "s|http://litellm.dx-shared.svc.cluster.local:4000|${LITELLM_URL_INTERNAL}|g
 EXTRA=()
 [[ " $* " == *custom-iq-values.db-external.yaml* ]] && EXTRA+=(--set-string configuration.database.dbHost="$PG_HOST")
 
-helm upgrade --install "$IQ_RELEASE" "$IQ_CHART_TGZ" -n "$DX_NS" -f "$VALUES" "$@" "${EXTRA[@]}" \
+# Helm 4: after Lab 3B the MCP server list of the ConfigMap belongs to "kubectl patch" (see below), so the
+# upgrade needs --force-conflicts (empty with Helm 3, see common/lib.sh); the list is patched again below.
+helm upgrade --install "$IQ_RELEASE" "$IQ_CHART_TGZ" -n "$DX_NS" -f "$VALUES" "$@" "${EXTRA[@]}" $HELM_FORCE_CONFLICTS \
   --set-string configuration.dx.releaseName="$DX_RELEASE" \
   --set-string configuration.dx.externalHost="$DX_HOST"
 

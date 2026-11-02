@@ -51,3 +51,9 @@ is_openshift() { [[ "$PLATFORM" == "openshift" ]]; }
 # starts (DAM retries until its PostgreSQL is ready), so with Helm 4 we use "--wait=legacy", which,
 # like Helm 3, waits up to --timeout for everything to become Ready.
 if helm version --short 2>/dev/null | grep -q '^v3'; then HELM_WAIT="--wait"; else HELM_WAIT="--wait=legacy"; fi
+
+# Helm 4 applies the objects with server-side apply: a field changed by another tool (e.g. the MCP server
+# list that custom-mcp/03-iq-register.sh patches in the IQ Integrator ConfigMap) makes the next "helm
+# upgrade" fail with "conflict with kubectl-patch". --force-conflicts lets Helm take the field back.
+# Helm 3 has no such conflicts (and no such option).
+if helm version --short 2>/dev/null | grep -q '^v3'; then HELM_FORCE_CONFLICTS=""; else HELM_FORCE_CONFLICTS="--force-conflicts"; fi
