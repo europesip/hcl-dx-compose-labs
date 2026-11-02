@@ -57,6 +57,41 @@ Issues found while preparing this PoC with HCL DX Compose CF238 (`hcl-dx-deploym
 | **MCP tool names contain dots** (`dam.mime-type…`), which the Anthropic and OpenAI APIs reject (`[a-zA-Z0-9_-]` only): with a provider that does not adapt them, the whole request fails with HTTP 400 | LiteLLM uses its `anthropic/` provider against the Anthropic-compatible endpoint of OpenRouter, which sanitises the names. HCL recommends `enableDam: false` with non-Claude models | No (improvement request) |
 | **The Integrator reads the MCP tools only when it starts.** If it starts before the MCP Server is ready (normal on a fresh install), it has no tools until it is restarted | The install waits for the MCP Server and then restarts the Integrator (`04-iq-install.sh`) | No |
 | **OpenRouter is not validated by HCL** (the HCL guides use AWS Bedrock) | Documented in Lab 3: OpenRouter is used through LiteLLM to avoid the AWS Bedrock account set-up | No (by design) |
+| **IQ does not request prompt caching** (details below) | LiteLLM adds the cache mark (`cache_control_injection_points` in `litellm-values.yaml`) | No (improvement request) |
+
+#### IQ does not request prompt caching
+
+- **Problem.** Every request from the Integrator carries the same large fixed prefix: the MCP tool
+  definitions and the system prompt. Measured in the LiteLLM debug log (58 tools, CF238): **29,654
+  tokens out of 30,046** in a one-sentence question. Claude only caches a prefix when the request
+  marks where it ends (`cache_control`), and the Integrator never adds that mark: the request arrives
+  at LiteLLM without any `cache_control`. So, sent as IQ produces it, the whole prefix is billed at
+  the full input price on every model call. The prompt itself is well built for caching (fixed part
+  first, the question at the end, no dates or per-user data in it): only the mark is missing.
+- **Cost impact** (Claude Sonnet 4.6, Anthropic list prices: input $3/MTok, cache write $3.75/MTok,
+  cache read $0.30/MTok). A question that uses one tool makes 2 model calls, both with the prefix:
+
+  | | Prefix cost per question |
+  |---|---|
+  | Without caching (as IQ sends it) | 2 × 29,654 tokens × $3 ≈ **$0.18** |
+  | With caching, cache already warm | 2 × 29,654 × $0.30 ≈ **$0.018** |
+  | With caching, first call after 5 min idle | ≈ $0.11 (write) + $0.009 (read) |
+
+  About 90 % less on the input side. For example, 1,000 questions a day go from about $180 to about
+  $20 a day (≈ $4,800 a month saved). The cache lives 5 minutes, so the saving depends on traffic:
+  with very sparse use most calls pay the write (+25 %), and with steady use almost all read.
+  Bedrock prices and caching rules for Claude are similar, and the HCL reference configuration
+  (LiteLLM + Bedrock) has the same problem unless the gateway adds the mark.
+- **Solution in the labs (workaround).** LiteLLM injects the mark at the end of the system message
+  for both models (`cache_control_injection_points: [{location: message, role: system}]` in
+  `lab3-iq-openrouter/litellm-values.yaml`). Tools and system prompt go before it, so the whole
+  prefix is cached. Verified in the LiteLLM log: first call `cache_creation_input_tokens=29654`,
+  second call `cache_read_input_tokens=29654`. The conversation history after the system prompt is
+  not cached; that is a small part of each request.
+- **Why an improvement request and not a bug.** IQ works and its answers are correct; caching is a
+  cost and latency optimisation the product does not promise. The request to HCL would be: mark the
+  cacheable prefix in the requests (or document the gateway setting above as part of the
+  recommended LiteLLM configuration).
 
 ### Search V2 (hcl-dx-search 2.36.0)
 
@@ -64,8 +99,6 @@ Issues found while preparing this PoC with HCL DX Compose CF238 (`hcl-dx-deploym
 |---|---|---|
 | **`automatedSetup.haproxyProtocol` defaults to `http`** (port 80), but the DX HAProxy only listens on 443 with TLS by default: the crawlers time out and index 0 documents | `haproxyProtocol: https` in `custom-search-values.yaml` | Candidate for a case |
 | **The File Processor is disabled by default**, but the Search Middleware looks for it anyway and logs "Could not connect to file processor" every 3 seconds | `applications.fileProcessor: true` | Candidate (together with the previous one) |
-| **The OpenSearch volume uses the StorageClass `manual` by default** | `volumes.openSearchManager.data.storageClassName` set to the RWO StorageClass | No |
-| Content sources and crawlers are created only on the first installation: changing `automatedSetup` later has no effect | Documented in Lab 4: uninstall, delete the PVC and install again | No |
 
 ### Installation with Helm 4
 

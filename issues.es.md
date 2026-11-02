@@ -58,6 +58,44 @@ Problemas encontrados al preparar esta PoC con HCL DX Compose CF238 (`hcl-dx-dep
 | **Los nombres de las herramientas MCP llevan puntos** (`dam.mime-type…`), que las APIs de Anthropic y OpenAI rechazan (solo `[a-zA-Z0-9_-]`): con un proveedor que no los adapte, la petición entera falla con HTTP 400 | LiteLLM usa su proveedor `anthropic/` contra el endpoint compatible con Anthropic de OpenRouter, que adapta los nombres. HCL recomienda `enableDam: false` con modelos que no sean Claude | No (petición de mejora) |
 | **El Integrator solo lee las herramientas MCP al arrancar.** Si arranca antes de que el MCP Server esté listo (lo normal en una instalación nueva), se queda sin herramientas hasta que se reinicia | La instalación espera al MCP Server y después reinicia el Integrator (`04-iq-install.sh`) | No |
 | **OpenRouter no está validado por HCL** (las guías de HCL usan AWS Bedrock) | Documentado en el Lab 3: se usa OpenRouter a través de LiteLLM para evitar preparar una cuenta de AWS Bedrock | No (decisión de diseño) |
+| **IQ no pide *prompt caching*** (detalle debajo) | LiteLLM añade la marca de caché (`cache_control_injection_points` en `litellm-values.yaml`) | No (petición de mejora) |
+
+#### IQ no pide *prompt caching*
+
+- **Problema.** Todas las peticiones del Integrator llevan el mismo prefijo fijo y grande: las
+  definiciones de las herramientas MCP y el *system prompt*. Medido en el log de LiteLLM en modo
+  *debug* (58 herramientas, CF238): **29.654 tokens de 30.046** en una pregunta de una frase. Claude
+  solo guarda en caché un prefijo cuando la petición marca dónde acaba (`cache_control`), y el
+  Integrator nunca pone esa marca: la petición llega a LiteLLM sin ningún `cache_control`. Así que, tal
+  como la genera IQ, todo el prefijo se cobra a precio completo de entrada en cada llamada al modelo.
+  El *prompt* en sí está bien construido para la caché (la parte fija primero, la pregunta al final,
+  sin fechas ni datos del usuario): solo falta la marca.
+- **Impacto en coste** (Claude Sonnet 4.6, precios de Anthropic: entrada 3 $/MTok, escritura en
+  caché 3,75 $/MTok, lectura de caché 0,30 $/MTok). Una pregunta que usa una herramienta hace 2
+  llamadas al modelo, las dos con el prefijo:
+
+  | | Coste del prefijo por pregunta |
+  |---|---|
+  | Sin caché (tal como lo envía IQ) | 2 × 29.654 tokens × 3 $ ≈ **0,18 $** |
+  | Con caché, ya creada | 2 × 29.654 × 0,30 $ ≈ **0,018 $** |
+  | Con caché, primera llamada tras 5 min sin uso | ≈ 0,11 $ (escritura) + 0,009 $ (lectura) |
+
+  Alrededor de un 90 % menos en la parte de entrada. Por ejemplo, 1.000 preguntas al día pasan de
+  unos 180 $ a unos 20 $ diarios (≈ 4.800 $ al mes de ahorro). La caché dura 5 minutos, así que el
+  ahorro depende del tráfico: con un uso muy esporádico casi todas las llamadas pagan la escritura
+  (+25 %), y con uso continuo casi todas leen. Los precios y las reglas de caché de Claude en Bedrock
+  son parecidos, y la configuración de referencia de HCL (LiteLLM + Bedrock) tiene el mismo problema
+  si la pasarela no añade la marca.
+- **Solución en los labs (workaround).** LiteLLM inyecta la marca al final del mensaje de sistema en
+  los dos modelos (`cache_control_injection_points: [{location: message, role: system}]` en
+  `lab3-iq-openrouter/litellm-values.yaml`). Las herramientas y el *system prompt* van antes, así que
+  se guarda todo el prefijo. Comprobado en el log de LiteLLM: primera llamada
+  `cache_creation_input_tokens=29654`, segunda `cache_read_input_tokens=29654`. El historial de la
+  conversación, que va después del *system prompt*, no se guarda; es una parte pequeña de cada petición.
+- **Por qué petición de mejora y no bug.** IQ funciona y responde bien; la caché es una optimización
+  de coste y latencia que el producto no promete. Lo que se pediría a HCL: marcar el prefijo cacheable
+  en las peticiones (o documentar el ajuste anterior de la pasarela como parte de la configuración
+  recomendada de LiteLLM).
 
 ### Search V2 (hcl-dx-search 2.36.0)
 
@@ -65,8 +103,6 @@ Problemas encontrados al preparar esta PoC con HCL DX Compose CF238 (`hcl-dx-dep
 |---|---|---|
 | **`automatedSetup.haproxyProtocol` vale `http` por defecto** (puerto 80), pero el HAProxy de DX solo escucha en 443 con TLS por defecto: los rastreadores agotan el tiempo e indexan 0 documentos | `haproxyProtocol: https` en `custom-search-values.yaml` | Candidato a case |
 | **El File Processor viene desactivado por defecto**, pero el Search Middleware lo busca igualmente y registra «Could not connect to file processor» cada 3 segundos | `applications.fileProcessor: true` | Candidato (junto con el anterior) |
-| **El volumen de OpenSearch usa la StorageClass `manual` por defecto** | `volumes.openSearchManager.data.storageClassName` con la StorageClass RWO | No |
-| Las fuentes de contenido y los rastreadores solo se crean en la primera instalación: cambiar `automatedSetup` después no tiene efecto | Documentado en el Lab 4: desinstalar, borrar el PVC e instalar de nuevo | No |
 
 ### Instalación con Helm 4
 
