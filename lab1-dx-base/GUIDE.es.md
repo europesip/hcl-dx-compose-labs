@@ -190,7 +190,7 @@ lab1-dx-base/03-expose.sh
 
 | Plataforma | Recurso |
 |---|---|
-| **Kubernetes** | [ingress-dx.yaml](ingress-dx.yaml): Ingress `nginx` que termina TLS con `dx-tls-cert` y re-cifra hacia `dx-deployment-haproxy:443`. Publica `/` entero |
+| **Kubernetes** | [ingress-dx.yaml](ingress-dx.yaml): Ingress `nginx` que termina TLS con `dx-tls-cert` y re-cifra hacia `dx-deployment-haproxy:443`. Publica `/` entero.<br>Con `INGRESS_CLASS=traefik` (el de k3s por defecto): [ingressroute-dx-traefik.yaml](ingressroute-dx-traefik.yaml), una IngressRoute de Traefik con el mismo diseño |
 | **OpenShift** | [route-dx-openshift.yaml](route-dx-openshift.yaml): Route `passthrough`; el TLS lo termina HAProxy |
 
 Sin DNS o sin Ingress se puede probar con un port-forward:

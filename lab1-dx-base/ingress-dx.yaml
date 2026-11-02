@@ -5,9 +5,8 @@
 # re-encrypts towards HAProxy (backend-protocol HTTPS), the only entry point of DX.
 # The whole "/" is published: DX uses /wps, /dx (API, DAM, IQ), /hcl, /ibm and /adminCenter.
 #
-# k3s ships Traefik by default; the reference lab cluster uses ingress-nginx. With Traefik, remove
-# the nginx annotations, use ingressClassName: traefik and a ServersTransport with
-# insecureSkipVerify (HAProxy serves a self-signed certificate) or an IngressRouteTCP with passthrough.
+# k3s ships Traefik by default; the reference lab cluster uses ingress-nginx. With Traefik
+# (INGRESS_CLASS=traefik), 03-expose.sh applies ingressroute-dx-traefik.yaml instead of this file.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

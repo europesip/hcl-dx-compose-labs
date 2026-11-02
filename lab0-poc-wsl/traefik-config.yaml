@@ -1,0 +1,46 @@
+# Lab 0 · Configuration of the Traefik that k3s installs (INGRESS_CLASS=traefik). Applied by 02-ingress.sh.
+# HelmChartConfig is how k3s customises the charts it installs: k3s redeploys Traefik with these values.
+# - hostNetwork on 80/443, as ingress-nginx in 02-ingress.sh: the k3s ServiceLB publishes the ports
+#   with iptables rules, without a listening socket, and WSL only forwards Windows localhost to ports
+#   that have one. Binding 80/443 needs root with NET_BIND_SERVICE (the Traefik chart example).
+#   hostIP 127.0.0.1: with ":80" (or "0.0.0.0:80") Traefik opens a single IPv6 socket that also
+#   accepts IPv4, and WSL then forwards only Windows [::1], not 127.0.0.1 (where the nip.io name
+#   points). Bound to 127.0.0.1, DX is reachable only from this PC, which is enough for the PoC.
+#   The internal "traefik" port (8080) moves to 9000, to leave 8080 free in WSL.
+# - Traefik v3 cuts any request that takes more than 60 s to arrive (entry point readTimeout):
+#   10 minutes, as the timeouts of ingress-dx.yaml, for large uploads to DAM.
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    hostNetwork: true
+    ports:
+      traefik:
+        port: 9000
+      web:
+        port: 80
+        hostIP: 127.0.0.1
+      websecure:
+        port: 443
+        hostIP: 127.0.0.1
+    securityContext:
+      capabilities:
+        drop: [ALL]
+        add: [NET_BIND_SERVICE]
+      readOnlyRootFilesystem: true
+      runAsGroup: 0
+      runAsNonRoot: false
+      runAsUser: 0
+    updateStrategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 1
+        maxSurge: 0
+    service:
+      type: ClusterIP
+    additionalArguments:
+      - "--entryPoints.web.transport.respondingTimeouts.readTimeout=600s"
+      - "--entryPoints.websecure.transport.respondingTimeouts.readTimeout=600s"

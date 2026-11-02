@@ -71,8 +71,9 @@ does require `cluster-admin` (it creates global CRDs and webhooks).
 ## External access
 
 - **Kubernetes**: the Ingress terminates TLS with `dx-tls-cert` and re-encrypts towards the
-  `dx-deployment-haproxy:443` service (`backend-protocol: HTTPS`). If your k3s uses the default
-  **Traefik**, see the comment in `lab1-dx-base/ingress-dx.yaml`.
+  `dx-deployment-haproxy:443` service (`backend-protocol: HTTPS`). With the **Traefik** that k3s
+  installs by default (`INGRESS_CLASS=traefik`), a Traefik IngressRoute does the same
+  (`lab1-dx-base/ingressroute-dx-traefik.yaml`).
 - **OpenShift**: Route with `termination: passthrough` to the `haproxy` port of the same service.
   The router does not decrypt; the certificate the browser sees is the HAProxy one (`dx-tls-cert`).
 

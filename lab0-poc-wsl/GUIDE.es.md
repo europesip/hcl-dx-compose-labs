@@ -32,7 +32,8 @@ AKS, GKE...), usa ese y sáltate este lab.
 del clúster de referencia de los labs (de Rancher/SUSE), en **un solo nodo** que hace de master y de worker, con:
 
 - las StorageClasses `dx-deploy-rwo` y `dx-deploy-rwx` que esperan los labs,
-- ingress-nginx, para entrar en DX desde el navegador de Windows,
+- el Traefik que k3s instala por defecto como Ingress controller, para entrar en DX desde el
+  navegador de Windows,
 - y una capa de recursos reducidos para que los cuatro labs quepan en un PC.
 
 Después, los Labs 1 a 4 se hacen **exactamente igual** que en el clúster de referencia.
@@ -81,6 +82,16 @@ queda dentro de la distro. Para volver a entrar más adelante: `wsl -d dx-poc`.
 Ubuntu 24.04 en WSL ya trae **systemd** activado (`/etc/wsl.conf` → `[boot] systemd=true`), que k3s
 necesita, y `vm.max_map_count` suficiente para OpenSearch (1048576).
 
+> **Si tras crear la distro dejan de funcionar `code .`, `explorer.exe` o `wsl.exe` en tus otras
+> distros** (*"cannot execute binary file: Exec format error"*): es un fallo conocido de WSL con
+> systemd. Al arrancar o parar una distro, su servicio `systemd-binfmt` borra del kernel, compartido
+> por todas las distros, el registro que permite ejecutar programas de Windows (`WSLInterop`).
+> Evítalo pidiendo a systemd que lo registre él mismo, **en `dx-poc` y en cualquier otra distro con
+> systemd** (una vez; el fichero se mantiene en los reinicios):
+> ```bash
+> echo ':WSLInterop:M::MZ::/init:PF' | sudo tee /etc/binfmt.d/WSLInterop.conf && sudo systemctl restart systemd-binfmt
+> ```
+
 > **Memoria: se recomiendan 24 GB para WSL.** WSL usa por defecto la mitad de la RAM del PC (en
 > un PC de 32 GB, unos 16 GB). Con los cuatro labs en marcha medimos **12,6 GiB de uso real** de
 > los ~15 GiB de la VM: **puede funcionar con 16 GB, pero muy justo** (cualquier otra carga en WSL
@@ -102,11 +113,16 @@ tu home:
 cd ~
 ```
 
-**k3s** de un nodo, la misma versión que el clúster de referencia, sin Traefik (usaremos ingress-nginx):
+**k3s** de un nodo, la misma versión que el clúster de referencia, con su Traefik (el Ingress
+controller que k3s instala por defecto):
 
 ```bash
-curl -sfL https://get.k3s.io | sudo INSTALL_K3S_VERSION=v1.35.5+k3s1 sh -s - --disable traefik --write-kubeconfig-mode 644
+curl -sfL https://get.k3s.io | sudo INSTALL_K3S_VERSION=v1.35.5+k3s1 sh -s - --write-kubeconfig-mode 644
 ```
+
+> **¿Prefieres ingress-nginx**, como el clúster de referencia? Instala k3s con `--disable traefik`
+> (delante de `--write-kubeconfig-mode`) y pon `INGRESS_CLASS=nginx` en `env.sh` (paso 3): el
+> paso 5 instala entonces ingress-nginx.
 
 **kubeconfig** para tu usuario (k3s trae `kubectl`):
 
@@ -146,6 +162,7 @@ En `env.sh`, además de las credenciales de `hclcr.io` (y la clave de OpenRouter
 
 ```bash
 export DX_HOST="${DX_HOST:-dx-demo.127.0.0.1.nip.io}"   # nip.io: resuelve a 127.0.0.1, sin tocar DNS ni hosts
+export INGRESS_CLASS="${INGRESS_CLASS:-traefik}"         # el Traefik de k3s (nginx si lo desactivaste)
 export DX_POC="${DX_POC:-1}"                            # capa de recursos reducidos de este Lab 0
 ```
 
@@ -188,12 +205,27 @@ Por eso el script deja el directorio como `1000:1001` con permisos `2775`, usand
 lab0-poc-wsl/02-ingress.sh
 ```
 
-Instala **ingress-nginx** (el mismo Ingress Controller que el clúster de referencia, así el
-`ingress-dx.yaml` del Lab 1 sirve sin cambios) con `hostNetwork`: escucha directamente en los
-puertos 80 y 443 de WSL, y **WSL reenvía `localhost` de Windows a WSL**, así que el navegador de
-Windows llega a DX por `https://dx-demo.127.0.0.1.nip.io`.
+Ajusta el **Traefik** que trae k3s (con el `HelmChartConfig` [traefik-config.yaml](traefik-config.yaml), la forma que tiene k3s de configurar
+lo que instala) para que escuche directamente en los puertos 80 y 443 de WSL (`hostNetwork`):
+**WSL reenvía `localhost` de Windows a WSL**, así que el navegador de Windows llega a DX por
+`https://dx-demo.127.0.0.1.nip.io`.
 
-Comprobar (debe responder 404, la página por defecto de ingress-nginx):
+**Por qué `hostNetwork`.** Por defecto k3s publica Traefik con su balanceador (ServiceLB), que
+redirige los puertos con reglas de iptables, sin un proceso escuchando en ellos. WSL solo reenvía
+a Windows los puertos en los que hay un proceso escuchando, así que el navegador de Windows no
+llegaría. Escucha en `127.0.0.1` y no en todas las interfaces porque, si no, Traefik abre un único
+socket IPv6 y WSL solo lo reenvía a `[::1]` de Windows, no a `127.0.0.1` (adonde apunta el nombre
+`nip.io`); así DX solo es accesible desde tu PC, que es lo que necesita la POC. También sube a 10 minutos el tiempo máximo para recibir una petición (60 s por defecto
+en Traefik v3), para las subidas grandes a DAM.
+
+En el Lab 1, `03-expose.sh` publica DX con una **IngressRoute** de Traefik
+([ingressroute-dx-traefik.yaml](../lab1-dx-base/ingressroute-dx-traefik.yaml)) en lugar del Ingress
+de ingress-nginx: mismo diseño (TLS en Traefik con `dx-tls-cert` y re-cifrado hacia HAProxy).
+
+Con `INGRESS_CLASS=nginx`, el script instala en su lugar **ingress-nginx**, también con
+`hostNetwork`.
+
+Comprobar (debe responder 404, la página por defecto de Traefik):
 
 ```bash
 curl -s -o /dev/null -w '%{http_code}\n' http://localhost/
@@ -259,7 +291,7 @@ por defecto), con la capa `DX_POC=1`:
 | PVC de DAM en `Pending`: *"NodePath only supports ReadWriteOnce"* | `dx-deploy-rwx` apunta al `local-path` de k3s | Usa la StorageClass estática de `storage-poc.yaml` (`lab0-poc-wsl/01-storage.sh`) |
 | DAM en `1/2` y Helm agota el tiempo: `EACCES ... /opt/app/upload` en el log de DAM | El directorio `hostPath` es de `root` | `lab0-poc-wsl/01-storage.sh` lo deja como `1000:1001` (repítelo y DAM queda listo sin reiniciar) |
 | Pods en `Pending` con `Insufficient memory` | Faltan reservas de memoria | `DX_POC=1` en `env.sh`, o más memoria en `.wslconfig` |
-| El navegador de Windows no abre `https://dx-demo.127.0.0.1.nip.io` | ingress-nginx no escucha o WSL no reenvía `localhost` | `curl http://localhost/` dentro de WSL debe dar 404; si sí da y Windows no, revisa `localhostForwarding` en `.wslconfig` (por defecto activado) |
+| El navegador de Windows no abre `https://dx-demo.127.0.0.1.nip.io` | Traefik (o ingress-nginx) no escucha en 80/443 o WSL no reenvía `localhost` | `curl http://localhost/` dentro de WSL debe dar 404; si sí da y Windows no, revisa `localhostForwarding` en `.wslconfig` (por defecto activado) |
 | `nip.io` no resuelve | Sin acceso a DNS público | Añade `127.0.0.1 dx-demo.local` al `hosts` de Windows y de WSL y usa ese nombre en `DX_HOST` |
 
 ## Desinstalar la POC

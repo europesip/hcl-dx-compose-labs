@@ -40,7 +40,7 @@ export SC_RWX="${SC_RWX:-dx-deploy-rwx}"   # DAM binaries (shared by the DAM pod
 # --- External access to DX ----------------------------------------------------------------
 # FQDN used to reach DX. It must resolve to the Ingress (Kubernetes) or the router (OpenShift).
 export DX_HOST="${DX_HOST:-dx-demo.example.com}"   # <<<
-export INGRESS_CLASS="${INGRESS_CLASS:-nginx}"     # PLATFORM=kubernetes only
+export INGRESS_CLASS="${INGRESS_CLASS:-nginx}"     # PLATFORM=kubernetes only: nginx, traefik (k3s default) or yours
 # Single-node PoC (Lab 0, k3s on WSL2): 1 = reduced resource requests so that the four labs fit
 # in ~15 GiB. Leave empty on a normal cluster.
 export DX_POC="${DX_POC:-}"

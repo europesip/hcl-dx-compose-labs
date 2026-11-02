@@ -38,6 +38,10 @@ if is_openshift; then
 else
   kubectl get ingressclass "$INGRESS_CLASS" >/dev/null 2>&1 && ok "IngressClass $INGRESS_CLASS" \
     || fail "IngressClass $INGRESS_CLASS does not exist (set INGRESS_CLASS in env.sh)"
+  if [[ "$INGRESS_CLASS" == traefik ]]; then
+    kubectl get crd ingressroutes.traefik.io serverstransports.traefik.io >/dev/null 2>&1 && ok "Traefik CRDs (IngressRoute, ServersTransport)" \
+      || fail "Traefik CRDs missing: Traefik v3 with its CRDs is needed (k3s installs them)"
+  fi
 fi
 if getent hosts "$DX_HOST" >/dev/null 2>&1; then ok "DNS: $DX_HOST -> $(getent hosts "$DX_HOST" | awk '{print $1}')"
 else fail "DNS: $DX_HOST does not resolve"; fi

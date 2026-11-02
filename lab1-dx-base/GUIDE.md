@@ -193,7 +193,7 @@ lab1-dx-base/03-expose.sh
 
 | Platform | Resource |
 |---|---|
-| **Kubernetes** | [ingress-dx.yaml](ingress-dx.yaml): `nginx` Ingress that terminates TLS with `dx-tls-cert` and re-encrypts towards `dx-deployment-haproxy:443`. It publishes the whole `/` |
+| **Kubernetes** | [ingress-dx.yaml](ingress-dx.yaml): `nginx` Ingress that terminates TLS with `dx-tls-cert` and re-encrypts towards `dx-deployment-haproxy:443`. It publishes the whole `/`.<br>With `INGRESS_CLASS=traefik` (the k3s default): [ingressroute-dx-traefik.yaml](ingressroute-dx-traefik.yaml), a Traefik IngressRoute with the same design |
 | **OpenShift** | [route-dx-openshift.yaml](route-dx-openshift.yaml): `passthrough` Route; TLS is terminated by HAProxy |
 
 Without DNS or Ingress you can test with a port-forward:

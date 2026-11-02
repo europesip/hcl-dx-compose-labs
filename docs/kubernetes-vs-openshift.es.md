@@ -70,8 +70,9 @@ el ClusterRole adicional (asignado solo en el namespace). Instalar el operador C
 ## Acceso externo
 
 - **Kubernetes**: el Ingress termina TLS con `dx-tls-cert` y vuelve a cifrar hacia el servicio
-  `dx-deployment-haproxy:443` (`backend-protocol: HTTPS`). Si tu k3s usa el **Traefik** que trae
-  por defecto, ver el comentario de `lab1-dx-base/ingress-dx.yaml`.
+  `dx-deployment-haproxy:443` (`backend-protocol: HTTPS`). Con el **Traefik** que k3s
+  instala por defecto (`INGRESS_CLASS=traefik`), una IngressRoute de Traefik hace lo mismo
+  (`lab1-dx-base/ingressroute-dx-traefik.yaml`).
 - **OpenShift**: Route con `termination: passthrough` hacia el puerto `haproxy` del mismo servicio.
   El router no descifra; el certificado que ve el navegador es el de HAProxy (`dx-tls-cert`).
 
