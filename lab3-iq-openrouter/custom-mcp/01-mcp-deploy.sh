@@ -6,8 +6,6 @@ require_vars SHARED_NS DX_NS DX_RELEASE
 cd "$(dirname "$0")"
 
 render europesip-mcp.yaml '$SHARED_NS $DX_NS $DX_RELEASE' | kubectl apply -f -
-# Earlier versions of the lab mounted server.py from this ConfigMap: no longer used
-kubectl -n "$SHARED_NS" delete configmap europesip-mcp-code --ignore-not-found >/dev/null
 kubectl -n "$SHARED_NS" rollout status deployment/europesip-mcp --timeout=300s
 kubectl -n "$SHARED_NS" get pods,svc -l app=europesip-mcp
 echo "URL for IQ: http://europesip-mcp.${SHARED_NS}.svc.cluster.local:3000"
