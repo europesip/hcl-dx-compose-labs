@@ -43,7 +43,6 @@ FILES = [
     "lab3-iq-openrouter/custom-iq-values.db-external.yaml",
     "lab3-iq-openrouter/custom-values.iq.yaml",
     "lab3-iq-openrouter/iq-chat.py",
-    "lab3-iq-openrouter/custom-mcp/server.py",
     "lab3-iq-openrouter/custom-mcp/europesip-mcp.yaml",
     "lab4-opensearch/custom-search-values.yaml",
     "lab4-opensearch/custom-values.search.yaml",

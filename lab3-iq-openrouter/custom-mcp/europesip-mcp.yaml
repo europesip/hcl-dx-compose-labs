@@ -1,7 +1,7 @@
 # Lab 3B · EUROPESIP custom MCP Server, in the shared namespace (not HCL software).
-# Applied by 01-mcp-deploy.sh, which replaces ${SHARED_NS}, ${DX_NS} and ${DX_RELEASE}. The code (server.py) goes in the
-# europesip-mcp-code ConfigMap. Public python:3.12-slim image; the dependencies are installed at
-# start-up (requires access to PyPI). In production you would build your own image with the code.
+# Applied by 01-mcp-deploy.sh, which replaces ${SHARED_NS}, ${DX_NS} and ${DX_RELEASE}. Public image
+# with server.py and its dependencies, built from https://github.com/europesip/hcl-dx-iq-europesip-mcp
+# (server.py, in this folder, is a copy of that repository's code).
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,27 +18,20 @@ spec:
     spec:
       containers:
         - name: mcp
-          image: python:3.12-slim
-          command: ["sh", "-c", "pip install --no-cache-dir -q 'mcp==1.30.0' uvicorn && exec python /app/server.py"]
+          image: ghcr.io/europesip/hcl-dx-iq-europesip-mcp:1.0.0
           env:
             - { name: PORT, value: "3000" }
             # DX entry point inside the cluster, for europesip_whoami (it calls DX with the user's session)
             - { name: DX_URL, value: "https://${DX_RELEASE}-haproxy.${DX_NS}.svc.cluster.local" }
-            - { name: PYTHONUNBUFFERED, value: "1" }
           ports:
             - { name: http, containerPort: 3000 }
           readinessProbe:
             httpGet: { path: /probe/ready, port: 3000 }
-            initialDelaySeconds: 10
+            initialDelaySeconds: 3
             periodSeconds: 5
           resources:
             requests: { cpu: 50m, memory: 128Mi }
             limits:   { cpu: 500m, memory: 256Mi }
-          volumeMounts:
-            - { name: code, mountPath: /app }
-      volumes:
-        - name: code
-          configMap: { name: europesip-mcp-code }
 ---
 apiVersion: v1
 kind: Service

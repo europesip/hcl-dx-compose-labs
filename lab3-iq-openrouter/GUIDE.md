@@ -266,7 +266,8 @@ Server, our own**, not the one that comes with HCL: that is why it runs in a sep
 ### The server
 
 [custom-mcp/server.py](custom-mcp/server.py): about 190 lines of Python with the official MCP SDK
-(`FastMCP`). It publishes five tools:
+(`FastMCP`). Its source code and its image are published in
+[europesip/hcl-dx-iq-europesip-mcp](https://github.com/europesip/hcl-dx-iq-europesip-mcp). It publishes five tools:
 
 | Tool | IQ uses it when the user... | Returns |
 |---|---|---|
@@ -314,8 +315,9 @@ What it has to comply with for IQ to use it:
 lab3-iq-openrouter/custom-mcp/01-mcp-deploy.sh
 ```
 
-ConfigMap with `server.py` + `python:3.12-slim` Deployment (installs `mcp` at start-up) + Service
-`europesip-mcp:3000`, in `dx-shared` ([europesip-mcp.yaml](custom-mcp/europesip-mcp.yaml)).
+Deployment with the public image `ghcr.io/europesip/hcl-dx-iq-europesip-mcp:1.0.0` (the server and
+its dependencies, amd64 and arm64) + Service `europesip-mcp:3000`, in `dx-shared`
+([europesip-mcp.yaml](custom-mcp/europesip-mcp.yaml)).
 
 ### Step 3B-2 · Test it before connecting it to IQ
 
@@ -426,7 +428,7 @@ of an administrative account.
 > **Cost.** The added tools travel in every request (these five, about 3,000 characters ≈ 800-900
 > tokens) and changing the list invalidates the prompt cache until the next request.
 
-To remove it: `kubectl -n dx-shared delete deploy/europesip-mcp svc/europesip-mcp cm/europesip-mcp-code`
+To remove it: `kubectl -n dx-shared delete deploy/europesip-mcp svc/europesip-mcp`
 and `lab3-iq-openrouter/04-iq-install.sh` (regenerates the list with only the HCL MCP).
 
 ## Deviations from the HCL documentation (IQ 1.0.2)
