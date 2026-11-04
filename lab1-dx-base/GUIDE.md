@@ -6,7 +6,7 @@
 [base requirements](../docs/requirements.md) (or the single-node PoC of [Lab 0](../lab0-poc-wsl/GUIDE.md),
 only if you have no cluster). This is where the installation starts.
 
-**Goal:** a **minimal, working base installation**: install HCL DX Compose CF238 in the `dx-demo` namespace from the official HCL Harbor and
+**Goal:** a **minimal, working base installation**: install HCL DX Compose CF239 in the `dx-demo` namespace from the official HCL Harbor and
 access the portal at `https://$DX_HOST/wps/portal`.
 
 **⏱ Estimated time: ~10 minutes** (+ the image download the first time).
@@ -88,15 +88,15 @@ Equivalent to:
 
 ```bash
 printf '%s' "$HCL_HARBOR_TOKEN" | helm registry login hclcr.io -u "$HCL_HARBOR_USER" --password-stdin
-helm pull oci://hclcr.io/dx-compose/hcl-dx-deployment --version 2.49.0 -d charts/
-helm pull oci://hclcr.io/dx/hcl-dx-iq --version 1.0.2 -d charts/                # for Lab 3
-helm pull oci://hclcr.io/dx-compose/hcl-dx-search --version 2.36.0 -d charts/   # for Lab 4
-helm show values charts/hcl-dx-deployment-2.49.0.tgz > charts/values-dx-default-2.49.0.yaml
+helm pull oci://hclcr.io/dx-compose/hcl-dx-deployment --version 2.50.0 -d charts/
+helm pull oci://hclcr.io/dx/hcl-dx-iq --version 1.0.3 -d charts/                # for Lab 3
+helm pull oci://hclcr.io/dx-compose/hcl-dx-search --version 2.37.0 -d charts/   # for Lab 4
+helm show values charts/hcl-dx-deployment-2.50.0.tgz > charts/values-dx-default-2.50.0.yaml
 ```
 
 - You could install straight from `oci://`, but downloading it lets you **see what the chart
-  contains** (`tar xzf charts/hcl-dx-deployment-2.49.0.tgz`) and pin the exact version.
-- `charts/values-dx-default-2.49.0.yaml` holds the ~3000 default values. **It is not edited**: our
+  contains** (`tar xzf charts/hcl-dx-deployment-2.50.0.tgz`) and pin the exact version.
+- `charts/values-dx-default-2.50.0.yaml` holds the ~3000 default values. **It is not edited**: our
   configuration is a separate file with only what changes (step 4). HCL does not support changes
   to the chart templates, only to the values.
 
@@ -136,7 +136,7 @@ First, read [custom-values.yaml](custom-values.yaml): it is short and every bloc
 
 | Block | What it decides |
 |---|---|
-| `images` | `hclcr.io` registry and `regcred` pull secret. The CF238 names and tags come in the chart |
+| `images` | `hclcr.io` registry and `regcred` pull secret. The CF239 names and tags come in the chart |
 | `volumes` | StorageClass and size of each PVC (RWX only for DAM). The script sets the StorageClass names from `SC_RWO`/`SC_RWX` |
 | `applications` | DX Compose = `webEngine: true`, `core: false`. Without the DX OpenLDAP or Remote Search |
 | `networking` | HAProxy as `ClusterIP` and its certificate. The script sets the host from `DX_HOST` |
@@ -149,7 +149,7 @@ lab1-dx-base/02-install-dx.sh
 It calls `common/dx-helm.sh`, which shows and runs:
 
 ```bash
-helm upgrade --install dx-deployment charts/hcl-dx-deployment-2.49.0.tgz -n dx-demo \
+helm upgrade --install dx-deployment charts/hcl-dx-deployment-2.50.0.tgz -n dx-demo \
   -f lab1-dx-base/custom-values.yaml \
   --set-string networking.webEngine.host=$DX_HOST \
   --set-string volumes.webEngine.customization.storageClassName=$SC_RWO ... \

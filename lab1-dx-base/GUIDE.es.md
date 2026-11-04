@@ -6,7 +6,7 @@
 [requisitos base](../docs/requirements.es.md) (o la PoC de un nodo del [Lab 0](../lab0-poc-wsl/GUIDE.es.md),
 solo si no tienes clúster). Aquí empieza la instalación.
 
-**Objetivo:** una **instalación base mínima y funcional**: instalar HCL DX Compose CF238 en el namespace `dx-demo` desde el Harbor oficial de
+**Objetivo:** una **instalación base mínima y funcional**: instalar HCL DX Compose CF239 en el namespace `dx-demo` desde el Harbor oficial de
 HCL y acceder al portal en `https://$DX_HOST/wps/portal`.
 
 **⏱ Tiempo estimado: ~10 minutos** (+ la descarga de imágenes la primera vez).
@@ -87,14 +87,14 @@ Equivale a:
 
 ```bash
 printf '%s' "$HCL_HARBOR_TOKEN" | helm registry login hclcr.io -u "$HCL_HARBOR_USER" --password-stdin
-helm pull oci://hclcr.io/dx-compose/hcl-dx-deployment --version 2.49.0 -d charts/
-helm pull oci://hclcr.io/dx/hcl-dx-iq --version 1.0.2 -d charts/          # para el Lab 3
-helm show values charts/hcl-dx-deployment-2.49.0.tgz > charts/values-dx-default-2.49.0.yaml
+helm pull oci://hclcr.io/dx-compose/hcl-dx-deployment --version 2.50.0 -d charts/
+helm pull oci://hclcr.io/dx/hcl-dx-iq --version 1.0.3 -d charts/          # para el Lab 3
+helm show values charts/hcl-dx-deployment-2.50.0.tgz > charts/values-dx-default-2.50.0.yaml
 ```
 
 - Se podría instalar directamente desde `oci://`, pero descargarlo permite **ver qué trae el chart**
-  (`tar xzf charts/hcl-dx-deployment-2.49.0.tgz`) y fijar la versión exacta.
-- `charts/values-dx-default-2.49.0.yaml` son los ~3000 valores por defecto. **No se edita**: nuestra
+  (`tar xzf charts/hcl-dx-deployment-2.50.0.tgz`) y fijar la versión exacta.
+- `charts/values-dx-default-2.50.0.yaml` son los ~3000 valores por defecto. **No se edita**: nuestra
   configuración es un fichero aparte con solo lo que cambia (paso 4). HCL no soporta cambios en
   las plantillas del chart, solo en los values.
 
@@ -134,7 +134,7 @@ Primero, lee [custom-values.yaml](custom-values.yaml): es corto y cada bloque es
 
 | Bloque | Qué decide |
 |---|---|
-| `images` | Registro `hclcr.io` y pull secret `regcred`. Nombres y tags de CF238 vienen en el chart |
+| `images` | Registro `hclcr.io` y pull secret `regcred`. Nombres y tags de CF239 vienen en el chart |
 | `volumes` | StorageClass y tamaño de cada PVC (RWX solo para DAM). Los nombres de StorageClass los pone el script desde `SC_RWO`/`SC_RWX` |
 | `applications` | DX Compose = `webEngine: true`, `core: false`. Sin OpenLDAP ni Remote Search de DX |
 | `networking` | HAProxy como `ClusterIP` y su certificado. El host lo pone el script desde `DX_HOST` |
@@ -147,7 +147,7 @@ lab1-dx-base/02-install-dx.sh
 Llama a `common/dx-helm.sh`, que muestra y ejecuta:
 
 ```bash
-helm upgrade --install dx-deployment charts/hcl-dx-deployment-2.49.0.tgz -n dx-demo \
+helm upgrade --install dx-deployment charts/hcl-dx-deployment-2.50.0.tgz -n dx-demo \
   -f lab1-dx-base/custom-values.yaml \
   --set-string networking.webEngine.host=$DX_HOST \
   --set-string volumes.webEngine.customization.storageClassName=$SC_RWO ... \

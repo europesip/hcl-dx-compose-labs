@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Step 2 · Log in to the official HCL Harbor (hclcr.io) and download the CF238 charts to ./charts
-#   hcl-dx-deployment 2.49.0  (oci://hclcr.io/dx-compose/hcl-dx-deployment)  -> Labs 1 and 2
-#   hcl-dx-iq         1.0.2   (oci://hclcr.io/dx/hcl-dx-iq)                   -> Lab 3
-#   hcl-dx-search     2.36.0  (oci://hclcr.io/dx-compose/hcl-dx-search)       -> Lab 4
+# Step 2 · Log in to the official HCL Harbor (hclcr.io) and download the CF239 charts to ./charts
+#   hcl-dx-deployment 2.50.0  (oci://hclcr.io/dx-compose/hcl-dx-deployment)  -> Labs 1 and 2
+#   hcl-dx-iq         1.0.3   (oci://hclcr.io/dx/hcl-dx-iq)                   -> Lab 3
+#   hcl-dx-search     2.37.0  (oci://hclcr.io/dx-compose/hcl-dx-search)       -> Lab 4
 # Images are NOT downloaded here: the cluster pulls them from hclcr.io with the regcred secret.
 set -euo pipefail
 source "$(dirname "$0")/lib.sh"

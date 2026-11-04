@@ -15,7 +15,7 @@ info "PVC (all Bound)"
 kubectl -n "$DX_NS" get pvc
 kubectl -n "$DX_NS" get pvc --no-headers | awk '$2!="Bound"{exit 1}' && ok "all Bound" || fail "there are unbound PVCs (check the StorageClasses)"
 
-info "Images in use (they must come from hclcr.io and be CF238)"
+info "Images in use (they must come from hclcr.io and be CF239)"
 kubectl -n "$DX_NS" get pods -o jsonpath='{range .items[*]}{range .spec.containers[*]}{.image}{"\n"}{end}{end}' | sort -u | sed 's/^/  /'
 
 info "HTTPS access to https://${DX_HOST}/wps/portal"

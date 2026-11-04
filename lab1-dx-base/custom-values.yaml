@@ -1,9 +1,9 @@
 # ------------------------------------------------------------------------------------------
-# Lab 1 · Base custom-values.yaml for DX Compose · chart hcl-dx-deployment 2.49.0 (CF238)
+# Lab 1 · Base custom-values.yaml for DX Compose · chart hcl-dx-deployment 2.50.0 (CF239)
 #
 # It is the base layer for EVERY iteration. The following labs do not modify it: they add their
 # own layers with -f (see common/dx-helm.sh). It only contains what changes compared to the chart
-# default values (charts/values-dx-default-2.49.0.yaml).
+# default values (charts/values-dx-default-2.50.0.yaml).
 #
 # Set from env.sh by common/dx-helm.sh with --set-string (so they are not repeated here):
 #   networking.webEngine.host           <- DX_HOST
@@ -11,7 +11,7 @@
 # ------------------------------------------------------------------------------------------
 
 # Images: straight from the official HCL Harbor. The names (dx-compose/webengine, ...) and the
-# CF238 tags already come in the chart, so we only change the registry and the pull secret.
+# CF239 tags already come in the chart, so we only change the registry and the pull secret.
 images:
   repository: "hclcr.io"
   imagePullSecrets:

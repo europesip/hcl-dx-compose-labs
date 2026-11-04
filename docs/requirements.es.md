@@ -66,9 +66,9 @@ Usamos directamente el registro oficial **`hclcr.io`**. El clúster descarga las
 
 | Artefacto | Ruta OCI |
 |---|---|
-| Chart DX Compose | `oci://hclcr.io/dx-compose/hcl-dx-deployment` (2.49.0) |
-| Chart IQ | `oci://hclcr.io/dx/hcl-dx-iq` (1.0.2) |
-| Imágenes | `hclcr.io/dx-compose/...` (los nombres y tags de CF238 vienen en el chart) |
+| Chart DX Compose | `oci://hclcr.io/dx-compose/hcl-dx-deployment` (2.50.0) |
+| Chart IQ | `oci://hclcr.io/dx/hcl-dx-iq` (1.0.3) |
+| Imágenes | `hclcr.io/dx-compose/...` (los nombres y tags de CF239 vienen en el chart) |
 
 Credenciales: el e-mail de tu cuenta HCL y el **CLI secret** de tu perfil en https://hclcr.io
 (*User Profile → CLI secret*). Van en `env.sh` (`HCL_HARBOR_USER`, `HCL_HARBOR_TOKEN`).

@@ -65,10 +65,10 @@ We use the official **`hclcr.io`** registry directly. The cluster pulls the imag
 
 | Artefact | OCI path |
 |---|---|
-| DX Compose chart | `oci://hclcr.io/dx-compose/hcl-dx-deployment` (2.49.0) |
-| IQ chart | `oci://hclcr.io/dx/hcl-dx-iq` (1.0.2) |
-| Search chart (Lab 4) | `oci://hclcr.io/dx-compose/hcl-dx-search` (2.36.0) |
-| Images | `hclcr.io/dx-compose/...` (the CF238 names and tags come in the chart) |
+| DX Compose chart | `oci://hclcr.io/dx-compose/hcl-dx-deployment` (2.50.0) |
+| IQ chart | `oci://hclcr.io/dx/hcl-dx-iq` (1.0.3) |
+| Search chart (Lab 4) | `oci://hclcr.io/dx-compose/hcl-dx-search` (2.37.0) |
+| Images | `hclcr.io/dx-compose/...` (the CF239 names and tags come in the chart) |
 
 Credentials: the e-mail of your HCL account and the **CLI secret** of your profile at
 https://hclcr.io (*User Profile → CLI secret*). They go in `env.sh` (`HCL_HARBOR_USER`,

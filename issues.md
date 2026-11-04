@@ -4,14 +4,16 @@
 
 Issues found while preparing this PoC with HCL DX Compose CF238 (`hcl-dx-deployment` 2.49.0,
 `hcl-dx-iq` 1.0.2, `hcl-dx-search` 2.36.0), what happens and how the labs deal with them.
+**Re-checked on CF239** (`hcl-dx-deployment` 2.50.0, `hcl-dx-iq` 1.0.3, `hcl-dx-search` 2.37.0)
+with a clean installation of all the labs on 2026-11-04: each issue says whether it is still present.
 
 ## Issues reported to HCL Support
 
 | Case | Opened | Issue | Status |
 |---|---|---|---|
-| **CS1479102** | 2026-11-02 | IQ: the MCP server list set as documented is ignored | Open, being reproduced by HCL |
-| **CS1479139** | 2026-11-02 | IQ: the system prompt describes an active RAG memory while RAG is disabled | Open |
-| **CS1479178** | 2026-11-02 | IQ: requests to the LLM cannot use prompt caching, so every call pays full price for a ~30,000-token prefix | Open |
+| **CS1479102** | 2026-11-02 | IQ: the MCP server list set as documented is ignored | Open, being reproduced by HCL. **Still present in IQ 1.0.3** |
+| **CS1479139** | 2026-11-02 | IQ: the system prompt describes an active RAG memory while RAG is disabled | Open. **Partly changed in IQ 1.0.3**: the directive is softer, but still sent with RAG disabled |
+| **CS1479178** | 2026-11-02 | IQ: requests to the LLM cannot use prompt caching, so every call pays full price for a ~30,000-token prefix | Open. **Still present in IQ 1.0.3** (prefix now ~32,500 tokens) |
 
 ### CS1479102 · IQ ignores `MCP_SERVER_LIST`
 
@@ -27,6 +29,11 @@ Issues found while preparing this PoC with HCL DX Compose CF238 (`hcl-dx-deploym
 - **Side effect with Helm 4.** Helm 4 applies objects with server-side apply: once the key has been
   patched, the next `helm upgrade` of IQ fails with `conflict with "kubectl-patch"`. The labs use
   `--force-conflicts` with Helm 4 (`HELM_FORCE_CONFLICTS` in `common/lib.sh`) and patch the key again.
+- **CF239 / IQ 1.0.3: still present.** The chart still generates `mcp_server_list` with only the HCL
+  MCP Server, and there is still no value to extend it. New in 1.0.3: an `[MCP Watchdog]` asks the
+  servers in the list for their tools again every 10 minutes, so a server that was not ready at
+  start-up is picked up without a restart. But the list itself is only read at start-up: in our test,
+  removing a server from the ConfigMap had no effect until the Integrator was restarted.
 
 ### CS1479139 · RAG directive in the prompt while RAG is disabled
 
@@ -40,6 +47,12 @@ Issues found while preparing this PoC with HCL DX Compose CF238 (`hcl-dx-deploym
   users, data sent to the embedding provider).
 - **Solution in the labs.** None for now: it does not block IQ, and the section is part of the product
   prompt. Waiting for HCL.
+- **CF239 / IQ 1.0.3: partly changed.** The `RAG_ENABLED=false` lines at `ERROR` level are no longer
+  logged, and the directive has been rewritten: it no longer says "absolute truth", no longer names
+  the "Past conversation note:" / "CRITICAL SYSTEM MEMORY HISTORY" labels or other sessions, and adds
+  that users who want their history deleted must ask their administrator. But it is **still sent
+  with RAG disabled**, and still states "You have access to injected historical context from prior
+  conversations" and that this context is "authoritative". The documentation request is still open.
 
 ### CS1479178 · IQ requests cannot use prompt caching
 
@@ -75,6 +88,10 @@ Issues found while preparing this PoC with HCL DX Compose CF238 (`hcl-dx-deploym
 - **Reported as a defect** because of its business impact: the excessive cost of every IQ call. The
   case asks HCL to mark the cacheable prefix in the Integrator requests and, until then, to document
   the gateway configuration.
+- **CF239 / IQ 1.0.3: still present.** With the LiteLLM workaround removed, 5 model calls from 2
+  questions all returned `cache_read_input_tokens=0` and `cache_creation_input_tokens=0`. The prefix
+  has grown to **~32,500 tokens** (60 tools; system prompt of 18,912 characters instead of 14,068).
+  With the workaround, the second call read 32,157 tokens from the cache.
 
 ## Issues not reported (no case opened)
 
@@ -84,17 +101,17 @@ Issues found while preparing this PoC with HCL DX Compose CF238 (`hcl-dx-deploym
 |---|---|
 | **The Web Engine on PostgreSQL is not supported in CF238** (DB2, Oracle and SQL Server are). HCL is validating PostgreSQL for the Web Engine (its tests work with PostgreSQL 18). In our tests, the Web Engine (OpenJPA) generates `LIKE … ESCAPE '\'` (DB2/Oracle style), which PostgreSQL rejects with "invalid escape string" with its default settings | Lab 2B is presented as a learning exercise, not as a supported configuration. The PostgreSQL preparation script sets `standard_conforming_strings = off` (and `escape_string_warning = off`) on `dx_core` |
 
-### IQ (hcl-dx-iq 1.0.2)
+### IQ (hcl-dx-iq 1.0.2; re-checked on 1.0.3)
 
 | Issue | Solution in the labs | Case? |
 |---|---|---|
-| **`LITELLM_BASE_URL` is undocumented but required.** With only the documented `configuration.litellm.liteLlmUrl`, the Integrator's LLM adapter does not send the requests to our LiteLLM | `LITELLM_BASE_URL` set in `environment.pod.integrator` with the same URL (`custom-iq-values.yaml`) | Candidate for a case |
-| **`LITELLM_URL` and `LITELLM_API_KEY` cannot be overridden** through `environment.pod.integrator`: the chart defines them again | The URL goes in `configuration.litellm.liteLlmUrl` (+ `LITELLM_BASE_URL`); the key in the `iq-litellm-api-secret` secret | To be added as a comment to CS1479102 |
-| **MCP tool names contain dots** (`dam.mime-type…`), which the Anthropic and OpenAI APIs reject (`[a-zA-Z0-9_-]` only): with a provider that does not adapt them, the whole request fails with HTTP 400 | LiteLLM uses its `anthropic/` provider against the Anthropic-compatible endpoint of OpenRouter, which sanitises the names. HCL recommends `enableDam: false` with non-Claude models | No (improvement request) |
-| **The Integrator reads the MCP tools only when it starts.** If it starts before the MCP Server is ready (normal on a fresh install), it has no tools until it is restarted | The install waits for the MCP Server and then restarts the Integrator (`04-iq-install.sh`) | No |
+| **`LITELLM_BASE_URL` is undocumented but required.** With only the documented `configuration.litellm.liteLlmUrl`, the Integrator's LLM adapter does not send the requests to our LiteLLM | `LITELLM_BASE_URL` set in `environment.pod.integrator` with the same URL (`custom-iq-values.yaml`). **Still required in 1.0.3**: without it, IQ answers "The LLM service is temporarily unavailable" | Candidate for a case |
+| **`LITELLM_URL` and `LITELLM_API_KEY` cannot be overridden** through `environment.pod.integrator`: the chart defines them again | The URL goes in `configuration.litellm.liteLlmUrl` (+ `LITELLM_BASE_URL`); the key in the `iq-litellm-api-secret` secret. **Same in 1.0.3** | To be added as a comment to CS1479102 |
+| **MCP tool names contain dots** (`dam.mime-type…`), which the Anthropic and OpenAI APIs reject (`[a-zA-Z0-9_-]` only): with a provider that does not adapt them, the whole request fails with HTTP 400 | LiteLLM uses its `anthropic/` provider against the Anthropic-compatible endpoint of OpenRouter, which sanitises the names. HCL recommends `enableDam: false` with non-Claude models. **Fixed in 1.0.3**: the 55 tools have valid names (`get_collection_from_DAM`...), and the Integrator adds a prefix per server (`tool61b8b48c_...`) | No (improvement request) |
+| **The Integrator reads the MCP tools only when it starts.** If it starts before the MCP Server is ready (normal on a fresh install), it has no tools until it is restarted | The install waits for the MCP Server and then restarts the Integrator (`04-iq-install.sh`). **Mitigated in 1.0.3**: a watchdog re-reads the tools every 10 minutes (tested: the tools of a server started later appeared after 10 minutes) | No |
 | **OpenRouter is not validated by HCL** (the HCL guides use AWS Bedrock) | Documented in Lab 3: OpenRouter is used through LiteLLM to avoid the AWS Bedrock account set-up | No (by design) |
 
-### Search V2 (hcl-dx-search 2.36.0)
+### Search V2 (hcl-dx-search 2.36.0; both still present in 2.37.0)
 
 | Issue | Solution in the labs | Case? |
 |---|---|---|

@@ -109,7 +109,7 @@ Puntos a explicar:
   con el AD. Sin él, el AD no forma parte del realm. `allowOpIfRepoDown` permite que wpsadmin
   siga entrando aunque el AD no responda.
 - No hace falta redefinir el `basicRegistry` (ni poner la contraseña de wpsadmin en el XML): en
-  CF238 lo genera el chart desde `web-engine-secret`.
+  CF239 lo genera el chart desde `web-engine-secret`.
 
 ```bash
 lab2-ldap-postgres/enterprise/active-directory/02-dx-upgrade.sh

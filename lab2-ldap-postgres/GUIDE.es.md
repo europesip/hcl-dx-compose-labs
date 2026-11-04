@@ -126,13 +126,13 @@ lab2-ldap-postgres/a-ldap/03-dx-upgrade.sh
 Crea el secret `dx-ldap-bind` en `dx-demo` y hace el `helm upgrade` con la capa LDAP:
 
 ```bash
-helm upgrade --install dx-deployment charts/hcl-dx-deployment-2.49.0.tgz -n dx-demo \
+helm upgrade --install dx-deployment charts/hcl-dx-deployment-2.50.0.tgz -n dx-demo \
   -f lab1-dx-base/custom-values.yaml \
   -f lab2-ldap-postgres/a-ldap/custom-values.ldap.yaml \
   --set-string networking.webEngine.host=$DX_HOST --timeout 30m --wait
 ```
 
-**Qué genera el chart.** Con `type: other`, el chart de CF238 crea la configuración de Open Liberty:
+**Qué genera el chart.** Con `type: other`, el chart de CF239 crea la configuración de Open Liberty:
 un `<ldapRegistry>` (filtros `inetOrgPerson` para usuarios y `groupOfUniqueNames` para grupos) y un
 `<federatedRepository>` que une **el registro básico** (`o=defaultWIMFileBasedRealm`, donde vive
 `wpsadmin`) **y el LDAP**. Por eso wpsadmin sigue entrando y los usuarios del LDAP también. Para

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Lab 4 · Step 2 · Install hcl-dx-search (OpenSearch + Search Middleware) in the DX namespace.
 # Equivalent command (the wizard RUNBOOK.md shows it with your values):
-#   helm upgrade --install dx-search charts/hcl-dx-search-2.36.0.tgz -n dx-demo \
+#   helm upgrade --install dx-search charts/hcl-dx-search-2.37.0.tgz -n dx-demo \
 #     -f lab4-opensearch/custom-search-values.yaml -f lab4-opensearch/admin-dn.rendered.yaml --wait
 set -euo pipefail
 source "$(dirname "$0")/../common/lib.sh"

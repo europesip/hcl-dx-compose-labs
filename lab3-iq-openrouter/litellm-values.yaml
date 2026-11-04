@@ -12,9 +12,11 @@
 # Why OpenRouter and not AWS Bedrock (the HCL guides use Bedrock): see GUIDE.md, section 3.
 #
 # "anthropic/" provider against the OpenRouter Anthropic endpoint (and NOT "openrouter/"):
-#   the HCL MCP Server publishes tools with dots in the name (dam.mime-type.tool...).
-#   The anthropic/ provider sanitises those names to the format Claude requires and maps them back;
-#   openrouter/ (OpenAI format) sends them as they are and Claude rejects the request (HTTP 400).
+#   up to IQ 1.0.2 the HCL MCP Server published tools with dots in the name (dam.mime-type...),
+#   which the anthropic/ provider sanitises and openrouter/ (OpenAI format) sends as they are, so
+#   Claude rejected the request (HTTP 400). IQ 1.0.3 (CF239) already uses valid names
+#   ([a-zA-Z0-9_], e.g. get_collection_from_DAM); anthropic/ is kept because it is tested and it
+#   also supports the prompt caching below.
 #   Format: model "anthropic/<OpenRouter id>", api_base https://openrouter.ai/api
 #
 # Do not use OpenAI reasoning models (gpt-5.x): they inject reasoning_effort and break the IQ
@@ -47,7 +49,7 @@ proxy_config:
         api_base: https://openrouter.ai/api
         api_key: os.environ/OPENROUTER_API_KEY
         # Prompt caching: marks the system prompt as the end of the cacheable part. Anthropic caches
-        # by prefix (tools -> system -> messages): it covers the ~53 tools and the prompt, which
+        # by prefix (tools -> system -> messages): it covers the ~60 tools and the prompt, which
         # are most of the tokens of every IQ request.
         cache_control_injection_points:
           - location: message

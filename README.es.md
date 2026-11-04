@@ -1,4 +1,4 @@
-# HCL DX Compose desde cero en Kubernetes (CF238)
+# HCL DX Compose desde cero en Kubernetes (CF239)
 
 [English](README.md) · **Español** · [Asistente de configuración (opcional, experimental)](https://europesip.github.io/hcl-dx-compose-labs/about.html?lang=es)
 
@@ -17,7 +17,7 @@ construye la plataforma en cuatro laboratorios, cada uno sobre el anterior.
 | [Lab 2 · LDAP y PostgreSQL](lab2-ldap-postgres/GUIDE.es.md) | **2A**: autenticación contra un OpenLDAP. **2B**: transferencia de la base de datos del Web Engine de Derby a PostgreSQL | ~27 min (2A ~10 · 2B ~17) |
 | ↳ [Lab 2 · rama empresarial](lab2-ldap-postgres/GUIDE-enterprise.es.md) *(opcional)* | Las mismas iteraciones contra **Active Directory** (con `configOverrideFiles`) y **Oracle** (TCPS), habituales en empresas corporativas | referencia |
 | [Lab 3 · IQ con OpenRouter](lab3-iq-openrouter/GUIDE.es.md) | **3A**: asistente de IA de DX (IQ) usando LiteLLM como proxy hacia OpenRouter (Claude) en lugar de AWS Bedrock. **3B**: MCP Server propio de EUROPESIP (servicios, soporte, laboratorios y la herramienta figma&web-to-dx) | ~13 min (3A ~10 · 3B ~3) |
-| [Lab 4 · Búsqueda con OpenSearch](lab4-opensearch/GUIDE.es.md) | Search V2: OpenSearch + Search Middleware (`hcl-dx-search` 2.36.0), certificados y `adminDN`, rastreo de WCM, portal y JCR y búsqueda por API | ~10 min |
+| [Lab 4 · Búsqueda con OpenSearch](lab4-opensearch/GUIDE.es.md) | Search V2: OpenSearch + Search Middleware (`hcl-dx-search` 2.37.0), certificados y `adminDN`, rastreo de WCM, portal y JCR y búsqueda por API | ~10 min |
 | | **Total de ejecución** (Labs 1 a 4) | **~60 min** |
 
 > **¿Sin clúster? Lab 0 (opcional).** Solo si **no tienes un entorno Kubernetes ya desplegado**
@@ -36,7 +36,7 @@ construye la plataforma en cuatro laboratorios, cada uno sobre el anterior.
 > para no complicar los labs, **se han omitido**. Para un proyecto real, recomendamos contar
 > siempre con un **partner de HCL** o con los **servicios especializados de HCL**.
 
-Versiones: **HCL DX Compose 9.5 CF238**, charts `hcl-dx-deployment` **2.49.0**, `hcl-dx-iq`
+Versiones: **HCL DX Compose 9.5 CF239**, charts `hcl-dx-deployment` **2.50.0**, `hcl-dx-iq`
 **1.0.2** y `hcl-dx-search` **2.36.0**. Documentación oficial:
 [Installing DX Compose (CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/install/kubernetes_deployment/install/).
 
@@ -211,7 +211,7 @@ lab0-poc-wsl/              Lab 0 (opcional): PoC de un nodo con k3s en WSL2
 common/                    pasos comunes y utilidades
   00-check-prereqs.sh        comprueba herramientas, clúster, StorageClasses, DNS y credenciales
   01-namespaces.sh           crea dx-demo y dx-shared (con anotaciones SCC si es OpenShift)
-  02-pull-hcl-charts.sh      login en hclcr.io y descarga de los charts de CF238
+  02-pull-hcl-charts.sh      login en hclcr.io y descarga de los charts de CF239
   dx-helm.sh                 el ÚNICO helm install/upgrade de DX: base + capas de cada lab
   collect-support-data.sh    recoge los datos para un case de HCL Support (.tar.gz)
   99-cleanup.sh              borra todo para repetir los labs desde cero
@@ -233,7 +233,7 @@ Nunca se edita a mano el `values.yaml` del chart ni se usa `--reuse-values`. Hay
 `custom-values.yaml` base (Lab 1) y cada iteración añade su fichero pequeño:
 
 ```
-helm upgrade --install dx-deployment charts/hcl-dx-deployment-2.49.0.tgz -n dx-demo \
+helm upgrade --install dx-deployment charts/hcl-dx-deployment-2.50.0.tgz -n dx-demo \
   -f lab1-dx-base/custom-values.yaml                          # Lab 1: base
   -f lab2-ldap-postgres/a-ldap/custom-values.ldap.yaml         # Lab 2A: LDAP
   -f lab2-ldap-postgres/b-postgres/custom-values.postgres.yaml # Lab 2B: BD externa
@@ -267,9 +267,9 @@ Resumen (detalle en [docs/requirements.es.md](docs/requirements.es.md)):
   especializados de HCL.
 - **Material licenciado.** Los charts e imágenes de HCL no están en este repositorio: cada asistente
   los descarga con su cuenta. `charts/` y los `.tgz` están en `.gitignore`.
-- **Web Engine sobre PostgreSQL (Lab 2B) no está soportado todavía por HCL en CF238** (sí DB2,
-  Oracle y SQL Server). HCL lo está validando; el lab sirve para aprender el proceso de
-  transferencia.
+- **Web Engine sobre PostgreSQL (Lab 2B) no está soportado todavía por HCL** (en CF238 sí lo están
+  DB2, Oracle y SQL Server; la documentación de CF239 aún no está publicada). HCL lo está
+  validando; el lab sirve para aprender el proceso de transferencia.
 - **OpenRouter no está validado por HCL** (LiteLLM sí). Las guías de HCL usan AWS Bedrock; el Lab 3
   explica por qué usamos OpenRouter y las desviaciones.
 - El OpenLDAP, el PostgreSQL, LiteLLM y el MCP propio de `dx-shared` están dimensionados para un laboratorio (una

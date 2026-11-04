@@ -3,7 +3,7 @@
 # documentation, with --wait to wait until everything is Ready; the first time takes 15-25 minutes).
 #
 # Equivalent command, by hand (the wizard RUNBOOK.md shows it with your values):
-#   helm install dx-deployment charts/hcl-dx-deployment-2.49.0.tgz -n dx-demo \
+#   helm install dx-deployment charts/hcl-dx-deployment-2.50.0.tgz -n dx-demo \
 #     -f lab1-dx-base/custom-values.yaml --set-string networking.webEngine.host=$DX_HOST \
 #     --timeout 30m --wait          (with Helm 4: --wait=legacy, see common/lib.sh)
 #

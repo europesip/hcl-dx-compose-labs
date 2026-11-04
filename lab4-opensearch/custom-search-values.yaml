@@ -1,6 +1,6 @@
 # ------------------------------------------------------------------------------------------
-# Lab 4 · custom-search-values.yaml · chart hcl-dx-search 2.36.0 (CF238) · release dx-search
-# Only what changes compared to the default values (charts/values-search-default-2.36.0.yaml).
+# Lab 4 · custom-search-values.yaml · chart hcl-dx-search 2.37.0 (CF239) · release dx-search
+# Only what changes compared to the default values (charts/values-search-default-2.37.0.yaml).
 # The adminDN is not here: 01-certs.sh generates it in admin-dn.rendered.yaml.
 # Set from env.sh by 02-search-install.sh: the StorageClass (SC_RWO) and the DX release (DX_RELEASE).
 #
@@ -13,7 +13,7 @@ images:
   repository: "hclcr.io"
   imagePullSecrets:
     - name: regcred
-  # names (dx-compose/dx-opensearch, ...) and CF238 tags: the chart ones
+  # names (dx-compose/dx-opensearch, ...) and CF239 tags: the chart ones
 
 volumes:
   openSearchManager:
@@ -26,7 +26,7 @@ applications:
   openSearch: true
   searchMiddleware: true
   # Extracts the text of DAM documents (Office, PDF...) to index it (1 CPU / 2 GiB).
-  # The chart ships it disabled, but the CF238 Search Middleware looks for it anyway and, without
+  # The chart ships it disabled, but the CF239 Search Middleware looks for it anyway and, without
   # it, logs "Could not connect to file processor" every 3 seconds: we enable it.
   fileProcessor: true
 

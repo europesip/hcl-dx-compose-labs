@@ -2,7 +2,7 @@
 # Lab 3B · Step 3 · Register the custom MCP Server in IQ.
 #
 # The Integrator reads the list of MCP Servers (comma separated) from the key
-# dx.config.integrator.mcp_server_list of the <IQ_RELEASE>-integrator ConfigMap. Chart 1.0.2
+# dx.config.integrator.mcp_server_list of the <IQ_RELEASE>-integrator ConfigMap. Chart 1.0.3
 # generates it with a single server (the HCL one) and offers no value to extend it; the
 # MCP_SERVER_LIST environment variable has no effect either (the ConfigMap overrides it). So:
 #   1. the ConfigMap is patched with both servers, and

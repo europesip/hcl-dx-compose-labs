@@ -110,7 +110,7 @@ Points to explain:
   with the AD. Without it, the AD is not part of the realm. `allowOpIfRepoDown` lets wpsadmin log
   in even if the AD does not answer.
 - There is no need to redefine the `basicRegistry` (or to put the wpsadmin password in the XML):
-  in CF238 the chart generates it from `web-engine-secret`.
+  in CF239 the chart generates it from `web-engine-secret`.
 
 ```bash
 lab2-ldap-postgres/enterprise/active-directory/02-dx-upgrade.sh

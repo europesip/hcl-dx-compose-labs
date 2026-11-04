@@ -39,7 +39,7 @@ Documentación de HCL:
 
 | Componente | Namespace | Chart |
 |---|---|---|
-| OpenSearch, Search Middleware y File Processor | **`dx-demo`** | `hcl-dx-search` **2.36.0** (CF238) de HCL |
+| OpenSearch, Search Middleware y File Processor | **`dx-demo`** | `hcl-dx-search` **2.37.0** (CF239) de HCL |
 
 `hcl-dx-search` es software de HCL y, además, **tiene que estar en el mismo namespace que DX**:
 HAProxy enruta a `<servicio>.<namespace de DX>`, la búsqueda localiza el HAProxy de DX para
@@ -121,7 +121,7 @@ Lee [custom-search-values.yaml](custom-search-values.yaml):
 
 | Valor | Para qué |
 |---|---|
-| `images.repository: hclcr.io` + `regcred` | Imágenes de CF238 (`dx-compose/dx-opensearch`, `dx-search-middleware`) |
+| `images.repository: hclcr.io` + `regcred` | Imágenes de CF239 (`dx-compose/dx-opensearch`, `dx-search-middleware`) |
 | `volumes.openSearchManager.data.storageClassName` | El chart trae `manual` por defecto: hay que cambiarlo. El script pone `SC_RWO` de `env.sh` |
 | `applications.fileProcessor: true` | Extrae el texto de documentos de DAM (Office, PDF) para indexarlo. El chart lo trae a `false`, pero sin él el Search Middleware registra `Could not connect to file processor` cada 3 s |
 | `security.pushAdministration.deploymentReleaseName` | Release de DX con la que comparte la credencial *push-admin* (`DX_RELEASE`, la pone el script) |
@@ -134,7 +134,7 @@ lab4-opensearch/02-search-install.sh
 ```
 
 ```bash
-helm upgrade --install dx-search charts/hcl-dx-search-2.36.0.tgz -n dx-demo \
+helm upgrade --install dx-search charts/hcl-dx-search-2.37.0.tgz -n dx-demo \
   -f lab4-opensearch/custom-search-values.yaml -f lab4-opensearch/admin-dn.rendered.yaml --wait
 ```
 

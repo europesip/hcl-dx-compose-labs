@@ -1,10 +1,10 @@
 # ------------------------------------------------------------------------------------------
-# Lab 3 · custom-iq-values.yaml · chart hcl-dx-iq 1.0.2 (CF238) · release dx-iq · DX namespace
+# Lab 3 · custom-iq-values.yaml · chart hcl-dx-iq 1.0.3 (CF239) · release dx-iq · DX namespace
 # No secrets. Always used with helm upgrade -f (never --reuse-values).
 # Set from env.sh by 04-iq-install.sh: configuration.dx.releaseName, externalHost and the
 # LiteLLM URL (both occurrences of http://litellm.dx-shared...:4000 below).
 #
-# Deviations from the HCL documentation (needed in IQ 1.0.2, see GUIDE, section 3):
+# Deviations from the HCL documentation (needed in IQ 1.0.2 and 1.0.3, see GUIDE, section 3):
 #   - LITELLM_BASE_URL: undocumented but essential variable.
 #   - LiteLLM in front of OpenRouter: HCL does not validate OpenRouter (it does validate LiteLLM).
 # ------------------------------------------------------------------------------------------
@@ -12,7 +12,7 @@ images:
   repository: "hclcr.io"
   imagePullSecrets:
     - name: regcred
-  # No tags: the chart ships the images compatible with CF238
+  # No tags: the chart ships the images compatible with CF239
 
 configuration:
   dx:
@@ -31,8 +31,8 @@ configuration:
   mcpServer:
     standaloneMode: false
     enableWcm: true
-    # Works with Claude thanks to the LiteLLM anthropic/ provider (see litellm-values.yaml).
-    # With a provider that does not fix tool names containing dots -> enableDam: false
+    # IQ 1.0.3 publishes valid tool names (no dots, see litellm-values.yaml). HCL still says to
+    # disable it with non-Claude models -> enableDam: false
     enableDam: true
 
   # LiteLLM lives in another namespace: the service FQDN is used (= LITELLM_URL_INTERNAL)
@@ -50,7 +50,7 @@ environment:
       # Response token cap, below the maximum of both models (Haiku 4.5: 64k)
       - name: "LLM_MAX_TOKENS"
         value: "16384"
-      # Undocumented but essential in Integrator 1.0.2: it is the URL the LLM adapter really
+      # Undocumented but essential in Integrator 1.0.2 and 1.0.3: it is the URL the LLM adapter really
       # uses. Without it, it calls an internal HCL URL. Same value as litellm.liteLlmUrl.
       - name: "LITELLM_BASE_URL"
         value: "http://litellm.dx-shared.svc.cluster.local:4000"

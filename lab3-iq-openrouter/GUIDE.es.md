@@ -36,7 +36,7 @@ Documentación de HCL: [IQ installation (CF238)](https://help.hcl-software.com/d
 
 | Componente | Namespace | Quién lo da |
 |---|---|---|
-| IQ Integrator y MCP Server de HCL | `dx-demo` | Chart `hcl-dx-iq` 1.0.2 de HCL |
+| IQ Integrator y MCP Server de HCL | `dx-demo` | Chart `hcl-dx-iq` 1.0.3 de HCL |
 | LiteLLM | **`dx-shared`** | **No lo suministra HCL**: chart oficial de LiteLLM (BerriAI) |
 | MCP Server de EUROPESIP (3B) | **`dx-shared`** | Nuestro propio servidor MCP |
 | Modelos | Internet | OpenRouter (clave `OPENROUTER_API_KEY`) |
@@ -140,10 +140,12 @@ proxy_config:
     drop_params: true                                  # HCL: imprescindible
 ```
 
-- **`anthropic/` y no `openrouter/`**: el MCP Server de HCL tiene herramientas con puntos en el
-  nombre (`dam.mime-type...`). El proveedor `anthropic/` las adapta al formato que acepta Claude;
-  con `openrouter/` (formato OpenAI) Claude rechaza toda la petición con HTTP 400.
-- **Prompt caching**: cada petición de IQ envía ~50 herramientas y un system prompt largo que
+- **`anthropic/` y no `openrouter/`**: hasta IQ 1.0.2 el MCP Server de HCL tenía herramientas con
+  puntos en el nombre (`dam.mime-type...`), que el proveedor `anthropic/` adapta al formato que
+  acepta Claude; con `openrouter/` (formato OpenAI) Claude rechazaba toda la petición con HTTP 400.
+  IQ 1.0.3 (CF239) ya publica nombres válidos (`get_collection_from_DAM`...). Mantenemos
+  `anthropic/` porque es la vía probada y admite el prompt caching de abajo.
+- **Prompt caching**: cada petición de IQ envía ~60 herramientas y un system prompt largo que
   apenas cambian. Marcarlos como cacheables abarata mucho las preguntas siguientes.
 - `db.deployStandalone: false`: sin el PostgreSQL que el chart instalaría por defecto.
 
@@ -166,7 +168,7 @@ Lee [custom-iq-values.yaml](custom-iq-values.yaml). Lo principal:
 |---|---|
 | `configuration.dx.releaseName` / `externalHost` | Qué DX usar (`dx-deployment`) y su FQDN; los pasa el script desde `env.sh` |
 | `configuration.litellm.liteLlmUrl` | `http://litellm.dx-shared.svc.cluster.local:4000`: **FQDN** porque está en otro namespace. El script pone `LITELLM_URL_INTERNAL` de `env.sh` |
-| `environment.pod.integrator` → `LITELLM_BASE_URL` | Misma URL. No documentada pero imprescindible en 1.0.2 (ver abajo) |
+| `environment.pod.integrator` → `LITELLM_BASE_URL` | Misma URL. No documentada pero imprescindible en 1.0.2 y 1.0.3 (ver abajo) |
 | `configuration.mcpServer.enableWcm` / `enableDam` | Herramientas que IQ puede usar sobre WCM y DAM |
 | `configuration.database.enabled: false` | Sesiones en SQLite en memoria (se pierden al reiniciar). Ver apéndice |
 
@@ -175,7 +177,7 @@ lab3-iq-openrouter/04-iq-install.sh
 ```
 
 ```bash
-helm upgrade --install dx-iq charts/hcl-dx-iq-1.0.2.tgz -n dx-demo -f lab3-iq-openrouter/custom-iq-values.yaml \
+helm upgrade --install dx-iq charts/hcl-dx-iq-1.0.3.tgz -n dx-demo -f lab3-iq-openrouter/custom-iq-values.yaml \
   --set-string configuration.dx.releaseName=dx-deployment --set-string configuration.dx.externalHost=$DX_HOST
 ```
 
@@ -244,13 +246,13 @@ Practitioner Studio habilitado, que es lo normal en DX Compose) y prueba:
 
 IQ no está limitado a las herramientas de HCL. Un **MCP Server** (*Model Context Protocol*) es un
 servicio que publica **herramientas**: funciones con nombre, descripción y parámetros que el LLM
-puede decidir llamar. El MCP Server de HCL publica 53 (WCM y DAM). Aquí añadimos uno propio con
+puede decidir llamar. El MCP Server de HCL publica 55 (WCM, DAM y páginas). Aquí añadimos uno propio con
 información que el modelo no puede saber: **quién es EUROPESIP y qué servicios ofrece**, su horario
 de soporte, dónde están estos laboratorios... y una herramienta, **figma&web-to-dx**, que presenta
 la solución de EUROPESIP para generar componentes de DX a partir de diseños.
 
 ```
-                                ┌─► dx-iq-mcp-server:3000            (HCL, dx-demo)    53 herramientas
+                                ┌─► dx-iq-mcp-server:3000            (HCL, dx-demo)    55 herramientas
  IQ Integrator ── tools/list ───┤
    (dx-demo)                    └─► europesip-mcp.dx-shared:3000     (propio, dx-shared) 5 herramientas
 ```
@@ -262,7 +264,7 @@ Server nuevo, nuestro propio**, no el que viene con HCL: por eso lo corremos en 
 completo de servicio (`europesip-mcp.dx-shared.svc.cluster.local`).
 
 > **Soporte.** HCL documenta `MCP_SERVER_LIST` para su propio MCP Server; añadir servidores propios
-> no está documentado ni soportado en IQ 1.0.2. Funciona con el procedimiento de abajo.
+> no está documentado ni soportado en IQ 1.0.3. Funciona con el procedimiento de abajo.
 
 ### El servidor
 
@@ -338,7 +340,7 @@ lab3-iq-openrouter/custom-mcp/03-iq-register.sh
 ```
 
 El Integrator lee la lista de MCP Servers de la clave `dx.config.integrator.mcp_server_list` del
-ConfigMap `dx-iq-integrator`. El chart 1.0.2 la genera con solo el de HCL y no ofrece ningún valor
+ConfigMap `dx-iq-integrator`. El chart 1.0.3 la genera con solo el de HCL y no ofrece ningún valor
 para ampliarla (la variable `MCP_SERVER_LIST` tampoco tiene efecto: el ConfigMap la sobrescribe).
 El script parchea esa clave y reinicia el Integrator:
 
@@ -349,10 +351,16 @@ http://dx-iq-mcp-server:3000,http://europesip-mcp.dx-shared.svc.cluster.local:30
 En el log del Integrator:
 
 ```
-Fetched 53 tools from http://dx-iq-mcp-server:3000
 Fetched 5 tools from http://europesip-mcp.dx-shared.svc.cluster.local:3000
-Total tools: 58
+Fetched 55 tools from http://dx-iq-mcp-server:3000
+Total tools: 60
 ```
+
+El Integrator añade un prefijo por servidor al nombre de cada herramienta
+(`tool61b8b48c_europesip_faq`...). Desde IQ 1.0.3 además vuelve a pedir sus herramientas a los
+servidores de su lista cada 10 minutos (`[MCP Watchdog]` en el log): si un servidor no estaba listo
+cuando arrancó el Integrator, sus herramientas aparecen sin reiniciar. La lista de servidores, en
+cambio, solo se lee al arrancar, así que añadir uno sigue necesitando el reinicio que hace el script.
 
 > Cada `helm upgrade` de IQ regenera el ConfigMap. `04-iq-install.sh` vuelve a añadir el servidor
 > propio automáticamente si existe el servicio `europesip-mcp` en `dx-shared`.
@@ -435,7 +443,7 @@ pregunta**, en lugar de con una cuenta administrativa.
 Para quitarlo: `kubectl -n dx-shared delete deploy/europesip-mcp svc/europesip-mcp`
 y `lab3-iq-openrouter/04-iq-install.sh` (regenera la lista con solo el MCP de HCL).
 
-## Desviaciones respecto a la documentación de HCL (IQ 1.0.2)
+## Desviaciones respecto a la documentación de HCL (IQ 1.0.3)
 
 (Además del cambio de AWS Bedrock por OpenRouter, explicado al principio.)
 

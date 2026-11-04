@@ -52,13 +52,13 @@ export HCL_REGISTRY="${HCL_REGISTRY:-hclcr.io}"
 export HCL_HARBOR_USER="${HCL_HARBOR_USER:-}"      # <<<
 export HCL_HARBOR_TOKEN="${HCL_HARBOR_TOKEN:-}"    # <<<
 
-# --- Versions (HCL DX Compose CF238) ------------------------------------------------------
+# --- Versions (HCL DX Compose CF239) ------------------------------------------------------
 export DX_CHART="${DX_CHART:-oci://${HCL_REGISTRY}/dx-compose/hcl-dx-deployment}"
-export DX_CHART_VERSION="${DX_CHART_VERSION:-2.49.0}"
+export DX_CHART_VERSION="${DX_CHART_VERSION:-2.50.0}"
 export IQ_CHART="${IQ_CHART:-oci://${HCL_REGISTRY}/dx/hcl-dx-iq}"
-export IQ_CHART_VERSION="${IQ_CHART_VERSION:-1.0.2}"
+export IQ_CHART_VERSION="${IQ_CHART_VERSION:-1.0.3}"
 export SEARCH_CHART="${SEARCH_CHART:-oci://${HCL_REGISTRY}/dx-compose/hcl-dx-search}"   # Lab 4
-export SEARCH_CHART_VERSION="${SEARCH_CHART_VERSION:-2.36.0}"
+export SEARCH_CHART_VERSION="${SEARCH_CHART_VERSION:-2.37.0}"
 export CHARTS_DIR="${CHARTS_DIR:-$REPO_ROOT/charts}"
 export DX_CHART_TGZ="${DX_CHART_TGZ:-$CHARTS_DIR/hcl-dx-deployment-${DX_CHART_VERSION}.tgz}"
 export IQ_CHART_TGZ="${IQ_CHART_TGZ:-$CHARTS_DIR/hcl-dx-iq-${IQ_CHART_VERSION}.tgz}"
