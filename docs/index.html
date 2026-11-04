@@ -93,8 +93,6 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid 
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 details{margin-top:10px}
 summary{cursor:pointer;color:var(--accent)}
-.tabs{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
-.tabs button[aria-selected="true"]{background:var(--accent-soft);border-color:var(--accent)}
 pre{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto;max-height:520px;font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;margin:8px 0 0;white-space:pre}
 code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--code-bg);padding:1px 4px;border-radius:4px;font-size:.92em}
 footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding:16px 0}
@@ -301,14 +299,6 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
       <code>env.example.sh</code>) and <code>source ./env.sh</code>; the lab scripts install everything. C: unzip it anywhere
       (it creates <code>dx-install/</code>), then <code>cd dx-install</code> and follow its <code>RUNBOOK.md</code> or run
       <code>./install.sh</code>. Option C contains credentials in plain text: keep it private and rotate them afterwards.</p>
-    <div class="tabs" role="tablist">
-      <button type="button" class="btn small" role="tab" aria-selected="true" data-tab="env">env.sh</button>
-      <button type="button" class="btn small" role="tab" aria-selected="false" data-tab="run">RUNBOOK.md (B)</button>
-      <button type="button" class="btn small" role="tab" aria-selected="false" data-tab="drun">dx-install/RUNBOOK.md (C)</button>
-      <button type="button" class="btn small" role="tab" aria-selected="false" data-tab="dsh">dx-install/install.sh (C)</button>
-      <button type="button" class="btn small" id="copy" data-i18n="copy">Copy</button>
-    </div>
-    <pre id="preview" aria-live="polite"></pre>
   </section>
   </form>
 </main>
@@ -381,7 +371,6 @@ const T = {
     oCT: "Opción C · Instalación directa (dx-install/)",
     oCB: 'Una carpeta <b>autónoma</b>, una instalación a medida que puedes incluso enviar a alguien sin el repositorio de los labs: todos los ficheros ya rellenos con tus valores (credenciales incluidas, en claro), un <code>RUNBOOK.md</code> con comandos cortos y fáciles de seguir y un <code>install.sh</code> que los ejecuta mostrando el lab y el paso. Solo hay que añadir a mano <code>setup-postgres-dx.sql</code> (Lab 2B).',
     dldirect: "Descargar ZIP dx-install/",
-    copy: "Copiar", copied: "Copiado",
     foot: 'Laboratorios para aprender (PoC), no para producción. Para un proyecto real recomendamos un partner de HCL o los servicios especializados de HCL. · <a href="https://github.com/europesip/hcl-dx-compose-labs">Repositorio de los labs</a> · <a href="https://github.com/europesip/hcl-dx-compose-labs-wizard">Código fuente del asistente</a> · <a href="about.html" class="about-link">Acerca de</a> · Código abierto (Apache-2.0), desarrollado originalmente por EUROPESIP · <a href="https://www.europesip.com">EUROPESIP</a>'
   }
 };
@@ -1530,10 +1519,8 @@ function showDone(opt){
 // ---------------------------------------------------------------------------------------------
 // UI
 // ---------------------------------------------------------------------------------------------
-let tab = "env", lastEnv = "", lastRun = "", lastDirect = [], ok = false, lastPlatform = "kubernetes";
+let lastEnv = "", lastRun = "", lastDirect = [], ok = false, lastPlatform = "kubernetes";
 const LAB_HOST = "dx-demo.apps.promox.europesip-lab.com", POC_HOST = "dx-demo.127.0.0.1.nip.io";
-const previewText = () => tab === "env" ? lastEnv : tab === "run" ? lastRun
-  : (lastDirect.find(f => f.name === (tab === "dsh" ? "dx-install/install.sh" : "dx-install/RUNBOOK.md")) || {}).text || "";
 function update(){
   // Lab 0: switch the default host between the reference cluster and nip.io (only if untouched)
   const pf = document.querySelector("input[name=platform]:checked").value;
@@ -1561,8 +1548,8 @@ function update(){
   [...err, ...warn].forEach(t => { const p = document.createElement("p"); p.textContent = (err.includes(t) ? "✖ " : "⚠ ") + t; box.appendChild(p); });
   ok = err.length === 0;
   ["dlZip","dlEnv","dlDirect"].forEach(id => $(id).disabled = !ok);
+  // The generated files are not shown on the page: the user only gets them by downloading them
   lastEnv = buildEnv(s); lastRun = buildRunbook(s); lastDirect = buildDirectZip(s);
-  $("preview").textContent = previewText();
 }
 function init(){
   captureEnglish();
@@ -1572,12 +1559,6 @@ function init(){
     const i = $(b.dataset.show), show = i.type === "password"; i.type = show ? "text" : "password";
     b.textContent = show ? (lang === "es" ? T.es.hide : "Hide") : tr("show");
   }));
-  document.querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", () => {
-    tab = b.dataset.tab; document.querySelectorAll("[data-tab]").forEach(x => x.setAttribute("aria-selected", String(x === b))); update();
-  }));
-  $("copy").addEventListener("click", async () => {
-    try { await navigator.clipboard.writeText(previewText()); $("copy").textContent = lang === "es" ? T.es.copied : "Copied"; setTimeout(() => $("copy").textContent = tr("copy"), 1500); } catch (e) {}
-  });
   $("dlZip").addEventListener("click", () => { if (!ok) return; download("dx-compose-labs-config.zip", zip([{name: "env.sh", text: lastEnv, mode: 0o100644}, {name: "RUNBOOK.md", text: lastRun}])); showDone("B"); });
   $("dlDirect").addEventListener("click", () => { if (!ok) return; download("dx-compose-labs-install.zip", zip(lastDirect)); showDone("C"); });
   $("doneClose").addEventListener("click", () => $("done").close());
