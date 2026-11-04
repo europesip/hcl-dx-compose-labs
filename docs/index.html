@@ -144,10 +144,13 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
         <input type="text" id="DX_HOST" value="dx-demo.apps.promox.europesip-lab.com" placeholder="dx-demo.example.com" spellcheck="false">
         <code>DX_HOST</code></label>
       <label class="f" id="ingressWrap"><span class="n" data-i18n="ingress">Ingress controller</span>
-        <select id="INGRESS_KIND"><option value="nginx" data-i18n="ingNginx">nginx (ingress-nginx) · reference cluster</option><option value="traefik" data-i18n="ingTraefik">traefik · k3s default</option><option value="other" data-i18n="ingOther">Other IngressClass…</option></select>
+        <select id="INGRESS_KIND"><option value="traefik" data-i18n="ingTraefik" selected>traefik · k3s default (recommended)</option><option value="nginx" data-i18n="ingNginx">nginx (ingress-nginx) · only if you already have it</option><option value="other" data-i18n="ingOther">Other IngressClass…</option></select>
         <input type="text" id="INGRESS_CLASS" class="hidden" style="margin-top:6px" placeholder="IngressClass" spellcheck="false">
         <code>INGRESS_CLASS</code></label>
     </div>
+    <p class="hint warn hidden" id="nginxHint" data-i18n-html="ingNginxH">⚠ <b>nginx</b> is only for clusters that already run ingress-nginx, such as older RKE2 versions (which
+      installed it by default) or a k3s installed with <code>--disable traefik</code>. The Kubernetes project retired ingress-nginx
+      in March 2026: if in doubt, choose <b>traefik</b>, the controller that k3s installs by default.</p>
     <p class="hint" id="ingressHint" data-i18n-html="ingh">With <b>nginx</b> or <b>traefik</b> the labs publish DX ready to use (an Ingress or a Traefik IngressRoute that re-encrypts towards the DX HAProxy).
       With another controller you get the standard Ingress, whose nginx annotations it will ignore: adapt the HTTPS re-encryption towards HAProxy with your controller's own settings.</p>
     <p class="hint" data-i18n-html="hosth">It must resolve to your Ingress controller or OpenShift router.
@@ -181,11 +184,11 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
       <label class="f"><span class="n" data-i18n="l2a">Lab 2A · Directory</span>
         <select id="dir"><option value="none" data-i18n="none">None (basic registry only)</option>
           <option value="openldap" selected data-i18n="oldap">OpenLDAP in the shared namespace (demo)</option>
-          <option value="ad" data-i18n="ad">Active Directory (enterprise branch)</option></select></label>
+          <option value="ad" data-i18n="ad">Active Directory (existing, pre-configured installation)</option></select></label>
       <label class="f"><span class="n" data-i18n="l2b">Lab 2B · Web Engine database</span>
         <select id="db"><option value="none" data-i18n="derby">Derby (no transfer)</option>
           <option value="postgres" selected data-i18n="pg">PostgreSQL 18 with CloudNativePG (demo)</option>
-          <option value="oracle" data-i18n="ora">Oracle 19c/21c (enterprise branch)</option></select></label>
+          <option value="oracle" data-i18n="ora">Oracle 19c/21c (existing, pre-configured installation)</option></select></label>
     </div>
     <div class="choices">
       <label class="choice"><input type="checkbox" id="lab3" checked><span><b data-i18n="l3">Lab 3A · IQ with OpenRouter</b><small data-i18n="l3h">LiteLLM proxy → OpenRouter (Claude), instead of AWS Bedrock</small></span></label>
@@ -334,7 +337,8 @@ const T = {
     ppn: "PoC en WSL2 (Lab 0)", pp: "Solo si no tienes clúster: k3s de un nodo en tu PC",
     pocw: 'El Lab 0 es un entorno de PoC simplificado y "trucado" (StorageClass RWX simulada, reservas de recursos rebajadas). No válido para producción.',
     s2: "2 · Acceso a DX", host: "Nombre de host de DX (FQDN)", ingress: "Ingress controller",
-    ingNginx: "nginx (ingress-nginx) · clúster de referencia", ingTraefik: "traefik · el de k3s por defecto", ingOther: "Otra IngressClass…",
+    ingNginx: "nginx (ingress-nginx) · solo si ya lo tienes", ingTraefik: "traefik · el de k3s por defecto (recomendado)",
+    ingNginxH: '⚠ <b>nginx</b> es solo para clústeres que ya tienen ingress-nginx, como versiones antiguas de RKE2 (que lo instalaban por defecto) o un k3s instalado con <code>--disable traefik</code>. El proyecto Kubernetes retiró ingress-nginx en marzo de 2026: si tienes dudas, elige <b>traefik</b>, el controlador que k3s instala por defecto.', ingOther: "Otra IngressClass…",
     ingh: 'Con <b>nginx</b> o <b>traefik</b> los labs publican DX listo para usar (un Ingress o una IngressRoute de Traefik que re-cifra hacia el HAProxy de DX). Con otro controlador se genera el Ingress estándar, cuyas anotaciones de nginx ignorará: adapta el re-cifrado HTTPS hacia HAProxy con la configuración propia de tu controlador.',
     hosth: 'Debe resolver a tu Ingress controller o al router de OpenShift. Sin DNS sirve un nombre <code>nip.io</code> como <code>dx.192.168.1.50.nip.io</code>.',
     tlsS: "Certificado TLS corporativo (opcional)",
@@ -343,8 +347,8 @@ const T = {
     s3: "3 · Almacenamiento", s3h: "DX necesita una StorageClass ReadWriteOnce y otra ReadWriteMany. Las proporciona el administrador del clúster.",
     rwo: "StorageClass ReadWriteOnce", rwx: "StorageClass ReadWriteMany (DAM)",
     s4: "4 · Labs", s4h: "El Lab 1 siempre se incluye. Los Labs 3 y 4 solo necesitan el Lab 1.",
-    l2a: "Lab 2A · Directorio", none: "Ninguno (solo registro básico)", oldap: "OpenLDAP en el namespace compartido (demo)", ad: "Active Directory (rama empresarial)",
-    l2b: "Lab 2B · Base de datos del Web Engine", derby: "Derby (sin transferencia)", pg: "PostgreSQL 18 con CloudNativePG (demo)", ora: "Oracle 19c/21c (rama empresarial)",
+    l2a: "Lab 2A · Directorio", none: "Ninguno (solo registro básico)", oldap: "OpenLDAP en el namespace compartido (demo)", ad: "Active Directory (instalación previa preconfigurada)",
+    l2b: "Lab 2B · Base de datos del Web Engine", derby: "Derby (sin transferencia)", pg: "PostgreSQL 18 con CloudNativePG (demo)", ora: "Oracle 19c/21c (instalación previa preconfigurada)",
     l3: "Lab 3A · IQ con OpenRouter", l3h: "Proxy LiteLLM → OpenRouter (Claude), en lugar de AWS Bedrock",
     l3b: "Lab 3B · MCP Server propio", l3bh: "MCP de EUROPESIP con la herramienta figma&web-to-dx",
     iqdb: "Apéndice del Lab 3 · Sesiones de IQ en PostgreSQL", iqdbh: "Requiere el Lab 2B con PostgreSQL",
@@ -1527,15 +1531,15 @@ function update(){
   if (pf !== lastPlatform) {
     if (pf === "poc" && $("DX_HOST").value === LAB_HOST) $("DX_HOST").value = POC_HOST;
     if (pf !== "poc" && $("DX_HOST").value === POC_HOST) $("DX_HOST").value = LAB_HOST;
-    // Lab 0 uses the Traefik that k3s installs; the reference cluster, ingress-nginx
+    // Lab 0 uses the Traefik that k3s installs (traefik is also the default for any Kubernetes)
     if (pf === "poc" && $("INGRESS_KIND").value === "nginx") $("INGRESS_KIND").value = "traefik";
-    if (pf !== "poc" && $("INGRESS_KIND").value === "traefik") $("INGRESS_KIND").value = "nginx";
     lastPlatform = pf;
   }
   const s = state();
   $("pocWarn").classList.toggle("hidden", !s.poc);
   $("ingressWrap").classList.toggle("hidden", s.openshift);
   $("ingressHint").classList.toggle("hidden", s.openshift);
+  $("nginxHint").classList.toggle("hidden", s.openshift || $("INGRESS_KIND").value !== "nginx");
   $("INGRESS_CLASS").classList.toggle("hidden", $("INGRESS_KIND").value !== "other");
   $("adBox").classList.toggle("hidden", s.dir !== "ad");
   $("oraBox").classList.toggle("hidden", s.db !== "oracle");
