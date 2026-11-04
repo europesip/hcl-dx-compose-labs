@@ -200,7 +200,7 @@ Dos herramientas que puedes usar en cualquier momento, estés en el lab que est�
 | Quiero... | Ejecuta | Detalle |
 |---|---|---|
 | **Abrir un case con HCL Support** porque algo falla | `common/collect-support-data.sh --case <número>` | Solo lectura. Recoge lo que pide HCL (technote KB0094817) en un `.tar.gz`, con los secretos enmascarados. [docs/support.es.md](docs/support.es.md) |
-| **Empezar de cero** | `common/99-cleanup.sh` | Borra las releases, los volúmenes y los dos namespaces (pide confirmación). [docs/cleanup.es.md](docs/cleanup.es.md) |
+| **Empezar de cero** | `common/99-cleanup.sh` (opción C del asistente: `./uninstall.sh` en `dx-install/`) | Borra las releases, los volúmenes y los dos namespaces (pide confirmación). [docs/cleanup.es.md](docs/cleanup.es.md) |
 
 Si necesitas las dos, recoge primero: una vez borrado, los logs se pierden.
 

@@ -199,7 +199,7 @@ Two tools you can use at any time, whatever the lab you are in:
 | I want to... | Run | Details |
 |---|---|---|
 | **Open a case with HCL Support** because something fails | `common/collect-support-data.sh --case <number>` | Read-only. Collects what HCL asks for (technote KB0094817) into a `.tar.gz`, with secrets masked. [docs/support.md](docs/support.md) |
-| **Start again from scratch** | `common/99-cleanup.sh` | Deletes the releases, volumes and both namespaces (asks for confirmation). [docs/cleanup.md](docs/cleanup.md) |
+| **Start again from scratch** | `common/99-cleanup.sh` (wizard option C: `./uninstall.sh` in `dx-install/`) | Deletes the releases, volumes and both namespaces (asks for confirmation). [docs/cleanup.md](docs/cleanup.md) |
 
 If you need both, collect first: once deleted, the logs are gone.
 

@@ -6,6 +6,9 @@
 common/99-cleanup.sh
 ```
 
+If you installed with option C of the configuration wizard (the `dx-install/` folder), run
+`./uninstall.sh` from that folder instead: it does the same.
+
 > If you are going to open a case with HCL Support, collect the data **first**
 > (`common/collect-support-data.sh`, see [support.md](support.md)): once deleted, the logs are gone.
 

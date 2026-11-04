@@ -6,6 +6,9 @@
 common/99-cleanup.sh
 ```
 
+Si instalaste con la opción C del asistente de configuración (la carpeta `dx-install/`), ejecuta en
+su lugar `./uninstall.sh` desde esa carpeta: hace lo mismo.
+
 > Si vas a abrir un case con HCL Support, recoge los datos **antes**
 > (`common/collect-support-data.sh`, ver [support.es.md](support.es.md)): una vez borrado, los logs se pierden.
 
