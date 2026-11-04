@@ -265,9 +265,11 @@ Server, our own**, not the one that comes with HCL: that is why it runs in a sep
 
 ### The server
 
-[custom-mcp/server.py](custom-mcp/server.py): about 190 lines of Python with the official MCP SDK
+[custom-mcp/server.py](custom-mcp/server.py): about 240 lines of commented Python with the official MCP SDK
 (`FastMCP`). Its source code and its image are published in
-[europesip/hcl-dx-iq-europesip-mcp](https://github.com/europesip/hcl-dx-iq-europesip-mcp). It publishes five tools:
+[europesip/hcl-dx-iq-europesip-mcp](https://github.com/europesip/hcl-dx-iq-europesip-mcp), as a
+skeleton to build your own MCP Server: its README explains how, with example questions and ideas
+to extend it. It publishes five tools:
 
 | Tool | IQ uses it when the user... | Returns |
 |---|---|---|
@@ -315,7 +317,7 @@ What it has to comply with for IQ to use it:
 lab3-iq-openrouter/custom-mcp/01-mcp-deploy.sh
 ```
 
-Deployment with the public image `ghcr.io/europesip/hcl-dx-iq-europesip-mcp:1.0.0` (the server and
+Deployment with the public image `ghcr.io/europesip/hcl-dx-iq-europesip-mcp:1.0.1` (the server and
 its dependencies, amd64 and arm64) + Service `europesip-mcp:3000`, in `dx-shared`
 ([europesip-mcp.yaml](custom-mcp/europesip-mcp.yaml)).
 

@@ -1,22 +1,38 @@
-"""Lab 3B · EUROPESIP custom MCP Server for HCL DX IQ.
+"""EUROPESIP custom MCP Server for HCL DX IQ: a skeleton to build your own.
 
-An MCP Server is a service that publishes "tools" (functions with a name, a description and
-parameters) that the LLM can decide to call. This one exposes five, over "streamable" HTTP at /mcp
-(the same transport as the HCL MCP Server):
-  - europesip_services(): who EUROPESIP is and which services it offers.
-  - europesip_faq(topic): support, AI, digital sovereignty, labs, contact...
-    Information the model cannot know by itself.
-  - figma_web_to_dx(source) -> shown as "figma&web-to-dx": presents the EUROPESIP tool that
-    generates WCM / Blueprint components from Figma, screenshots or URLs.
-  - europesip_whoami(): who the user asking IQ is. It uses the user's own DX session: the IQ
-    Integrator forwards the DX session cookies (LtpaToken2...) on every tools/call, and the tool
-    calls DX with them, so it only sees what that user is allowed to see.
-  - europesip_echo(text): diagnostics.
+WHAT THIS IS
+  An example, not a product. It shows how to extend HCL DX IQ with your own tools through a custom
+  MCP Server, next to the MCP Server that HCL supplies. Copy it, replace the EUROPESIP tools with
+  your own and you have the base of your own server. It is used in Lab 3B of
+  https://github.com/europesip/hcl-dx-compose-labs.
 
-Technical names only use [a-zA-Z0-9_-] (required by IQ/Claude); the display name goes in "title".
-The answers are in English; IQ translates them to the user's language when it replies.
+HOW IQ USES IT
+  An MCP Server publishes "tools": functions with a name, a description and typed parameters. When
+  the IQ Integrator starts, it asks every server in its list for its tools (tools/list). On every
+  question, the LLM reads the descriptions and decides whether to call one (tools/call); IQ then
+  writes the answer with what the tool returned. The transport is "streamable" HTTP at POST /mcp,
+  without sessions, the same as the HCL MCP Server.
+
+WHAT THE FIVE TOOLS SHOW
+  - europesip_services()       a fixed answer: the simplest possible tool.
+  - europesip_faq(topic)       a tool with a parameter, looking up a small knowledge base.
+  - figma_web_to_dx(source)    a technical name different from the display name ("figma&web-to-dx").
+  - europesip_whoami()         a tool that calls DX AS THE USER ASKING: the Integrator forwards the
+                               user's DX session cookies (LtpaToken2...) on every tools/call.
+  - europesip_echo(text)       diagnostics.
+
+ADDING YOUR OWN TOOL
+  Write a Python function and decorate it with @mcp.tool(). The SDK builds the tool from it:
+    - the function name is the tool name: only [a-zA-Z0-9_-] (required by IQ / Claude);
+    - the docstring is the description: it is all the LLM reads to decide when to use the tool,
+      and it travels in every request, so keep it short and precise;
+    - the type hints are the parameter schema;
+    - the returned string is what the LLM receives.
+  Then rebuild the image and restart the IQ Integrator, which only lists the tools when it starts.
+
 Every request is logged: method, path and the NAMES of headers and cookies (never their values),
-to see what the IQ Integrator sends. Official MCP SDK for Python (FastMCP).
+to see what the IQ Integrator sends. Official MCP SDK for Python (FastMCP). The answers are in
+English; IQ translates them to the user's language when it replies.
 """
 import logging, os, ssl, urllib.error, urllib.request
 import xml.etree.ElementTree as ET
@@ -29,11 +45,19 @@ from mcp.server.transport_security import TransportSecuritySettings
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger("europesip-mcp")
 
+# ---------------------------------------------------------------------------------------------
+# Configuration: environment variables, set in the Kubernetes Deployment (europesip-mcp.yaml).
+# Add yours here (URLs of your APIs, database connection...); secrets come from a Secret.
+# ---------------------------------------------------------------------------------------------
 WEB = "https://www.europesip.com"
 LABS_REPO = "https://github.com/europesip/hcl-dx-compose-labs"
 # DX entry point inside the cluster (the DX HAProxy service), set in europesip-mcp.yaml
 DX_URL = os.getenv("DX_URL", "https://dx-deployment-haproxy.dx-demo.svc.cluster.local").rstrip("/")
 
+# ---------------------------------------------------------------------------------------------
+# Knowledge base. In this example it is written in the code; in your own server it could be read
+# from a database, from DX WCM content or from any REST API (see the README).
+# ---------------------------------------------------------------------------------------------
 SERVICES = (
     "EUROPESIP is a company specialised in HCL and IBM products, with broad experience in "
     "portals (HCL Digital Experience) and in HCL Domino. It also has strong knowledge of "
@@ -81,6 +105,9 @@ ALIASES = {
 # Exact short topics that would match too much as substrings
 EXACT = {"ia": "ai", "ai": "ai", "soberania": "sovereignty", "soberanía": "sovereignty"}
 
+# ---------------------------------------------------------------------------------------------
+# The MCP Server. These settings are what the IQ Integrator needs; keep them in your own server.
+# ---------------------------------------------------------------------------------------------
 mcp = FastMCP(
     "europesip-kb",
     host="0.0.0.0",
@@ -91,6 +118,12 @@ mcp = FastMCP(
     transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=False),
 )
 
+# ---------------------------------------------------------------------------------------------
+# Tools
+# ---------------------------------------------------------------------------------------------
+
+# Tool 1 · The simplest possible tool: no parameters, a fixed answer. The LLM calls it when the
+# question matches its description (who EUROPESIP is, what it does...).
 @mcp.tool()
 def europesip_services() -> str:
     """Describes EUROPESIP and the services it offers (company specialised in HCL and IBM
@@ -99,6 +132,9 @@ def europesip_services() -> str:
     log.info("TOOL europesip_services")
     return SERVICES + STICK
 
+# Tool 2 · A tool with a parameter: the LLM fills in "topic" from the question. As the model may
+# not use exactly our topic names, it also matches keywords. This is the tool to replace with a
+# query to your own data (database, WCM, REST API).
 @mcp.tool()
 def europesip_faq(topic: str) -> str:
     """Looks up the EUROPESIP knowledge base. Use it when the user asks about EUROPESIP support
@@ -115,6 +151,9 @@ def europesip_faq(topic: str) -> str:
             return FAQ[key] + STICK
     return "There is no information about that topic. Available topics: " + ", ".join(FAQ)
 
+# Tool 3 · Technical name vs display name. IQ / Claude only accept tool names with
+# [a-zA-Z0-9_-], so "figma&web-to-dx" goes in "title" and in the description. Today it only
+# presents the EUROPESIP tool; a real version would start the conversion and return a task id.
 @mcp.tool(name="figma_web_to_dx", title="figma&web-to-dx")
 def figma_web_to_dx(source: str = "") -> str:
     """figma&web-to-dx: designs web pages or HCL DX WCM / Blueprint components from a Figma
@@ -126,7 +165,10 @@ def figma_web_to_dx(source: str = "") -> str:
             "building Blueprint components easier and faster from simple Figma URLs, website "
             f"screenshots or site URLs. For more information, contact EUROPESIP: {WEB}." + STICK)
 
-# DX User Management REST API: profile of the user that owns the session
+# Tool 4 · Acting as the user asking. On every tools/call the IQ Integrator forwards the DX session
+# cookies of that user. The tool calls the DX User Management REST API with the LtpaToken2 cookie,
+# so DX answers with THAT user's identity and permissions: no administrative account is needed.
+# The same pattern lets your own tools read or change DX content (WCM, DAM...) as the user.
 PROFILE_PATH = "/wps/mycontenthandler/um/secure/currentuser/profile?expandRefs=true"
 UM = "{http://www.ibm.com/xmlns/prod/websphere/um.xsd}"
 SHOW = ["uid", "cn", "givenName", "sn", "displayName", "mail", "ibm-primaryEmail", "ibm-jobTitle"]   # never "password"
@@ -137,6 +179,7 @@ def europesip_whoami(ctx: Context) -> str:
     """Tells who the current DX user is (the person asking), using their own DX session: user id,
     name and distinguished name. Use it when the user asks who they are, which user they are logged
     in as, or what DX knows about them."""
+    # The HTTP request of the tools/call, with the cookies forwarded by the Integrator
     request = ctx.request_context.request
     token = request.cookies.get("LtpaToken2") if request is not None else None
     log.info("TOOL europesip_whoami session=%s", "yes" if token else "no")   # never log the token
@@ -149,6 +192,8 @@ def europesip_whoami(ctx: Context) -> str:
     except (urllib.error.URLError, ET.ParseError) as e:
         log.warning("europesip_whoami: DX profile call failed: %s", e)
         return "DX did not return the profile of the current user (the session may have expired)."
+    # DX answers with an XML profile: keep the distinguished name and the allowed attributes only
+    # (the profile also includes the LDAP password hash, which must never be returned)
     dn, found = "", {}
     for el in root.iter():
         if el.tag == UM + "profile":
@@ -163,6 +208,8 @@ def europesip_whoami(ctx: Context) -> str:
     return ("The user asking is identified by their own DX session (LtpaToken2):\n"
             f"- distinguished name: {dn}\n" + "\n".join(lines))
 
+# Tool 5 · Diagnostics: checks the whole path IQ -> Integrator -> this server without the LLM
+# having to interpret anything. The description limits it to explicit requests.
 @mcp.tool()
 def europesip_echo(text: str) -> str:
     """Diagnostic tool: returns the received text with a prefix.
@@ -170,9 +217,13 @@ def europesip_echo(text: str) -> str:
     log.info("TOOL europesip_echo")
     return f"[europesip-mcp] {text}"
 
+# ---------------------------------------------------------------------------------------------
+# HTTP plumbing: readiness probe, request log and start-up. Keep it as is in your own server.
+# ---------------------------------------------------------------------------------------------
 @mcp.custom_route("/probe/ready", methods=["GET"])
 async def probe_ready(request: Request) -> PlainTextResponse:
-    """The IQ Integrator calls /probe/ready before asking for the tools (as with the HCL MCP)."""
+    """The IQ Integrator calls /probe/ready before asking for the tools (as with the HCL MCP);
+    Kubernetes uses it as the readiness probe too."""
     return PlainTextResponse("OK")
 
 app = mcp.streamable_http_app()

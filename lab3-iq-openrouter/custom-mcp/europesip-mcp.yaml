@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: mcp
-          image: ghcr.io/europesip/hcl-dx-iq-europesip-mcp:1.0.0
+          image: ghcr.io/europesip/hcl-dx-iq-europesip-mcp:1.0.1
           env:
             - { name: PORT, value: "3000" }
             # DX entry point inside the cluster, for europesip_whoami (it calls DX with the user's session)

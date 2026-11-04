@@ -266,9 +266,11 @@ completo de servicio (`europesip-mcp.dx-shared.svc.cluster.local`).
 
 ### El servidor
 
-[custom-mcp/server.py](custom-mcp/server.py): unas 190 líneas de Python con el SDK oficial de MCP
+[custom-mcp/server.py](custom-mcp/server.py): unas 240 líneas de Python comentado con el SDK oficial de MCP
 (`FastMCP`). Su código fuente y su imagen están publicados en
-[europesip/hcl-dx-iq-europesip-mcp](https://github.com/europesip/hcl-dx-iq-europesip-mcp). Publica cinco herramientas:
+[europesip/hcl-dx-iq-europesip-mcp](https://github.com/europesip/hcl-dx-iq-europesip-mcp), como
+esqueleto para construir tu propio servidor MCP: su README explica cómo, con preguntas de ejemplo e
+ideas para ampliarlo. Publica cinco herramientas:
 
 | Herramienta | IQ la usa cuando el usuario... | Devuelve |
 |---|---|---|
@@ -316,7 +318,7 @@ Lo que tiene que cumplir para que IQ lo use:
 lab3-iq-openrouter/custom-mcp/01-mcp-deploy.sh
 ```
 
-Deployment con la imagen pública `ghcr.io/europesip/hcl-dx-iq-europesip-mcp:1.0.0` (el servidor y
+Deployment con la imagen pública `ghcr.io/europesip/hcl-dx-iq-europesip-mcp:1.0.1` (el servidor y
 sus dependencias, amd64 y arm64) + Service `europesip-mcp:3000`, en `dx-shared`
 ([europesip-mcp.yaml](custom-mcp/europesip-mcp.yaml)).
 
