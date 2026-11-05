@@ -39,6 +39,7 @@ FILES = [
     "lab2-ldap-postgres/enterprise/oracle/dx_dbtype.properties",
     "lab2-ldap-postgres/enterprise/oracle/dx_dbdomain.properties.template",
     "lab3-iq-openrouter/litellm-values.yaml",
+    "lab3-iq-openrouter/litellm-values.qwen.yaml",
     "lab3-iq-openrouter/custom-iq-values.yaml",
     "lab3-iq-openrouter/custom-iq-values.db-external.yaml",
     "lab3-iq-openrouter/custom-values.iq.yaml",

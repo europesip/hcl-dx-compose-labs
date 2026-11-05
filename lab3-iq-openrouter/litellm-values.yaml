@@ -8,6 +8,7 @@
 #   iq-summary         -> conversation summary to reduce the context      -> Claude Haiku 4.5
 # They are the models HCL validates, with their OpenRouter ID. To change them: change the ID
 # (https://openrouter.ai/models) and run 02-litellm-install.sh again. IQ is not touched.
+# Cheaper option for a PoC or a lab: IQ_LLM=qwen in env.sh adds litellm-values.qwen.yaml (Qwen).
 #
 # Why OpenRouter and not AWS Bedrock (the HCL guides use Bedrock): see GUIDE.md, section 3.
 #

@@ -88,6 +88,10 @@ export IQ_DB_PASSWORD="${IQ_DB_PASSWORD:-EuropeS1P}"                # Lab 2B/3: 
 
 # --- Lab 3: IQ with OpenRouter ------------------------------------------------------------
 export OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}"        # <<< Lab 3: sk-or-v1-...
+# LLM behind IQ: claude = Claude Sonnet 4.6 + Haiku 4.5 (validated by HCL, recommended for
+# production) | qwen = Qwen 3.7 Plus + 3.8 Flash (5-10x cheaper, for a PoC or a lab; it knows
+# less about HCL DX). Change it and run lab3-iq-openrouter/02-litellm-install.sh again.
+export IQ_LLM="${IQ_LLM:-claude}"
 # LiteLLM master key (must start with "sk-"). If empty, Lab 3 01-secrets.sh reuses the one already
 # in the cluster or generates a new one.
 export LITELLM_MASTER_KEY="${LITELLM_MASTER_KEY:-}"

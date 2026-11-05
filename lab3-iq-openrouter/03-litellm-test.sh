@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lab 3 · Step 3 · Test LiteLLM -> OpenRouter -> Claude BEFORE installing IQ.
+# Lab 3 · Step 3 · Test LiteLLM -> OpenRouter -> the models BEFORE installing IQ.
 # Uses a local port-forward: the key never appears in any pod nor on a remote command line.
 set -euo pipefail
 source "$(dirname "$0")/../common/lib.sh"
@@ -18,6 +18,12 @@ curl -s "${H[@]}" "http://localhost:$PORT/v1/models" | python3 -c 'import sys,js
 for m in iq-general-purpose iq-summary; do
   info "chat with $m"
   curl -s "${H[@]}" "http://localhost:$PORT/v1/chat/completions" \
-    -d "{\"model\":\"$m\",\"max_tokens\":60,\"messages\":[{\"role\":\"user\",\"content\":\"Answer only: ready\"}]}" \
-  | python3 -c 'import sys,json; d=json.load(sys.stdin); print("  ", d["choices"][0]["message"]["content"].strip(), "| model:", d.get("model")) if "choices" in d else print("  ERROR:", json.dumps(d)[:400])'
+    -d "{\"model\":\"$m\",\"max_tokens\":1000,\"messages\":[{\"role\":\"user\",\"content\":\"Answer only: ready\"}]}" \
+  | python3 -c '
+import sys,json
+d=json.load(sys.stdin)
+if "choices" not in d: print("  ERROR:", json.dumps(d)[:400]); sys.exit()
+c=d["choices"][0]; u=d.get("usage") or {}
+print("  ", (c["message"].get("content") or "(empty: finish_reason=%s)" % c.get("finish_reason")).strip(),
+      "| model:", d.get("model"), "| tokens in/out:", u.get("prompt_tokens"), "/", u.get("completion_tokens"))'
 done

@@ -146,6 +146,8 @@ proxy_config:
   because it is the tested path and it supports the prompt caching below.
 - **Prompt caching**: every IQ request sends ~60 tools and a long system prompt that barely
   change. Marking them as cacheable makes the following questions much cheaper.
+- **Cheaper model for a PoC or a lab**: `IQ_LLM=qwen` in `env.sh` routes the same two models to
+  Qwen ([litellm-values.qwen.yaml](litellm-values.qwen.yaml)). See [Cost and choice of model](#cost-and-choice-of-model).
 - `db.deployStandalone: false`: without the PostgreSQL the chart would install by default.
 
 ## Step 3 · Test LiteLLM before installing IQ
@@ -155,7 +157,7 @@ lab3-iq-openrouter/03-litellm-test.sh
 ```
 
 It opens a local port-forward, lists the models and sends one request to each. Both must answer
-`ready` (LiteLLM returns the logical model name; the real one, Sonnet 4.6 or Haiku 4.5, is shown at
+`ready` (LiteLLM returns the logical model name; the real one, Sonnet 4.6 or Haiku 4.5 (or Qwen), is shown at
 https://openrouter.ai/activity). If it fails here, the problem is the OpenRouter key or credit, not
 IQ.
 
@@ -465,12 +467,32 @@ lab3-iq-openrouter/04-iq-install.sh -f custom-iq-values.db-external.yaml
 The `dx_iq_db_user` role was already created by CNPG in Lab 2B. IQ creates its tables when it
 starts: after opening a chat they appear in `iqdb`.
 
-## Cost
+## Cost and choice of model
 
-The OpenRouter account pays. With prompt caching enabled, the first question of a session is the
-most expensive one (it creates the tools and system prompt cache) and the following ones read from
-the cache at ~10 % of the price. Measured in the lab with two identical requests of ~4000 prompt
-tokens:
+The OpenRouter account pays. IQ chains several LLM calls for each question (choose the tool, read
+its result, answer, and sometimes the conversation summary), and **each call carries ~30,000
+tokens** of HCL system prompt and tool definitions before the user's question. That is why IQ is
+expensive even with prompt caching: the cache cuts the price of that prefix to ~10 %, but only
+while it is warm (5 minutes without questions and the next one writes it again).
+
+Measured on CF239 (IQ 1.0.3, 60 tools), same questions, prompt caching on, cost reported by
+OpenRouter:
+
+| `IQ_LLM` | Models | Cost per question | Use it for |
+|---|---|---|---|
+| `claude` (default) | Claude Sonnet 4.6 + Haiku 4.5 | ≈ $0.03 with a warm cache, ≈ $0.14 for the first question after 5 min idle | **Production**: the models HCL validates, and the best knowledge of HCL DX |
+| `qwen` | Qwen 3.7 Plus + Qwen 3.8 Flash | ≈ $0.005–0.01 (5–10× cheaper) | **PoC and labs** |
+
+With `qwen` the IQ tools work (WCM libraries, the custom MCP Server, answers in Spanish), but
+the model knows less about HCL DX: answers to "how do I..." questions, which IQ answers from the
+model's own knowledge without tools, are more generic and less precise. It also reasons before
+answering, so a question takes a few seconds longer.
+
+To switch, set `IQ_LLM` in `env.sh` and run Step 2 again (`02-litellm-install.sh`, which adds
+[litellm-values.qwen.yaml](litellm-values.qwen.yaml)); IQ is not touched. Prices and model IDs
+change: check https://openrouter.ai/models before a session.
+
+Prompt caching, measured in the lab with two identical requests of ~4000 prompt tokens:
 
 | Request | Tokens written to cache | Tokens read from cache |
 |---|---|---|

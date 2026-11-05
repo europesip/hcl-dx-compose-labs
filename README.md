@@ -16,7 +16,7 @@ in four labs, each one on top of the previous one.
 | ▶ [Lab 1 · Base DX](lab1-dx-base/GUIDE.md) · **start here** | The start of the installation: a **minimal, working base installation** of DX Compose. It checks the base requirements and covers namespaces, secrets, the Helm chart from the HCL Harbor, the installation and external access. The other labs are built on top of it | ~10 min |
 | [Lab 2 · LDAP and PostgreSQL](lab2-ldap-postgres/GUIDE.md) | **2A**: authentication against OpenLDAP. **2B**: transfer of the Web Engine database from Derby to PostgreSQL | ~27 min (2A ~10 · 2B ~17) |
 | ↳ [Lab 2 · enterprise branch](lab2-ldap-postgres/GUIDE-enterprise.md) *(optional)* | The same iterations against **Active Directory** (with `configOverrideFiles`) and **Oracle** (TCPS), common in corporate environments | reference |
-| [Lab 3 · IQ with OpenRouter](lab3-iq-openrouter/GUIDE.md) | **3A**: the DX AI assistant (IQ) using LiteLLM as a proxy to OpenRouter (Claude) instead of AWS Bedrock. **3B**: EUROPESIP custom MCP Server (services, support, labs and the figma&web-to-dx tool) | ~13 min (3A ~10 · 3B ~3) |
+| [Lab 3 · IQ with OpenRouter](lab3-iq-openrouter/GUIDE.md) | **3A**: the DX AI assistant (IQ) using LiteLLM as a proxy to OpenRouter (Claude, or Qwen for a cheaper PoC) instead of AWS Bedrock. **3B**: EUROPESIP custom MCP Server (services, support, labs and the figma&web-to-dx tool) | ~13 min (3A ~10 · 3B ~3) |
 | [Lab 4 · Search with OpenSearch](lab4-opensearch/GUIDE.md) | Search V2: OpenSearch + Search Middleware (`hcl-dx-search` 2.37.0), certificates and `adminDN`, crawling of WCM, portal and JCR, and search through the API | ~10 min |
 | | **Total run time** (Labs 1 to 4) | **~60 min** |
 
