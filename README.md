@@ -65,6 +65,10 @@ cluster. Keep them in mind when planning:
   can be left as homework.
 - With explanations and questions, plan roughly twice the run time.
 
+**Webinar slides.** The deck of the webinar *Deploy HCL DX Compose in Minutes* (November 12, 2026),
+which follows these labs with a ready-made `dx-install/` folder from the wizard:
+[webinar/deploy-dx-compose-in-minutes-2026-11-12.pdf](webinar/deploy-dx-compose-in-minutes-2026-11-12.pdf) (PDF).
+
 ## Reference lab environment
 
 Everything works on **standard Kubernetes** and on **OpenShift** (see

@@ -66,6 +66,10 @@ de referencia de los labs. Tenlos en cuenta al planificar:
   (el más largo) puede quedar como ejercicio para después.
 - Con explicaciones y preguntas, calcula aproximadamente el doble del tiempo de ejecución.
 
+**Slides del webinar.** La presentación del webinar *Deploy HCL DX Compose in Minutes* (12 de
+noviembre de 2026, en inglés), que sigue estos labs con una carpeta `dx-install/` generada con el
+asistente: [webinar/deploy-dx-compose-in-minutes-2026-11-12.pdf](webinar/deploy-dx-compose-in-minutes-2026-11-12.pdf) (PDF).
+
 ## Entorno de referencia de los labs
 
 Todo funciona en **Kubernetes estándar** y en **OpenShift** (ver
