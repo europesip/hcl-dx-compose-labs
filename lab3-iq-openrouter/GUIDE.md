@@ -96,6 +96,8 @@ cd hcl-dx-compose-labs && source ./env.sh      # with OPENROUTER_API_KEY set
 
 ---
 
+> **Installed LiteLLM in the [external dependencies](../external-deps/GUIDE.md)?** Steps 1 to 3 are done: go to step 4.
+
 ## Step 1 · Secrets
 
 ```bash
@@ -315,6 +317,8 @@ What it has to comply with for IQ to use it:
 | Tool names `[a-zA-Z0-9_-]` | `figma_web_to_dx`, with the display name in `title` (the Integrator adds a per-server prefix: `562b68ed_...`) |
 | **A good description** | It is the only thing the model reads to decide whether to use it. Short and precise: it travels in every request |
 
+> **Deployed it in the [external dependencies](../external-deps/GUIDE.md)?** Steps 3B-1 and 3B-2 are done, and step 4 of Lab 3A already registered it in IQ: step 3B-3 is harmless if you run it again.
+
 ### Step 3B-1 · Deploy
 
 ```bash
@@ -454,7 +458,7 @@ and `lab3-iq-openrouter/04-iq-install.sh` (regenerates the list with only the HC
    redefines them afterwards. The key goes in `iq-litellm-api-secret`.
 3. **OpenRouter through the LiteLLM `anthropic/` provider** (see step 2).
 
-## Appendix · IQ sessions in PostgreSQL (requires Lab 2B)
+## Appendix · IQ sessions in PostgreSQL (requires PostgreSQL in the external dependencies)
 
 With in-memory SQLite the history is lost when the pod restarts and the Integrator cannot be
 scaled. To use the `dx-shared` PostgreSQL:
@@ -464,7 +468,7 @@ lab3-iq-openrouter/A1-iq-database.sh                                   # iqdb da
 lab3-iq-openrouter/04-iq-install.sh -f custom-iq-values.db-external.yaml
 ```
 
-The `dx_iq_db_user` role was already created by CNPG in Lab 2B. IQ creates its tables when it
+The `dx_iq_db_user` role was already created by CNPG with the cluster (external dependencies or Lab 2B). IQ creates its tables when it
 starts: after opening a chat they appear in `iqdb`.
 
 ## Cost and choice of model

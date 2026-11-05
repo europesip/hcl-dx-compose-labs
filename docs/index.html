@@ -87,6 +87,21 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid 
 .choice b{display:block;font-weight:600}
 .choice small{color:var(--muted)}
 .choice:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.labrow{display:grid;grid-template-columns:72px 1fr;gap:4px 12px;align-items:start;border-top:1px solid var(--line);padding:12px 0 6px}
+.labrow:first-of-type{border-top:0}
+.labrow>.labrow-h{font-weight:700;padding-top:10px}
+.labrow>:not(.labrow-h){grid-column:2}
+.labrow .choices,.labrow .grid{margin-top:0}
+@media (max-width:620px){.labrow{grid-template-columns:1fr}.labrow>:not(.labrow-h){grid-column:1}.labrow>.labrow-h{padding-top:0}}
+.tag{display:table;font-size:11.5px;font-weight:600;border-radius:999px;padding:0 8px;margin:3px 0 2px;white-space:nowrap}
+.tag.must{background:var(--accent);color:var(--accent-ink)}
+.tag.opt{border:1px solid var(--line);color:var(--muted)}
+.tag.sug{border:1px solid var(--accent);color:var(--accent)}
+.choice.fixed{cursor:default}
+.choice.off{opacity:.55}
+.choice.off .needs{display:block}
+.needs{display:block;color:var(--muted);font-style:italic;font-size:12.5px}
+.sub{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:14px;margin:8px 0 0 4px}
 .pw{display:flex;gap:6px}
 .pw input{flex:1}
 .btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:8px;padding:8px 14px;font:inherit;cursor:pointer}
@@ -180,36 +195,85 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
   </section>
 
   <section class="card">
-    <h2 data-i18n="s4">4 · Labs</h2>
-    <p class="hint" data-i18n="s4h">Lab 1 is always included. Labs 3 and 4 only need Lab 1.</p>
-    <div class="grid">
-      <label class="f"><span class="n" data-i18n="l2a">Lab 2A · Directory</span>
-        <select id="dir"><option value="none" data-i18n="none">None (basic registry only)</option>
-          <option value="openldap" selected data-i18n="oldap">OpenLDAP in the shared namespace (demo)</option>
-          <option value="ad" data-i18n="ad">Active Directory (existing, pre-configured installation)</option></select></label>
-      <label class="f"><span class="n" data-i18n="l2b">Lab 2B · Web Engine database</span>
-        <select id="db"><option value="none" data-i18n="derby">Derby (no transfer)</option>
-          <option value="postgres" selected data-i18n="pg">PostgreSQL 18 with CloudNativePG (demo)</option>
-          <option value="oracle" data-i18n="ora">Oracle 19c/21c (existing, pre-configured installation)</option></select></label>
-    </div>
+    <h2><span data-i18n="sD">4 · External dependencies</span> <button type="button" class="info-btn" data-info="depsInfo" data-i18n="more">ⓘ What is this?</button></h2>
+    <p class="hint" data-i18n-html="sDh">Software that is not HCL's, installed in the shared namespace <b>before anything else</b>, so the labs that use it go faster.
+      If you install it here, the labs use it with predefined values. If you do not, the labs that need it are not available, or you give the details of
+      the one you already have (Active Directory, Oracle).</p>
     <div class="choices">
-      <label class="choice"><input type="checkbox" id="lab3" checked><span><b data-i18n="l3">Lab 3A · IQ with OpenRouter</b><small><span data-i18n="l3h">LiteLLM proxy → OpenRouter (Claude or Qwen), instead of AWS Bedrock</span> <button type="button" class="info-btn" data-info="orInfo" data-i18n="orWhy">ⓘ Why OpenRouter?</button></small></span></label>
-      <label class="choice"><input type="checkbox" id="lab3b" checked><span><b data-i18n="l3b">Lab 3B · Custom MCP Server</b><small data-i18n="l3bh">EUROPESIP MCP with the figma&amp;web-to-dx tool</small></span></label>
-      <label class="choice"><input type="checkbox" id="iqdb"><span><b data-i18n="iqdb">Lab 3 appendix · IQ sessions in PostgreSQL</b><small data-i18n="iqdbh">Requires Lab 2B with PostgreSQL</small></span></label>
-      <label class="choice"><input type="checkbox" id="lab4" checked><span><b data-i18n="l4">Lab 4 · Search with OpenSearch</b><small data-i18n="l4h">hcl-dx-search 2.37.0, Search V2</small></span></label>
+      <label class="choice" data-i18n-title="dLdapT" title="An OpenLDAP with demo users and groups (andres, macarena, dxadmins...)"><input type="checkbox" id="depLdap" checked><span><b data-i18n="dLdap">OpenLDAP</b><small data-i18n="dLdapH">Demo directory with users and groups · for Lab 2A</small></span></label>
+      <label class="choice" data-i18n-title="dPgT" title="PostgreSQL 18 managed by the CloudNativePG operator"><input type="checkbox" id="depPg"><span><b data-i18n="dPg">PostgreSQL 18</b><small data-i18n="dPgH">CloudNativePG · for the IQ sessions (Lab 3 appendix) or your own advanced uses</small></span></label>
+      <label class="choice" data-i18n-title="dLlmT" title="The proxy between IQ and the AI models (OpenRouter)"><input type="checkbox" id="depLlm" checked><span><b data-i18n="dLlm">LiteLLM</b><small data-i18n="dLlmH">Proxy to the AI models (OpenRouter) · needed by Lab 3A (IQ)</small></span></label>
+      <label class="choice" data-i18n-title="dMcpT" title="Our own MCP Server: it adds EUROPESIP tools to IQ"><input type="checkbox" id="depMcp"><span><b data-i18n="dMcp">EUROPESIP MCP Server</b><small data-i18n="dMcpH">Custom tools for IQ · needed by Lab 3B</small></span></label>
     </div>
-    <div class="grid" id="llmWrap">
+    <label class="sub hidden" id="pgSchemaWrap"><input type="checkbox" id="pgSchema"> <span data-i18n="pgSchema">Deploy the schema the Web Engine needs</span> <button type="button" class="info-btn" data-info="pgInfo" data-i18n="whyPg">ⓘ When to use PostgreSQL?</button></label>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="s4">5 · Labs</h2>
+    <p class="hint" data-i18n-html="s4h">One row per lab. <b>Lab 1 is the only mandatory one</b>; every other lab is optional and only needs Lab 1. Hover over an option, or click ⓘ, for help.</p>
+
+    <div class="labrow">
+      <div class="labrow-h">Lab 1</div>
+      <div class="choices">
+        <label class="choice fixed" data-i18n-title="l1T" title="Always installed: every other lab is built on top of it"><input type="checkbox" checked disabled><span><b data-i18n="l1">Lab 1 · Base DX</b> <span class="tag must" data-i18n="must">Mandatory · the only one</span><small data-i18n="l1h">DX Compose installed and published</small></span></label>
+        <label class="choice" data-i18n-title="l1bT" title="A sample Script Application (React) pushed to WCM by a Helm chart"><input type="checkbox" id="lab1b"><span><b data-i18n="l1b">Lab 1B · Sample Script Application</b> <span class="tag opt" data-i18n="optional">Optional</span><small><span data-i18n="l1bh">Hello DX, deployed with a Helm chart</span> <button type="button" class="info-btn" data-info="sappInfo" data-i18n="more">ⓘ What is this?</button></small></span></label>
+      </div>
+      <label class="sub hidden" id="dxcWrap"><input type="checkbox" id="dxcLicense"> <span data-i18n-html="dxcLic">I have read and accept the license of HCL <b>DXClient</b>, which the chart uses to push the app (<a href="https://github.com/europesip/hcl-dx-scriptapp-helm#install-it-on-your-cluster" target="_blank" rel="noopener">how to read it</a>)</span></label>
+    </div>
+
+    <div class="labrow">
+      <div class="labrow-h">Lab 2</div>
+      <div class="grid">
+        <label class="f"><span class="n" data-i18n="l2a">Lab 2A · Directory</span>
+          <select id="dir"><option value="none" data-i18n="none">None (basic registry only)</option>
+            <option value="openldap" selected data-i18n="oldap">OpenLDAP of the external dependencies (demo)</option>
+            <option value="ad" data-i18n="ad">Active Directory (existing, pre-configured installation)</option></select>
+          <small class="needs hidden" id="dirNeeds" data-i18n="dirNeeds">OpenLDAP needs "OpenLDAP" in the external dependencies</small></label>
+        <label class="f"><span class="n"><span data-i18n="l2b">Lab 2B · Web Engine database</span> <button type="button" class="info-btn" data-info="pgInfo" data-i18n="whyPg">ⓘ When to use PostgreSQL?</button></span>
+          <select id="db"><option value="none" selected data-i18n="derby">Derby, the built-in database (no transfer)</option>
+            <option value="oracle" data-i18n="ora">Oracle 19c/21c (existing, pre-configured installation)</option>
+            <option value="postgres" data-i18n="pg">PostgreSQL 18 (you create the tables, steps from HCL)</option></select>
+          <small class="needs hidden" id="pgSqlYes" data-i18n="pgSqlYes">✔ Your HCL Harbor user is from EUROPESIP or HCL: the table creation script is included in the downloads (option B or C).</small>
+          <small class="needs hidden" id="pgSqlNo" data-i18n="pgSqlNo">You will need the table creation script that HCL gives you (setup-postgres-dx.sql): the RUNBOOK tells you where to put it.</small></label>
+      </div>
+    </div>
+
+    <div class="labrow">
+      <div class="labrow-h">Lab 3</div>
+      <div class="choices">
+        <label class="choice" id="lab3W" data-i18n-title="l3T" title="The DX AI assistant, IQ"><input type="checkbox" id="lab3" checked><span><b data-i18n="l3">Lab 3A · IQ with OpenRouter</b><small><span data-i18n="l3h">LiteLLM proxy → OpenRouter (Claude or Qwen), instead of AWS Bedrock</span> <button type="button" class="info-btn" data-info="orInfo" data-i18n="orWhy">ⓘ Why OpenRouter?</button></small><small class="needs hidden" data-i18n="l3Needs">Needs "LiteLLM" in the external dependencies</small></span></label>
+        <label class="choice" id="lab3bW" data-i18n-title="l3bT" title="IQ extended with our own tools through a custom MCP Server"><input type="checkbox" id="lab3b"><span><b data-i18n="l3b">Lab 3B · Custom MCP Server</b> <span class="tag sug" data-i18n="optSug">Optional (suggested)</span><small data-i18n="l3bh">EUROPESIP MCP with the figma&amp;web-to-dx tool</small><small class="needs hidden" data-i18n="l3bNeeds">Needs Lab 3A and "EUROPESIP MCP Server" in the external dependencies</small></span></label>
+        <label class="choice" id="iqdbW" data-i18n-title="iqdbT" title="IQ keeps its chat sessions in PostgreSQL instead of in memory"><input type="checkbox" id="iqdb"><span><b data-i18n="iqdb">Lab 3 appendix · IQ sessions in PostgreSQL</b> <span class="tag opt" data-i18n="optNot">Optional · not needed</span><small data-i18n="iqdbh">Chat sessions survive a restart of IQ</small><small class="needs hidden" data-i18n="iqdbNeeds">Needs Lab 3A and "PostgreSQL" in the external dependencies</small></span></label>
+      </div>
+      <div class="grid" id="llmWrap">
       <label class="f"><span class="n" data-i18n="llm">Lab 3 · Model behind IQ (through OpenRouter)</span>
         <select id="IQ_LLM"><option value="claude" selected data-i18n="llmClaude">Claude Sonnet 4.6 + Haiku 4.5 · recommended for production · ≈ $0.03–0.14 per question</option>
           <option value="qwen" data-i18n="llmQwen">Qwen 3.7 Plus + 3.8 Flash · PoC / lab · ≈ $0.005–0.01 per question</option></select>
         <code>IQ_LLM</code></label>
     </div>
     <p class="hint" id="llmHint" data-i18n-html="llmH">IQ chains several LLM calls for every question, and each one carries ~30,000 tokens of HCL system prompt and tool definitions, so it is expensive even with prompt caching. Costs measured on CF239 with caching on (Claude: ≈ $0.03 with a warm cache, ≈ $0.14 for the first question after 5 minutes idle). <b>Claude</b> is the model HCL validates and the <b>recommended option for production</b>. For a <b>PoC or a lab</b>, <b>Qwen</b> is enough and 5–10 times cheaper: it uses the IQ tools well, but it knows less about HCL DX, so answers to "how do I…" questions can be more generic. You can switch later: change <code>IQ_LLM</code> and reinstall LiteLLM; IQ is not touched.</p>
+    </div>
+
+    <div class="labrow">
+      <div class="labrow-h">Lab 4</div>
+      <div class="choices">
+        <label class="choice" data-i18n-title="l4T" title="Search V2: OpenSearch and the Search Middleware"><input type="checkbox" id="lab4" checked><span><b data-i18n="l4">Lab 4 · Search with OpenSearch</b><small data-i18n="l4h">hcl-dx-search 2.37.0, Search V2</small></span></label>
+      </div>
+    </div>
     <div id="labWarn" class="warn hidden"></div>
   </section>
 
   <section class="card">
-    <h2 data-i18n="s5">5 · Credentials (optional)</h2>
+    <h2><span data-i18n="sM">6 · Installation mode</span> <button type="button" class="info-btn" data-info="fastInfo" data-i18n="more">ⓘ What is this?</button></h2>
+    <div class="choices">
+      <label class="choice"><input type="radio" name="mode" value="steps" checked><span><b data-i18n="mSteps">Step by step, lab by lab</b><small data-i18n="mStepsH">To learn: each lab adds its layer to DX, with one DX upgrade per lab</small></span></label>
+      <label class="choice"><input type="radio" name="mode" value="fast"><span><b data-i18n="mFast">Fast demo</b><small data-i18n="mFastH">Everything at once, in the fastest order: DX installed once with its directory, IQ and search together, one single upgrade</small></span></label>
+    </div>
+    <p class="hint" data-i18n-html="mH">The mode decides the order of <code>install.sh</code> (option C) and of the <code>RUNBOOK.md</code> (option B). In both modes the result is the same.</p>
+  </section>
+
+  <section class="card">
+    <h2 data-i18n="s5">7 · Credentials (optional)</h2>
     <p class="hint" data-i18n-html="s5h">Leave any field empty and fill it in later in <code>env.sh</code>. Values typed here
       stay in this page and in the files you download.</p>
     <div class="grid">
@@ -250,7 +314,7 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
   </section>
 
   <section class="card">
-    <h2 data-i18n="s6">6 · Advanced</h2>
+    <h2 data-i18n="s6">8 · Advanced</h2>
     <details><summary data-i18n="s6s">Namespaces, Helm releases, PostgreSQL cluster and Helm version (defaults are fine)</summary>
       <div class="grid">
         <label class="f"><span class="n" data-i18n="nsdx">Namespace for HCL software</span><input type="text" id="DX_NS" value="dx-demo" spellcheck="false"><code>DX_NS</code></label>
@@ -268,14 +332,14 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
   </section>
 
   <section class="card">
-    <h2 data-i18n="s7">7 · Your files</h2>
+    <h2 data-i18n="s7">9 · Your files</h2>
     <div id="errors" class="warn hidden"></div>
     <p class="hint" data-i18n="optsH">Choose what you need:</p>
     <details id="cmpBox"><summary data-i18n="cmpS">Which option should I choose? Compare the three</summary>
       <div data-i18n-html="cmpT"><div class="tw"><table class="cmp">
       <tr><th></th><th>A · Only <code>env.sh</code></th><th>B · <code>env.sh</code> + <code>RUNBOOK.md</code></th><th>C · Direct installation (<code>dx-install/</code>)</th></tr>
       <tr><th>What you download</th><td>A configuration file with your values</td><td>The same, plus a personalised guide</td><td>A complete folder: every values, properties, LDIF and secrets file already filled in, plus <code>RUNBOOK.md</code> and <code>install.sh</code></td></tr>
-      <tr><th>Needs the labs repository?</th><td>Yes</td><td>Yes</td><td><b>No</b> (only <code>setup-postgres-dx.sql</code> is added for Lab 2B)</td></tr>
+      <tr><th>Needs the labs repository?</th><td>Yes</td><td>Yes</td><td><b>No</b></td></tr>
       <tr><th>Where it goes</th><td>Root of your clone</td><td>Root of your clone</td><td>Anywhere</td></tr>
       <tr><th>What you run</th><td>The scripts of each lab, following the guides</td><td>The same scripts, in the order of the runbook</td><td>Direct commands (<code>kubectl apply -f</code>, <code>helm -f</code>), or everything at once with <code>./install.sh</code></td></tr>
       <tr><th>What you see in each step</th><td>The script; the guide explains what it does</td><td>The script, with the equivalent command and your values in a drop-down</td><td>The real command and the real files: no variables, no <code>--set</code>, no intermediate scripts</td></tr>
@@ -303,7 +367,7 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
         <p data-i18n-html="oCB">A <b>self-contained</b> folder, a tailor-made installation you can even send to someone without
           the labs repository: every file already filled in with your values (credentials included, in plain text), a
           <code>RUNBOOK.md</code> with short, easy-to-follow commands and an <code>install.sh</code> that runs them showing the
-          lab and step. Only <code>setup-postgres-dx.sql</code> (Lab 2B) has to be added by hand.</p>
+          lab and step.</p>
         <button type="button" class="btn primary" id="dlDirect" data-i18n="dldirect">Download dx-install/ ZIP</button>
       </div>
     </div>
@@ -328,6 +392,52 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
 <p><b>Sovereign AI.</b> We are aware of how important sovereign AI is, and it is one of our main concerns. That is why we also value this: besides the large models of today's vendors (Claude, GPT, Gemini…), OpenRouter offers <b>open-weight models</b> (Qwen, DeepSeek, Mistral, gpt-oss…) that you can later <b>download and run on your own hardware</b>. You can test them with IQ first, at almost no cost, and then decide whether to move to a local model so that your data never leaves your infrastructure.</p>
 <p><b>Getting started.</b> If you do not have an account yet, <a href="https://openrouter.ai" target="_blank" rel="noopener">sign up at openrouter.ai</a>, create an API key and buy credits: <b>about €10 is enough for a PoC</b>. If you already have an API account with Anthropic (Claude) or another provider (OpenAI, Google, AWS Bedrock, Azure), you do not even need to buy credit: OpenRouter can use <b>your own key for that provider</b> (<a href="https://openrouter.ai/docs/guides/overview/auth/byok" target="_blank" rel="noopener">BYOK</a>), so the usage is charged to the credit you already have there. OpenRouter's BYOK fee is free up to a monthly allowance far above what a PoC uses. OpenRouter lets you set a <b>spending limit on each key</b> and shows every request with its tokens and cost in its <a href="https://openrouter.ai/activity" target="_blank" rel="noopener">activity</a> page, so you always know what you are spending.</p></div>
   <div class="df"><a class="btn" href="https://openrouter.ai" target="_blank" rel="noopener" data-i18n="orSign">Sign up at OpenRouter</a><button type="button" class="btn primary" data-close="orInfo" data-i18n="close">Close</button></div>
+</dialog>
+
+<dialog id="depsInfo" class="dlg" aria-labelledby="depsInfoT">
+  <div class="dh"><h2 id="depsInfoT" data-i18n="depsInfoT">External dependencies</h2></div>
+  <div class="db" data-i18n-html="depsInfoB"><p>Four pieces that are <b>not HCL software</b> and that some labs use. They go in the shared namespace (<code>dx-shared</code>), apart from DX, and they are installed <b>first</b>, before Lab 1.</p>
+<ul><li><b>OpenLDAP</b>: a directory with demo users and groups. Lab 2A connects DX to it.</li>
+<li><b>PostgreSQL 18</b> (CloudNativePG operator): for the IQ chat sessions (Lab 3 appendix), or for your own advanced uses.</li>
+<li><b>LiteLLM</b>: the proxy between IQ and the AI models, through OpenRouter. Lab 3A needs it.</li>
+<li><b>EUROPESIP MCP Server</b>: our own tools for IQ. Lab 3B needs it.</li></ul>
+<p><b>Why first?</b> With them already in place, the labs only connect DX to them, and the demo goes faster.</p>
+<p><b>If you do not install one</b>, the labs that need it are not available (they appear disabled), or you give the details of the one you already have: an existing Active Directory instead of OpenLDAP (Lab 2A), an existing Oracle as the Web Engine database (Lab 2B).</p></div>
+  <div class="df"><button type="button" class="btn primary" data-close="depsInfo" data-i18n="close">Close</button></div>
+</dialog>
+
+<dialog id="pgInfo" class="dlg" aria-labelledby="pgInfoT">
+  <div class="dh"><h2 id="pgInfoT" data-i18n="pgInfoT">When to use PostgreSQL for the Web Engine</h2></div>
+  <div class="db" data-i18n-html="pgInfoB"><p>Right now the Web Engine can use PostgreSQL <b>only if you create yourself the tables it needs</b>, following the steps HCL gives you. Those steps are <b>not supplied with the lab yet</b>, because they have not been validated yet.</p>
+<p>If you have them, choose PostgreSQL:</p>
+<ul><li>PostgreSQL is installed in the <b>external dependencies</b>, before anything else.</li>
+<li>Before that step you put the table creation script, <code>setup-postgres-dx.sql</code>, where the <code>RUNBOOK.md</code> tells you: the cluster runs it once, when it is created.</li>
+<li>Lab 2B then transfers the Web Engine data from Derby to PostgreSQL (~14 min).</li></ul>
+<p>If you do not have them, use <b>Derby</b>, the internal database of the product (default, nothing to do), or an existing <b>Oracle</b>. PostgreSQL can still be installed for other advanced options, such as the <b>IQ sessions in the database</b> (Lab 3 appendix).</p></div>
+  <div class="df"><button type="button" class="btn primary" data-close="pgInfo" data-i18n="close">Close</button></div>
+</dialog>
+
+<dialog id="sappInfo" class="dlg" aria-labelledby="sappInfoT">
+  <div class="dh"><h2 id="sappInfoT" data-i18n="sappInfoT">Lab 1B · Sample Script Application</h2></div>
+  <div class="db" data-i18n-html="sappInfoB"><p>A <b>Script Application</b> is HTML, JavaScript and CSS stored in WCM: the way to build your own applications on DX Compose without Java portlets (which need the separately licensed Java Transition Module).</p>
+<p>This lab deploys <b>Hello DX</b>, a small React app by EUROPESIP, with a <b>Helm chart</b>: a Kubernetes Job runs HCL <b>DXClient</b> and pushes the app into WCM. No DXClient or developer tools on your PC: just <code>helm</code>. Every later run updates the same app.</p>
+<p>It shows two integrations with the DX REST APIs, <b>as the signed-in user</b>: who is signed in, and which WCM libraries they can read.</p>
+<p>After the install, add it to a page once: edit a page, add a component, <i>Script Applications</i> → <b>Hello DX</b>. Source, chart and instructions: <a href="https://github.com/europesip/hcl-dx-scriptapp-helm" target="_blank" rel="noopener">github.com/europesip/hcl-dx-scriptapp-helm</a>.</p></div>
+  <div class="df"><button type="button" class="btn primary" data-close="sappInfo" data-i18n="close">Close</button></div>
+</dialog>
+
+<dialog id="fastInfo" class="dlg" aria-labelledby="fastInfoT">
+  <div class="dh"><h2 id="fastInfoT" data-i18n="fastInfoT">Installation mode</h2></div>
+  <div class="db" data-i18n-html="fastInfoB"><p><b>Step by step</b> (to learn): the labs in order, each one adding its layer to DX. Every lab that changes DX runs a <code>helm upgrade</code> of DX, and each one restarts the Web Engine (~5 min).</p>
+<p><b>Fast demo</b> (when time is short): the same result in the fastest order.</p>
+<ol><li>The external dependencies, first.</li>
+<li>DX installed <b>once</b>, already connected to its directory (Lab 1 + 2A).</li>
+<li>IQ and search installed right after.</li>
+<li><b>One single</b> DX upgrade that enables IQ and search together.</li>
+<li>Lab 1B and the checks.</li></ol>
+<p>About <b>15 minutes less</b> with every lab (two DX upgrades fewer). Not available with the Oracle transfer (Lab 2B): use step by step for it.</p>
+<p>From the repository, the fast demo is <code>common/demo-fast.sh</code>: the <code>env.sh</code> of this wizard already carries your choice.</p></div>
+  <div class="df"><button type="button" class="btn primary" data-close="fastInfo" data-i18n="close">Close</button></div>
 </dialog>
 
 <footer>
@@ -364,9 +474,9 @@ const T = {
     tlsC: "Certificado (cadena completa, PEM)", tlsK: "Clave privada (sin contraseña)",
     s3: "3 · Almacenamiento", s3h: "DX necesita una StorageClass ReadWriteOnce y otra ReadWriteMany. Las proporciona el administrador del clúster.",
     rwo: "StorageClass ReadWriteOnce", rwx: "StorageClass ReadWriteMany (DAM)",
-    s4: "4 · Labs", s4h: "El Lab 1 siempre se incluye. Los Labs 3 y 4 solo necesitan el Lab 1.",
-    l2a: "Lab 2A · Directorio", none: "Ninguno (solo registro básico)", oldap: "OpenLDAP en el namespace compartido (demo)", ad: "Active Directory (instalación previa preconfigurada)",
-    l2b: "Lab 2B · Base de datos del Web Engine", derby: "Derby (sin transferencia)", pg: "PostgreSQL 18 con CloudNativePG (demo)", ora: "Oracle 19c/21c (instalación previa preconfigurada)",
+    s4: "5 · Labs", s4h: "Una fila por lab. <b>El Lab 1 es el único obligatorio</b>; el resto son opcionales y solo necesitan el Lab 1. Pasa el ratón por una opción, o pulsa ⓘ, para ver la ayuda.",
+    l2a: "Lab 2A · Directorio", none: "Ninguno (solo registro básico)", oldap: "OpenLDAP de las dependencias externas (demo)", ad: "Active Directory (instalación previa preconfigurada)",
+    l2b: "Lab 2B · Base de datos del Web Engine", derby: "Derby, la base de datos interna (sin transferencia)", pg: "PostgreSQL 18 (creas tú las tablas, pasos de HCL)", ora: "Oracle 19c/21c (instalación previa preconfigurada)",
     l3: "Lab 3A · IQ con OpenRouter", l3h: "Proxy LiteLLM → OpenRouter (Claude o Qwen), en lugar de AWS Bedrock",
     llm: "Lab 3 · Modelo detrás de IQ (a través de OpenRouter)",
     orWhy: "ⓘ ¿Por qué OpenRouter?", orInfoT: "¿Por qué OpenRouter?", orSign: "Darse de alta en OpenRouter", close: "Cerrar",
@@ -375,29 +485,84 @@ const T = {
     llmQwen: "Qwen 3.7 Plus + 3.8 Flash · PoC / laboratorio · ≈ 0,005–0,01 $ por pregunta",
     llmH: "IQ encadena varias llamadas al LLM por cada pregunta, y cada una lleva ~30.000 tokens de system prompt y definiciones de herramientas de HCL, así que sale caro incluso con prompt caching. Costes medidos en CF239 con la caché activada (Claude: ≈ 0,03 $ con la caché caliente, ≈ 0,14 $ la primera pregunta tras 5 minutos sin uso). <b>Claude</b> es el modelo que valida HCL y la <b>opción recomendada para producción</b>. Para una <b>PoC o un laboratorio</b>, <b>Qwen</b> es suficiente y entre 5 y 10 veces más barato: usa bien las herramientas de IQ, pero sabe menos de HCL DX, así que las respuestas a preguntas de tipo \"¿cómo hago…?\" pueden ser más genéricas. Puedes cambiarlo después: cambia <code>IQ_LLM</code> y reinstala LiteLLM; IQ no se toca.",
     l3b: "Lab 3B · MCP Server propio", l3bh: "MCP de EUROPESIP con la herramienta figma&web-to-dx",
-    iqdb: "Apéndice del Lab 3 · Sesiones de IQ en PostgreSQL", iqdbh: "Requiere el Lab 2B con PostgreSQL",
+    iqdb: "Apéndice del Lab 3 · Sesiones de IQ en PostgreSQL", iqdbh: "Las sesiones del chat sobreviven a un reinicio de IQ",
     l4: "Lab 4 · Búsqueda con OpenSearch", l4h: "hcl-dx-search 2.37.0, Search V2",
-    s5: "5 · Credenciales (opcional)",
+    s5: "7 · Credenciales (opcional)",
+    sD: "4 · Dependencias externas",
+    more: "ⓘ ¿Qué es esto?",
+    sDh: "Software que no es de HCL, instalado en el namespace compartido <b>antes que nada</b>, para que los labs que lo usan vayan más rápido. Si lo instalas aquí, los labs lo usan con valores predefinidos. Si no, los labs que lo necesitan no están disponibles, o das los datos del que ya tienes (Active Directory, Oracle).",
+    dLdap: "OpenLDAP",
+    dLdapH: "Directorio de demo con usuarios y grupos · para el Lab 2A",
+    dLdapT: "Un OpenLDAP con usuarios y grupos de demo (andres, macarena, dxadmins...)",
+    dPg: "PostgreSQL 18",
+    dPgH: "CloudNativePG · para las sesiones de IQ (apéndice del Lab 3) o tus propios usos avanzados",
+    dPgT: "PostgreSQL 18 gestionado por el operador CloudNativePG",
+    dLlm: "LiteLLM",
+    dLlmH: "Proxy hacia los modelos de IA (OpenRouter) · lo necesita el Lab 3A (IQ)",
+    dLlmT: "El proxy entre IQ y los modelos de IA (OpenRouter)",
+    dMcp: "MCP Server de EUROPESIP",
+    dMcpH: "Herramientas propias para IQ · lo necesita el Lab 3B",
+    dMcpT: "Nuestro MCP Server propio: añade herramientas de EUROPESIP a IQ",
+    pgSchema: "Desplegar el esquema que necesita el Web Engine",
+    whyNot: "ⓘ Aún no disponible",
+    whyPg: "ⓘ ¿Cuándo usar PostgreSQL?",
+    pgSqlYes: "✔ Tu usuario de HCL Harbor es de EUROPESIP o de HCL: el script de creación de las tablas va incluido en las descargas (opción B o C).",
+    pgSqlNo: "Necesitarás el script de creación de las tablas que te da HCL (setup-postgres-dx.sql): el RUNBOOK te dice dónde ponerlo.",
+
+    l1: "Lab 1 · DX base",
+    l1h: "DX Compose instalado y publicado",
+    l1T: "Se instala siempre: el resto de labs se construyen sobre él",
+    must: "Obligatorio · el único",
+    l1b: "Lab 1B · Script Application de ejemplo",
+    l1bh: "Hello DX, desplegada con un chart de Helm",
+    l1bT: "Una Script Application de ejemplo (React) que un chart de Helm sube a WCM",
+    optional: "Opcional",
+    dxcLic: "He leído y acepto la licencia de <b>DXClient</b> de HCL, que usa el chart para subir la app (<a href=\"https://github.com/europesip/hcl-dx-scriptapp-helm/blob/main/README.es.md#instalarlo-en-tu-clúster\" target=\"_blank\" rel=\"noopener\">cómo leerla</a>)",
+    dirNeeds: "OpenLDAP necesita \"OpenLDAP\" en las dependencias externas",
+    l3T: "El asistente de IA de DX, IQ",
+    l3Needs: "Necesita \"LiteLLM\" en las dependencias externas",
+    l3bT: "IQ ampliado con herramientas propias a través de un MCP Server",
+    l3bNeeds: "Necesita el Lab 3A y \"MCP Server de EUROPESIP\" en las dependencias externas",
+    optSug: "Opcional (recomendado)",
+    iqdbT: "IQ guarda sus sesiones de chat en PostgreSQL en lugar de en memoria",
+    iqdbNeeds: "Necesita el Lab 3A y \"PostgreSQL\" en las dependencias externas",
+    optNot: "Opcional · no necesario",
+    l4T: "Search V2: OpenSearch y el Search Middleware",
+    sM: "6 · Modo de instalación",
+    mSteps: "Paso a paso, lab a lab",
+    mStepsH: "Para aprender: cada lab añade su capa a DX, con un upgrade de DX por lab",
+    mFast: "Demo rápida",
+    mFastH: "Todo de una vez, en el orden más rápido: DX instalado una sola vez con su directorio, IQ y la búsqueda juntos, un único upgrade",
+    mH: "El modo decide el orden de <code>install.sh</code> (opción C) y del <code>RUNBOOK.md</code> (opción B). En los dos modos el resultado es el mismo.",
+    depsInfoT: "Dependencias externas",
+    depsInfoB: "<p>Cuatro piezas que <b>no son software de HCL</b> y que usan algunos labs. Van en el namespace compartido (<code>dx-shared</code>), separadas de DX, y se instalan <b>primero</b>, antes del Lab 1.</p>\n<ul><li><b>OpenLDAP</b>: un directorio con usuarios y grupos de demo. El Lab 2A conecta DX a él.</li>\n<li><b>PostgreSQL 18</b> (operador CloudNativePG): para las sesiones del chat de IQ (apéndice del Lab 3) o para tus propios usos avanzados.</li>\n<li><b>LiteLLM</b>: el proxy entre IQ y los modelos de IA, a través de OpenRouter. Lo necesita el Lab 3A.</li>\n<li><b>MCP Server de EUROPESIP</b>: nuestras herramientas propias para IQ. Lo necesita el Lab 3B.</li></ul>\n<p><b>¿Por qué primero?</b> Con ellas ya instaladas, los labs solo conectan DX a ellas, y la demo va más rápida.</p>\n<p><b>Si no instalas alguna</b>, los labs que la necesitan no están disponibles (aparecen desactivados), o das los datos de la que ya tienes: un Active Directory existente en lugar de OpenLDAP (Lab 2A), un Oracle existente como base de datos del Web Engine (Lab 2B).</p>",
+    pgInfoT: "Cuándo usar PostgreSQL para el Web Engine",
+    pgInfoB: "<p>Ahora mismo el Web Engine puede usar PostgreSQL <b>solo si creas tú mismo las tablas que necesita</b>, siguiendo los pasos que te dará HCL. Esos pasos <b>aún no se suministran con el lab</b>, porque todavía no han sido validados.</p>\n<p>Si los tienes, elige PostgreSQL:</p>\n<ul><li>PostgreSQL se instala en las <b>dependencias externas</b>, antes que nada.</li>\n<li>Antes de ese paso dejas el script de creación de las tablas, <code>setup-postgres-dx.sql</code>, donde te indica el <code>RUNBOOK.md</code>: el cluster lo ejecuta una vez, al crearse.</li>\n<li>Después, el Lab 2B transfiere los datos del Web Engine de Derby a PostgreSQL (~14 min).</li></ul>\n<p>Si no los tienes, usa <b>Derby</b>, la base de datos interna del producto (por defecto, no hay que hacer nada), o un <b>Oracle</b> existente. PostgreSQL se puede instalar igualmente para otras opciones avanzadas, como las <b>sesiones de IQ en base de datos</b> (apéndice del Lab 3).</p>",
+    sappInfoT: "Lab 1B · Script Application de ejemplo",
+    sappInfoB: "<p>Una <b>Script Application</b> es HTML, JavaScript y CSS guardados en WCM: la forma de construir aplicaciones propias en DX Compose sin portlets Java (que necesitan el Java Transition Module, con licencia aparte).</p>\n<p>Este lab despliega <b>Hello DX</b>, una pequeña app en React de EUROPESIP, con un <b>chart de Helm</b>: un Job de Kubernetes ejecuta <b>DXClient</b> de HCL y sube la app a WCM. Sin DXClient ni herramientas de desarrollo en tu equipo: solo <code>helm</code>. Cada ejecución posterior actualiza la misma app.</p>\n<p>Muestra dos integraciones con las API REST de DX, <b>como el usuario que ha iniciado sesión</b>: quién ha iniciado sesión y qué bibliotecas de WCM puede leer.</p>\n<p>Tras la instalación, añádela una vez a una página: edita una página, añade un componente, <i>Script Applications</i> → <b>Hello DX</b>. Código, chart e instrucciones: <a href=\"https://github.com/europesip/hcl-dx-scriptapp-helm\" target=\"_blank\" rel=\"noopener\">github.com/europesip/hcl-dx-scriptapp-helm</a>.</p>",
+    fastInfoT: "Modo de instalación",
+    fastInfoB: "<p><b>Paso a paso</b> (para aprender): los labs en orden, cada uno añadiendo su capa a DX. Cada lab que cambia DX hace un <code>helm upgrade</code> de DX, y cada uno reinicia el Web Engine (~5 min).</p>\n<p><b>Demo rápida</b> (cuando hay poco tiempo): el mismo resultado en el orden más rápido.</p>\n<ol><li>Las dependencias externas, primero.</li>\n<li>DX instalado <b>una sola vez</b>, ya conectado a su directorio (Lab 1 + 2A).</li>\n<li>IQ y la búsqueda, instalados justo después.</li>\n<li><b>Un único</b> upgrade de DX que activa IQ y la búsqueda a la vez.</li>\n<li>El Lab 1B y las comprobaciones.</li></ol>\n<p>Unos <b>15 minutos menos</b> con todos los labs (dos upgrades de DX menos). No disponible con la transferencia a Oracle (Lab 2B): para ella, usa el paso a paso.</p>\n<p>Desde el repositorio, la demo rápida es <code>common/demo-fast.sh</code>: el <code>env.sh</code> de este asistente ya lleva lo que has elegido.</p>",
+
     s5h: 'Deja cualquier campo vacío y rellénalo después en <code>env.sh</code>. Lo que escribes aquí se queda en esta página y en los ficheros que descargues.',
     hu: "Usuario de HCL Harbor (e-mail)", ht: "CLI secret de HCL Harbor", or: "API key de OpenRouter (Lab 3)",
     pwa: "Contraseña para todas las cuentas del lab", show: "Ver", hide: "Ocultar",
     pwh: 'Rellena con la contraseña pública por defecto del lab, <code>EuropeS1P</code> (la que usan los labs); vacía = la misma. Evita los caracteres <code>\' " \\ $ &amp; |</code>.',
     adT: "Active Directory", adU: "Usuario de bind (solo lectura)", adP: "Contraseña de bind", adC: "CA del AD (LDAPS)",
     oU: "Usuario de conexión", oP: "Contraseña", oC: "CA del listener (TCPS)",
-    s6: "6 · Avanzado", s6s: "Namespaces, releases de Helm, cluster PostgreSQL y versión de Helm (los valores por defecto sirven)",
+    s6: "8 · Avanzado", s6s: "Namespaces, releases de Helm, cluster PostgreSQL y versión de Helm (los valores por defecto sirven)",
     nsdx: "Namespace del software de HCL", nssh: "Namespace de herramientas de terceros", srel: "Release de búsqueda", pgc: "Cluster PostgreSQL", helmv: "Versión de Helm en tu estación de trabajo",
     namesh: "Nombres de Kubernetes: minúsculas, dígitos y guiones. Mantén la release de búsqueda como dx-search salvo que sepas por qué (el chart de DX la espera para la credencial push-admin compartida).",
-    s7: "7 · Tus ficheros", dlzip: "Descargar ZIP", dlenv: "Descargar env.sh",
+    s7: "9 · Tus ficheros", dlzip: "Descargar ZIP", dlenv: "Descargar env.sh",
     where: 'A y B: deja los ficheros en la raíz de tu copia del repositorio (junto a <code>env.example.sh</code>) y haz <code>source ./env.sh</code>; quien instala son los scripts de los labs. C: descomprímelo donde quieras (crea <code>dx-install/</code>), haz <code>cd dx-install</code> y sigue su <code>RUNBOOK.md</code> o ejecuta <code>./install.sh</code>. La opción C lleva credenciales en claro: guárdala en privado y rótalas después.',
     optsH: "Elige lo que necesitas:",
     cmpS: "¿Qué opción elijo? Compara las tres",
-    cmpT: "<div class=\"tw\"><table class=\"cmp\">\n      <tr><th><\/th><th>A · Solo <code>env.sh<\/code><\/th><th>B · <code>env.sh<\/code> + <code>RUNBOOK.md<\/code><\/th><th>C · Instalación directa (<code>dx-install/<\/code>)<\/th><\/tr>\n      <tr><th>Qué descargas<\/th><td>Un fichero de configuración con tus valores<\/td><td>Lo mismo, más una guía personalizada<\/td><td>Una carpeta completa: todos los values, properties, LDIF y secrets ya rellenos, más <code>RUNBOOK.md<\/code> e <code>install.sh<\/code><\/td><\/tr>\n      <tr><th>¿Necesita el repositorio de los labs?<\/th><td>Sí<\/td><td>Sí<\/td><td><b>No<\/b> (solo se añade <code>setup-postgres-dx.sql<\/code> para el Lab 2B)<\/td><\/tr>\n      <tr><th>Dónde va<\/th><td>Raíz de tu copia<\/td><td>Raíz de tu copia<\/td><td>Donde quieras<\/td><\/tr>\n      <tr><th>Qué ejecutas<\/th><td>Los scripts de cada lab, siguiendo las guías<\/td><td>Los mismos scripts, en el orden del runbook<\/td><td>Comandos directos (<code>kubectl apply -f<\/code>, <code>helm -f<\/code>), o todo de una vez con <code>./install.sh<\/code><\/td><\/tr>\n      <tr><th>Qué ves en cada paso<\/th><td>El script; la guía explica qué hace<\/td><td>El script, con el comando equivalente y tus valores en un desplegable<\/td><td>El comando real y los ficheros reales: sin variables, sin <code>--set<\/code>, sin scripts intermedios<\/td><\/tr>\n      <tr><th>Credenciales<\/th><td>En <code>env.sh<\/code> (se pueden dejar vacías)<\/td><td>Igual que A<\/td><td>En claro dentro de los ficheros; las vacías aparecen como <code>PUT-YOUR-…-HERE<\/code><\/td><\/tr>\n      <tr><th>Comprobaciones<\/th><td>Los <code>99-verify.sh<\/code> de cada lab<\/td><td>Igual que A<\/td><td>Marcadas como opcionales; las ejecuta <code>./install.sh --verify<\/code><\/td><\/tr>\n      <tr><th>Ideal para<\/th><td>Aprender con las guías (<b>recomendada<\/b>)<\/td><td>La misma vía, con un guion a medida de tu instalación<\/td><td>Demostraciones en directo, o enviar una instalación a medida a alguien que no tiene nada más. Guárdala en privado y rota las credenciales después<\/td><\/tr>\n    <\/table><\/div>\n    <p class=\"hint\">En las tres el resultado instalado es el mismo, y el asistente solo genera ficheros: nunca se conecta a tu clúster.<\/p>",
+    cmpT: "<div class=\"tw\"><table class=\"cmp\">\n      <tr><th><\/th><th>A · Solo <code>env.sh<\/code><\/th><th>B · <code>env.sh<\/code> + <code>RUNBOOK.md<\/code><\/th><th>C · Instalación directa (<code>dx-install/<\/code>)<\/th><\/tr>\n      <tr><th>Qué descargas<\/th><td>Un fichero de configuración con tus valores<\/td><td>Lo mismo, más una guía personalizada<\/td><td>Una carpeta completa: todos los values, properties, LDIF y secrets ya rellenos, más <code>RUNBOOK.md<\/code> e <code>install.sh<\/code><\/td><\/tr>\n      <tr><th>¿Necesita el repositorio de los labs?<\/th><td>Sí<\/td><td>Sí<\/td><td><b>No<\/b><\/td><\/tr>\n      <tr><th>Dónde va<\/th><td>Raíz de tu copia<\/td><td>Raíz de tu copia<\/td><td>Donde quieras<\/td><\/tr>\n      <tr><th>Qué ejecutas<\/th><td>Los scripts de cada lab, siguiendo las guías<\/td><td>Los mismos scripts, en el orden del runbook<\/td><td>Comandos directos (<code>kubectl apply -f<\/code>, <code>helm -f<\/code>), o todo de una vez con <code>./install.sh<\/code><\/td><\/tr>\n      <tr><th>Qué ves en cada paso<\/th><td>El script; la guía explica qué hace<\/td><td>El script, con el comando equivalente y tus valores en un desplegable<\/td><td>El comando real y los ficheros reales: sin variables, sin <code>--set<\/code>, sin scripts intermedios<\/td><\/tr>\n      <tr><th>Credenciales<\/th><td>En <code>env.sh<\/code> (se pueden dejar vacías)<\/td><td>Igual que A<\/td><td>En claro dentro de los ficheros; las vacías aparecen como <code>PUT-YOUR-…-HERE<\/code><\/td><\/tr>\n      <tr><th>Comprobaciones<\/th><td>Los <code>99-verify.sh<\/code> de cada lab<\/td><td>Igual que A<\/td><td>Marcadas como opcionales; las ejecuta <code>./install.sh --verify<\/code><\/td><\/tr>\n      <tr><th>Ideal para<\/th><td>Aprender con las guías (<b>recomendada<\/b>)<\/td><td>La misma vía, con un guion a medida de tu instalación<\/td><td>Demostraciones en directo, o enviar una instalación a medida a alguien que no tiene nada más. Guárdala en privado y rota las credenciales después<\/td><\/tr>\n    <\/table><\/div>\n    <p class=\"hint\">En las tres el resultado instalado es el mismo, y el asistente solo genera ficheros: nunca se conecta a tu clúster.<\/p>",
     oAT: "Opción A · Solo env.sh",
     oAB: 'Solo el fichero de configuración que necesitan los labs. Después sigue los labs <b>a mano</b>, con la guía de cada uno (<code>GUIDE.es.md</code>).',
     oBT: "Opción B · env.sh + RUNBOOK.md",
     oBB: 'Un ZIP con <code>env.sh</code> y <code>RUNBOOK.md</code>: las instrucciones para montar, uno tras otro, los labs que has elegido, con los scripts de los labs y los comandos equivalentes con tus valores.',
     oCT: "Opción C · Instalación directa (dx-install/)",
-    oCB: 'Una carpeta <b>autónoma</b>, una instalación a medida que puedes incluso enviar a alguien sin el repositorio de los labs: todos los ficheros ya rellenos con tus valores (credenciales incluidas, en claro), un <code>RUNBOOK.md</code> con comandos cortos y fáciles de seguir y un <code>install.sh</code> que los ejecuta mostrando el lab y el paso. Solo hay que añadir a mano <code>setup-postgres-dx.sql</code> (Lab 2B).',
+    oCB: 'Una carpeta <b>autónoma</b>, una instalación a medida que puedes incluso enviar a alguien sin el repositorio de los labs: todos los ficheros ya rellenos con tus valores (credenciales incluidas, en claro), un <code>RUNBOOK.md</code> con comandos cortos y fáciles de seguir y un <code>install.sh</code> que los ejecuta mostrando el lab y el paso.',
     dldirect: "Descargar ZIP dx-install/",
     foot: 'Laboratorios para aprender (PoC), no para producción. Para un proyecto real recomendamos un partner de HCL o los servicios especializados de HCL. · <a href="https://github.com/europesip/hcl-dx-compose-labs">Repositorio de los labs</a> · <a href="https://github.com/europesip/hcl-dx-compose-labs-wizard">Código fuente del asistente</a> · <a href="about.html" class="about-link">Acerca de</a> · Código abierto (Apache-2.0), desarrollado originalmente por EUROPESIP · <a href="https://www.europesip.com">EUROPESIP</a>'
   }
@@ -408,8 +573,14 @@ const M = {
     eHost: "DX host name: enter a fully qualified name (e.g. dx-demo.example.com).",
     eName: n => `${n}: use lower case letters, digits and hyphens (max. 63).`,
     eSc: "StorageClass names cannot be empty.",
-    eIqdb: "The IQ appendix requires Lab 2B with PostgreSQL and Lab 3A.",
-    eMcp: "Lab 3B requires Lab 3A.",
+    eIqdb: "The IQ sessions appendix needs Lab 3A and PostgreSQL in the external dependencies.",
+    eMcp: "Lab 3B needs Lab 3A and the EUROPESIP MCP Server in the external dependencies.",
+    eLlm: "Lab 3A needs LiteLLM in the external dependencies.",
+    eLdap: "Lab 2A with OpenLDAP needs OpenLDAP in the external dependencies.",
+    eDxc: "Lab 1B: read and accept the DXClient license (the checkbox under Lab 1B).",
+    eFastOra: "The fast demo does not include the Oracle transfer (Lab 2B): choose step by step.",
+    eFastPg: "The fast demo does not include the PostgreSQL transfer (Lab 2B): choose step by step.",
+    ePgDep: "PostgreSQL as the Web Engine database needs PostgreSQL in the external dependencies.",
     wSearch: "The search release is not dx-search: the DX chart reads the shared push-admin credential from dx-search by default. It works only if you know how to adapt it.",
     wPw: "The password contains characters that break properties/LDIF files: ' \" \\ $ & |",
     wOra: "TCPS JDBC URL without a listener CA file: 01-secrets-oracle.sh will ask for ORACLE_CA_FILE.",
@@ -420,8 +591,14 @@ const M = {
     eHost: "Nombre de host de DX: escribe un nombre completo (p. ej. dx-demo.example.com).",
     eName: n => `${n}: usa minúsculas, dígitos y guiones (máx. 63).`,
     eSc: "Los nombres de StorageClass no pueden estar vacíos.",
-    eIqdb: "El apéndice de IQ requiere el Lab 2B con PostgreSQL y el Lab 3A.",
-    eMcp: "El Lab 3B requiere el Lab 3A.",
+    eIqdb: "El apéndice de sesiones de IQ necesita el Lab 3A y PostgreSQL en las dependencias externas.",
+    eMcp: "El Lab 3B necesita el Lab 3A y el MCP Server de EUROPESIP en las dependencias externas.",
+    eLlm: "El Lab 3A necesita LiteLLM en las dependencias externas.",
+    eLdap: "El Lab 2A con OpenLDAP necesita OpenLDAP en las dependencias externas.",
+    eDxc: "Lab 1B: lee y acepta la licencia de DXClient (la casilla bajo el Lab 1B).",
+    eFastOra: "La demo rápida no incluye la transferencia a Oracle (Lab 2B): elige paso a paso.",
+    eFastPg: "La demo rápida no incluye la transferencia a PostgreSQL (Lab 2B): elige paso a paso.",
+    ePgDep: "PostgreSQL como base de datos del Web Engine necesita PostgreSQL en las dependencias externas.",
     wSearch: "La release de búsqueda no es dx-search: el chart de DX lee la credencial push-admin compartida de dx-search por defecto. Solo funciona si sabes cómo adaptarlo.",
     wPw: "La contraseña contiene caracteres que rompen los ficheros properties/LDIF: ' \" \\ $ & |",
     wOra: "URL JDBC TCPS sin CA del listener: 01-secrets-oracle.sh pedirá ORACLE_CA_FILE.",
@@ -434,6 +611,7 @@ const EN = {};   // original English texts, captured on load
 function captureEnglish(){
   document.querySelectorAll("[data-i18n]").forEach(e => EN[e.dataset.i18n] = e.textContent);
   document.querySelectorAll("[data-i18n-html]").forEach(e => EN[e.dataset.i18nHtml] = e.innerHTML);
+  document.querySelectorAll("[data-i18n-title]").forEach(e => EN[e.dataset.i18nTitle] = e.title);
 }
 function tr(k){ return (lang === "es" && T.es[k] !== undefined) ? T.es[k] : EN[k]; }
 function setLang(l){
@@ -441,6 +619,7 @@ function setLang(l){
   document.documentElement.lang = lang;
   document.querySelectorAll("[data-i18n]").forEach(e => { const v = tr(e.dataset.i18n); if (v !== undefined) e.textContent = v; });
   document.querySelectorAll("[data-i18n-html]").forEach(e => { const v = tr(e.dataset.i18nHtml); if (v !== undefined) e.innerHTML = v; });
+  document.querySelectorAll("[data-i18n-title]").forEach(e => { const v = tr(e.dataset.i18nTitle); if (v !== undefined) e.title = v; });
   document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
   document.querySelectorAll("a.about-link").forEach(a => a.href = "about.html" + (lang === "es" ? "?lang=es" : ""));
   document.querySelectorAll("a.cmp-link").forEach(a => a.onclick = e => { e.preventDefault(); $("cmpBox").open = true; $("cmpBox").scrollIntoView({behavior: "smooth"}); });
@@ -465,6 +644,10 @@ function state(){
     dir: $("dir").value, db: $("db").value,
     lab3: $("lab3").checked, lab3b: $("lab3b").checked, iqdb: $("iqdb").checked, lab4: $("lab4").checked,
     IQ_LLM: $("IQ_LLM").value,
+    // External dependencies, installed before Lab 1 (in dx-shared)
+    deps: {ldap: $("depLdap").checked, pg: $("depPg").checked, llm: $("depLlm").checked, mcp: $("depMcp").checked},
+    lab1b: $("lab1b").checked, dxcLicense: $("dxcLicense").checked,
+    fast: document.querySelector("input[name=mode]:checked").value === "fast",
     HCL_HARBOR_USER: val("HCL_HARBOR_USER"), HCL_HARBOR_TOKEN: $("HCL_HARBOR_TOKEN").value.trim(),
     OPENROUTER_API_KEY: $("OPENROUTER_API_KEY").value.trim(), LAB_PASSWORD: $("LAB_PASSWORD").value,
     AD_HOST: val("AD_HOST"), AD_PORT: $("AD_PORT").value, AD_BASE_DN: val("AD_BASE_DN"),
@@ -486,8 +669,14 @@ function validate(s){
   for (const k of ["DX_NS","SHARED_NS","DX_RELEASE","IQ_RELEASE","SEARCH_RELEASE","LDAP_RELEASE","LITELLM_RELEASE","PG_CLUSTER"])
     if (!/^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/.test(s[k])) err.push(m.eName(k));
   if (!s.SC_RWO || !s.SC_RWX) err.push(m.eSc);
-  if (s.iqdb && (s.db !== "postgres" || !s.lab3)) err.push(m.eIqdb);
-  if (s.lab3b && !s.lab3) err.push(m.eMcp);
+  if (s.iqdb && !(s.deps.pg && s.lab3)) err.push(m.eIqdb);
+  if (s.lab3b && !(s.deps.mcp && s.lab3)) err.push(m.eMcp);
+  if (s.lab3 && !s.deps.llm) err.push(m.eLlm);
+  if (s.dir === "openldap" && !s.deps.ldap) err.push(m.eLdap);
+  if (s.lab1b && !s.dxcLicense) err.push(m.eDxc);
+  if (s.fast && s.db === "oracle") err.push(m.eFastOra);
+  if (s.fast && s.db === "postgres") err.push(m.eFastPg);
+  if (s.db === "postgres" && !s.deps.pg) err.push(m.ePgDep);
   if (!s.openshift && !s.INGRESS_CLASS) err.push(m.eIngress);
   if (!s.openshift && s.INGRESS_CLASS && !["nginx", "traefik"].includes(s.INGRESS_CLASS)) warn.push(m.wIngress(s.INGRESS_CLASS));
   if (s.SEARCH_RELEASE !== "dx-search" && s.lab4) warn.push(m.wSearch);
@@ -507,6 +696,9 @@ function envLine(k, v, comment){
 function secretLine(k, v, hint){
   return v ? envLine(k, v) : `# export ${k}=""   # <<< ${hint}`;
 }
+const demoDeps = s => [s.deps.ldap && "openldap", s.deps.pg && "postgres", s.deps.llm && "litellm", s.deps.mcp && "mcp"].filter(Boolean).join(" ");
+const demoLabs = s => [s.lab1b && "1b", s.dir === "openldap" && "2a-openldap", s.dir === "ad" && "2a-ad", s.lab3 && "3a",
+  s.lab3b && "3b", s.iqdb && "iqdb", s.lab4 && "4"].filter(Boolean).join(" ");
 function buildEnv(s){
   const now = new Date().toISOString().slice(0, 16).replace("T", " ");
   const L = [];
@@ -536,7 +728,16 @@ function buildEnv(s){
   L.push("# --- HCL Harbor (hclcr.io) ---------------------------------------------------------------------");
   L.push(secretLine("HCL_HARBOR_USER", s.HCL_HARBOR_USER, "e-mail of your HCL account"));
   L.push(secretLine("HCL_HARBOR_TOKEN", s.HCL_HARBOR_TOKEN, "CLI secret from https://hclcr.io (User Profile)"));
-  if (s.lab3) {
+  L.push("");
+  L.push("# --- What to install (read by common/demo-fast.sh, the fast demo mode) ---------------------------");
+  L.push(envLine("DEMO_DEPS", demoDeps(s), "external dependencies: openldap postgres litellm mcp"));
+  L.push(envLine("DEMO_LABS", demoLabs(s), "Lab 1 always; 1b 2a-openldap|2a-ad 3a 3b iqdb 4"));
+  if (s.lab1b) {
+    L.push("");
+    L.push("# --- Lab 1B: sample Script Application ------------------------------------------------------------");
+    L.push(envLine("DXCLIENT_ACCEPT_LICENSE", "yes", "you accepted the HCL DXClient license in the wizard"));
+  }
+  if (s.deps.llm) {
     L.push("");
     L.push("# --- Lab 3: OpenRouter -------------------------------------------------------------------------");
     L.push(secretLine("OPENROUTER_API_KEY", s.OPENROUTER_API_KEY, "sk-or-v1-..."));
@@ -595,13 +796,18 @@ const R = {
     lab0a: "In Windows PowerShell, create a new WSL distro (it does not touch your other distros):",
     lab0b: "Inside the `dx-poc` distro, install k3s and Helm:",
     lab0c: "Clone the repository, copy `env.sh` into it, and prepare storage and ingress:",
+    deps: "External dependencies", depsT: "Third-party software in the shared namespace, installed before Lab 1. The labs below only connect DX to it.",
+    lab1b: "Lab 1B · Sample Script Application",
+    fast: "Fast demo: everything with one command", fastT: "`common/demo-fast.sh` installs what you chose (`DEMO_DEPS` and `DEMO_LABS` in your `env.sh`) in the fastest order: the external dependencies, DX installed once already connected to its directory, IQ and search in parallel, and one single DX upgrade that enables both. It prints the time of every phase.",
+    fastAfter: "Afterwards:",
     lab1: "Lab 1 · Base DX", l1s0: "Check the requirements (read-only)", l1s1: "Namespaces", l1s2: "Download the HCL charts", l1s3: "Secrets", l1s4: "Install DX (15-25 min the first time)", l1s5: "External access", l1s6: "Check",
     open: url => `Open ${url} and log in as **wpsadmin** with your lab password.`,
     lab2a: "Lab 2A · OpenLDAP", lab2aE: "Lab 2A · Active Directory (enterprise branch)",
     l2a4: "Then give the **Administrator** role to the `dxadmins` group in the portal: *Administration → Access → Resource Permissions → Virtual Resources → PORTAL* (GUIDE.md, step 4).",
     l2aE3: "Then give the **Administrator** role to your AD admin group in the portal (GUIDE-enterprise.md, step AD-3).",
     lab2b: "Lab 2B · Transfer to PostgreSQL", lab2bE: "Lab 2B · Transfer to Oracle (enterprise branch)",
-    sql: "`setup-postgres-dx.sql` must be in `lab2-ldap-postgres/b-postgres/` (see GUIDE.md, 2B step 3).",
+    sqlIn: "**PostgreSQL for the Web Engine:** the table creation script, `setup-postgres-dx.sql`, came in the ZIP of the wizard (`lab2-ldap-postgres/b-postgres/`). It is not validated by HCL yet: use it for the lab. The cluster runs it once, when it is created.",
+    sql: "**PostgreSQL for the Web Engine:** before installing PostgreSQL, put the table creation script that HCL gives you, `setup-postgres-dx.sql`, in `lab2-ldap-postgres/b-postgres/` (not supplied with the labs yet: see GUIDE.md, 2B step 3). The cluster runs it once, when it is created; without it `dx_core` stays empty and the transfer stops.",
     oraPrep: "Before: your DBA runs `setup-oracle-dx.sql` on the PDB (GUIDE-enterprise.md, ORA-1).",
     follow: "Follow the transfer (~14 min):",
     lab3: "Lab 3A · IQ with LiteLLM and OpenRouter", lab3b: "Lab 3B · Custom MCP Server", iqdb: "Lab 3 appendix · IQ sessions in PostgreSQL",
@@ -626,13 +832,18 @@ const R = {
     lab0a: "En PowerShell de Windows, crea una distro nueva de WSL (no toca tus otras distros):",
     lab0b: "Dentro de la distro `dx-poc`, instala k3s y Helm:",
     lab0c: "Clona el repositorio, copia en él `env.sh` y prepara el almacenamiento y el Ingress:",
+    deps: "Dependencias externas", depsT: "Software de terceros en el namespace compartido, instalado antes del Lab 1. Los labs de abajo solo conectan DX a él.",
+    lab1b: "Lab 1B · Script Application de ejemplo",
+    fast: "Demo rápida: todo con un comando", fastT: "`common/demo-fast.sh` instala lo que elegiste (`DEMO_DEPS` y `DEMO_LABS` en tu `env.sh`) en el orden más rápido: las dependencias externas, DX instalado una sola vez y ya conectado a su directorio, IQ y la búsqueda en paralelo, y un único upgrade de DX que activa las dos. Muestra el tiempo de cada fase.",
+    fastAfter: "Después:",
     lab1: "Lab 1 · DX base", l1s0: "Comprobar los requisitos (solo lectura)", l1s1: "Namespaces", l1s2: "Descargar los charts de HCL", l1s3: "Secrets", l1s4: "Instalar DX (15-25 min la primera vez)", l1s5: "Acceso externo", l1s6: "Comprobar",
     open: url => `Abre ${url} y entra como **wpsadmin** con tu contraseña del lab.`,
     lab2a: "Lab 2A · OpenLDAP", lab2aE: "Lab 2A · Active Directory (rama empresarial)",
     l2a4: "Después da el rol **Administrator** al grupo `dxadmins` en el portal: *Administración → Acceso → Permisos de recursos → Recursos virtuales → PORTAL* (GUIDE.es.md, paso 4).",
     l2aE3: "Después da el rol **Administrator** a tu grupo de administradores del AD en el portal (GUIDE-enterprise.es.md, paso AD-3).",
     lab2b: "Lab 2B · Transferencia a PostgreSQL", lab2bE: "Lab 2B · Transferencia a Oracle (rama empresarial)",
-    sql: "`setup-postgres-dx.sql` tiene que estar en `lab2-ldap-postgres/b-postgres/` (ver GUIDE.es.md, 2B paso 3).",
+    sqlIn: "**PostgreSQL para el Web Engine:** el script de creación de las tablas, `setup-postgres-dx.sql`, venía en el ZIP del asistente (`lab2-ldap-postgres/b-postgres/`). Aún no está validado por HCL: úsalo para el lab. El cluster lo ejecuta una vez, al crearse.",
+    sql: "**PostgreSQL para el Web Engine:** antes de instalar PostgreSQL, deja el script de creación de las tablas que te da HCL, `setup-postgres-dx.sql`, en `lab2-ldap-postgres/b-postgres/` (aún no se suministra con los labs: ver GUIDE.es.md, 2B paso 3). El cluster lo ejecuta una vez, al crearse; sin él `dx_core` queda vacía y la transferencia se detiene.",
     oraPrep: "Antes: tu DBA ejecuta `setup-oracle-dx.sql` en la PDB (GUIDE-enterprise.es.md, ORA-1).",
     follow: "Sigue la transferencia (~14 min):",
     lab3: "Lab 3A · IQ con LiteLLM y OpenRouter", lab3b: "Lab 3B · MCP Server propio", iqdb: "Apéndice del Lab 3 · Sesiones de IQ en PostgreSQL",
@@ -687,8 +898,8 @@ function buildRunbook(s){
   [["PLATFORM", plat], ["DX_HOST", s.DX_HOST], ...(s.openshift ? [] : [["INGRESS_CLASS", s.INGRESS_CLASS]]),
    ["SC_RWO / SC_RWX", `${s.SC_RWO} / ${s.SC_RWX}`], ["DX_NS / SHARED_NS", `${s.DX_NS} / ${s.SHARED_NS}`],
    ["DX_RELEASE", s.DX_RELEASE], ...(s.lab3 ? [["IQ_RELEASE / LITELLM_RELEASE", `${s.IQ_RELEASE} / ${s.LITELLM_RELEASE}`], ["IQ_LLM", s.IQ_LLM]] : []),
-   ...(s.lab4 ? [["SEARCH_RELEASE", s.SEARCH_RELEASE]] : []), ...(s.dir === "openldap" ? [["LDAP_RELEASE", s.LDAP_RELEASE]] : []),
-   ...(s.db === "postgres" ? [["PG_CLUSTER", s.PG_CLUSTER]] : [])]
+   ...(s.lab4 ? [["SEARCH_RELEASE", s.SEARCH_RELEASE]] : []), ...(s.deps.ldap ? [["LDAP_RELEASE", s.LDAP_RELEASE]] : []),
+   ...(s.deps.pg ? [["PG_CLUSTER", s.PG_CLUSTER]] : []), ["DEMO_DEPS", demoDeps(s) || "-"], ["DEMO_LABS", demoLabs(s) || "-"]]
    .forEach(([k, v]) => o.push(`| \`${k}\` | \`${v}\` |`));
   o.push("", r.secrets);
 
@@ -706,6 +917,38 @@ function buildRunbook(s){
   o.push(r.prepT);
   code("bash", "cd hcl-dx-compose-labs\nsource ./env.sh");
   o.push("", r.fill);
+
+  if (s.fast) {
+    h(`## ${r.fast}`);
+    o.push(r.fastT);
+    code("bash", "common/demo-fast.sh");
+    o.push("", r.fastAfter, "");
+    if (s.dir === "openldap") o.push("- " + r.l2a4);
+    if (s.dir === "ad") o.push("- " + r.l2aE3);
+    if (s.lab1b) o.push("- " + t("Add **Hello DX** to a page: edit a page > add a component > *Script Applications* > **Hello DX**.", "Añade **Hello DX** a una página: edita una página > añade un componente > *Script Applications* > **Hello DX**."));
+    o.push("- " + r.open(url));
+    if (s.lab3) code("bash", `${es ? "IQ_LANG=es " : ""}lab3-iq-openrouter/06-iq-chat-test.sh${es ? ' "¿Qué bibliotecas de WCM hay?"' : ' "Which WCM libraries are there?"'}`);
+    h(`## ${r.clean}`);
+    o.push(r.cleanT);
+    code("bash", "common/99-cleanup.sh" + (s.poc ? "\nlab0-poc-wsl/01-storage.sh" : ""));
+    return o.join("\n").replace(/\n{3,}/g, "\n\n") + "\n";
+  }
+
+  if (s.deps.ldap || s.deps.pg || s.deps.llm || s.deps.mcp) {
+    h(`## ${r.deps}`);
+    o.push(`${r.guide}: [external-deps/${G}](external-deps/${G})`, "", r.depsT);
+    step(t("Namespaces (Lab 1 runs it again, harmless)", "Namespaces (el Lab 1 lo vuelve a ejecutar, sin efecto)"), "common/01-namespaces.sh", null);
+    if (s.deps.ldap) step(t("OpenLDAP with the demo users", "OpenLDAP con los usuarios de demo"), "external-deps/01-openldap.sh",
+      `helm upgrade --install ${s.LDAP_RELEASE} helm-openldap/openldap-stack-ha --version 4.3.3 -n ${s.SHARED_NS} \\\n  -f lab2-ldap-postgres/a-ldap/openldap-values.yaml --set persistence.storageClass=${s.SC_RWO} --wait`);
+    if (s.deps.pg && s.db === "postgres") o.push("", "> " + (pgSqlFor(s) ? r.sqlIn : r.sql));
+    if (s.deps.pg) step(t("PostgreSQL 18 (CloudNativePG)", "PostgreSQL 18 (CloudNativePG)"), "external-deps/02-postgres.sh",
+      `helm upgrade --install cnpg cnpg/cloudnative-pg --version 0.29.1 -n ${s.SHARED_NS} --wait\n# + users and the cluster ${s.PG_CLUSTER} (lab2-ldap-postgres/b-postgres/cluster-dx-pg.yaml, ` +
+      (s.db === "postgres" ? "dx_core prepared by setup-postgres-dx.sql)" : "dx_core empty)"));
+    if (s.deps.llm) step("LiteLLM", "external-deps/03-litellm.sh",
+      `helm upgrade --install ${s.LITELLM_RELEASE} oci://ghcr.io/berriai/litellm-helm --version 1.106.5 -n ${s.SHARED_NS} \\\n  -f lab3-iq-openrouter/litellm-values.yaml${s.IQ_LLM === "qwen" ? " -f lab3-iq-openrouter/litellm-values.qwen.yaml" : ""}`);
+    if (s.deps.mcp) step(t("EUROPESIP MCP Server", "MCP Server de EUROPESIP"), "external-deps/04-mcp.sh", null);
+    step(t("Check", "Comprobar"), "external-deps/99-verify.sh", null);
+  }
 
   h(`## ${r.lab1}`);
   o.push(`${r.guide}: [lab1-dx-base/${G}](lab1-dx-base/${G})`);
@@ -729,12 +972,19 @@ function buildRunbook(s){
   step(r.l1s6, "lab1-dx-base/99-verify.sh", null);
   o.push("", r.open(url));
 
+  if (s.lab1b) {
+    h(`## ${r.lab1b}`);
+    o.push(`${r.guide}: [lab1b-scriptapp/${G}](lab1b-scriptapp/${G})`);
+    step(t("1B-1 · Deploy Hello DX with its Helm chart", "1B-1 · Desplegar Hello DX con su chart de Helm"), "lab1b-scriptapp/01-scriptapp-install.sh",
+      `helm upgrade --install hello-dx oci://ghcr.io/europesip/charts/hcl-dx-scriptapp --version 0.1.4 -n ${s.SHARED_NS} \\\n  --set dx.host=${s.DX_HOST} --set dx.credentialsSecret=scriptapp-dx --set dx.caSecret=scriptapp-dx-ca \\\n  --set dxclient.acceptLicense=true`);
+    step(t("1B · Check", "1B · Comprobar"), "lab1b-scriptapp/99-verify.sh", null);
+    o.push("", t("Add it to a page once: edit a page > add a component > *Script Applications* > **Hello DX**.", "Añádela una vez a una página: edita una página > añade un componente > *Script Applications* > **Hello DX**."));
+  }
+
   if (s.dir === "openldap") {
     h(`## ${r.lab2a}`);
     o.push(`${r.guide}: [lab2-ldap-postgres/${G}](lab2-ldap-postgres/${G})`);
-    step(t("2A-1 · Lab OpenLDAP with demo users", "2A-1 · OpenLDAP de laboratorio con usuarios de demo"), "lab2-ldap-postgres/a-ldap/01-ldap-install.sh",
-      `helm upgrade --install ${s.LDAP_RELEASE} helm-openldap/openldap-stack-ha --version 4.3.3 -n ${s.SHARED_NS} \\\n  -f lab2-ldap-postgres/a-ldap/openldap-values.yaml --set persistence.storageClass=${s.SC_RWO} --wait`);
-    step(t("2A-2 · Test the LDAP", "2A-2 · Probar el LDAP"), "lab2-ldap-postgres/a-ldap/02-ldap-test.sh", null);
+    o.push("", t("Steps 2A-1 and 2A-2 (install and test OpenLDAP) were done in the external dependencies.", "Los pasos 2A-1 y 2A-2 (instalar y probar OpenLDAP) ya se hicieron en las dependencias externas."));
     step(t("2A-3 · Connect DX to the LDAP (helm upgrade, ~5 min)", "2A-3 · Conectar DX al LDAP (helm upgrade, ~5 min)"), "lab2-ldap-postgres/a-ldap/03-dx-upgrade.sh",
       `kubectl -n ${s.DX_NS} create secret generic dx-ldap-bind \\\n  --from-literal=bindUser="cn=admin,dc=dxdemo,dc=com" --from-literal=bindPassword="$LDAP_ADMIN_PASSWORD"\n${dxHelm(s, 2)}`);
     o.push("", r.l2a4);
@@ -748,11 +998,7 @@ function buildRunbook(s){
   }
   if (s.db === "postgres") {
     h(`## ${r.lab2b}`);
-    o.push(`${r.guide}: [lab2-ldap-postgres/${G}](lab2-ldap-postgres/${G})`, "", r.sql);
-    step(t("2B-1 · CloudNativePG operator", "2B-1 · Operador CloudNativePG"), "lab2-ldap-postgres/b-postgres/01-cnpg-operator.sh", `helm upgrade --install cnpg cnpg/cloudnative-pg --version 0.29.1 -n ${s.SHARED_NS} --wait`);
-    step(t("2B-2 · PostgreSQL users", "2B-2 · Usuarios de PostgreSQL"), "lab2-ldap-postgres/b-postgres/02-secrets-postgres.sh", null);
-    step(t("2B-3 · PostgreSQL 18 cluster and database preparation", "2B-3 · Cluster PostgreSQL 18 y preparación de la base de datos"), "lab2-ldap-postgres/b-postgres/03-postgres-cluster.sh",
-      `kubectl -n ${s.SHARED_NS} create configmap dx-pg-setup-sql --from-file=lab2-ldap-postgres/b-postgres/setup-postgres-dx.sql\nSHARED_NS=${s.SHARED_NS} PG_CLUSTER=${s.PG_CLUSTER} SC_RWO=${s.SC_RWO} \\\n  envsubst '$SHARED_NS $PG_CLUSTER $SC_RWO' < lab2-ldap-postgres/b-postgres/cluster-dx-pg.yaml | kubectl apply -f -\nkubectl -n ${s.SHARED_NS} wait clusters.postgresql.cnpg.io/${s.PG_CLUSTER} --for=condition=Ready --timeout=10m`);
+    o.push(`${r.guide}: [lab2-ldap-postgres/${G}](lab2-ldap-postgres/${G})`, "", t("Steps 2B-1 to 2B-3 (operator, users and the cluster, with `dx_core` prepared by your `setup-postgres-dx.sql`) were done in the external dependencies.", "Los pasos 2B-1 a 2B-3 (operador, usuarios y el cluster, con `dx_core` preparada por tu `setup-postgres-dx.sql`) ya se hicieron en las dependencias externas."));
     step(t("2B-4 · Web Engine database properties", "2B-4 · Propiedades de base de datos del Web Engine"), "lab2-ldap-postgres/b-postgres/04-secrets-webengine.sh", null);
     step(t("2B-5 · Transfer Derby → PostgreSQL (helm upgrade, ~14 min)", "2B-5 · Transferencia Derby → PostgreSQL (helm upgrade, ~14 min)"), "lab2-ldap-postgres/b-postgres/05-dx-transfer.sh", dxHelm(s, 2.5));
     o.push("", r.follow);
@@ -768,25 +1014,18 @@ function buildRunbook(s){
   if (s.lab3) {
     h(`## ${r.lab3}`);
     o.push(`${r.guide}: [lab3-iq-openrouter/${G}](lab3-iq-openrouter/${G})`);
-    step(t("3-1 · Secrets (OpenRouter key and LiteLLM master key)", "3-1 · Secrets (clave de OpenRouter y master key de LiteLLM)"), "lab3-iq-openrouter/01-secrets.sh", null);
-    step(t("3-2 · LiteLLM", "3-2 · LiteLLM"), "lab3-iq-openrouter/02-litellm-install.sh",
-      `helm upgrade --install ${s.LITELLM_RELEASE} oci://ghcr.io/berriai/litellm-helm --version 1.106.5 -n ${s.SHARED_NS} \\\n  -f lab3-iq-openrouter/litellm-values.yaml${s.IQ_LLM === "qwen" ? " -f lab3-iq-openrouter/litellm-values.qwen.yaml" : ""}`);
-    step(t("3-3 · Test LiteLLM → OpenRouter", "3-3 · Probar LiteLLM → OpenRouter"), "lab3-iq-openrouter/03-litellm-test.sh", null);
-    step(t("3-4 · Install IQ (Integrator and MCP Server)", "3-4 · Instalar IQ (Integrator y MCP Server)"), "lab3-iq-openrouter/04-iq-install.sh",
+    o.push("", t("Steps 3-1 to 3-3 (secrets, LiteLLM and its test) were done in the external dependencies.", "Los pasos 3-1 a 3-3 (secrets, LiteLLM y su prueba) ya se hicieron en las dependencias externas."));
+    if (s.iqdb) step(t("A1 · iqdb database for the IQ sessions (appendix, before installing IQ)", "A1 · Base de datos iqdb para las sesiones de IQ (apéndice, antes de instalar IQ)"), "lab3-iq-openrouter/A1-iq-database.sh", null);
+    step(t("3-4 · Install IQ (Integrator and MCP Server)", "3-4 · Instalar IQ (Integrator y MCP Server)"), "lab3-iq-openrouter/04-iq-install.sh" + (s.iqdb ? " -f custom-iq-values.db-external.yaml" : ""),
       `# custom-iq-values.yaml with the LiteLLM URL replaced by ${s.LITELLM_URL}\nhelm upgrade --install ${s.IQ_RELEASE} charts/hcl-dx-iq-1.0.3.tgz -n ${s.DX_NS} -f <custom-iq-values.yaml> \\\n  --set-string configuration.dx.releaseName=${s.DX_RELEASE} \\\n  --set-string configuration.dx.externalHost=${s.DX_HOST}`);
     step(t("3-5 · Enable IQ in DX (helm upgrade, ~5 min)", "3-5 · Habilitar IQ en DX (helm upgrade, ~5 min)"), "lab3-iq-openrouter/05-dx-enable-iq.sh", dxHelm(s, 3));
     step(t("3 · Check (and ask IQ from the terminal)", "3 · Comprobar (y preguntar a IQ desde la terminal)"), `lab3-iq-openrouter/99-verify.sh\n${es ? "IQ_LANG=es " : ""}lab3-iq-openrouter/06-iq-chat-test.sh${es ? ' "¿Qué bibliotecas de WCM hay?"' : ' "Which WCM libraries are there?"'}`, null);
     if (s.lab3b) {
       h(`## ${r.lab3b}`);
-      step(t("3B-1 · Deploy the custom MCP Server", "3B-1 · Desplegar el MCP Server propio"), "lab3-iq-openrouter/custom-mcp/01-mcp-deploy.sh", null);
-      step(t("3B-2 · Test it (MCP from inside the cluster)", "3B-2 · Probarlo (MCP desde dentro del clúster)"), "lab3-iq-openrouter/custom-mcp/02-mcp-test.sh", null);
+      o.push("", t("Steps 3B-1 and 3B-2 (deploy and test the MCP Server) were done in the external dependencies, and step 3-4 already registered it in IQ. Step 3B-3 is harmless if run again.", "Los pasos 3B-1 y 3B-2 (desplegar y probar el MCP Server) ya se hicieron en las dependencias externas, y el paso 3-4 ya lo registró en IQ. Repetir el paso 3B-3 no tiene efecto."));
       step(t("3B-3 · Register it in IQ", "3B-3 · Registrarlo en IQ"), "lab3-iq-openrouter/custom-mcp/03-iq-register.sh",
         `kubectl -n ${s.DX_NS} patch configmap ${s.IQ_RELEASE}-integrator --type merge -p \\\n  '{"data":{"dx.config.integrator.mcp_server_list":"http://${s.IQ_RELEASE}-mcp-server:3000,http://europesip-mcp.${s.SHARED_NS}.svc.cluster.local:3000"}}'\nkubectl -n ${s.DX_NS} rollout restart deployment/${s.IQ_RELEASE}-integrator`);
       step(t("3B · Check", "3B · Comprobar"), `${es ? "IQ_LANG=es " : ""}lab3-iq-openrouter/06-iq-chat-test.sh${es ? ' "¿Qué servicios ofrece EUROPESIP?"' : ' "Which services does EUROPESIP offer?"'}`, null);
-    }
-    if (s.iqdb) {
-      h(`## ${r.iqdb}`);
-      step(t("A1 · iqdb database and IQ reinstall", "A1 · Base de datos iqdb y reinstalación de IQ"), "lab3-iq-openrouter/A1-iq-database.sh\nlab3-iq-openrouter/04-iq-install.sh -f custom-iq-values.db-external.yaml", null);
     }
   }
   if (s.lab4) {
@@ -849,6 +1088,12 @@ const TPL = {
 };
 // END LAB TEMPLATES
 
+// Table creation script for the Web Engine on PostgreSQL (setup-postgres-dx.sql, not validated by
+// HCL yet). Not shown on the page: it is only added to the downloads of users whose HCL Harbor
+// user belongs to EUROPESIP or HCL. A light limit on purpose, not a security control.
+const PG_SQL_B64 = "LS0gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCi0tIExhYiAyQiDCtyBQb3N0Z3JlU1FMIHByZXBhcmF0aW9uIGZvciB0aGUgSENMIERYIENvbXBvc2UgV2ViIEVuZ2luZQotLQotLSBSdW5zIE9OQ0UsIGFzIHN1cGVydXNlciAocG9zdGdyZXMpLCBjb25uZWN0ZWQgdG8gdGhlIGR4X2NvcmUgZGF0YWJhc2UuCi0tIEluIHRoZSBsYWIgQ2xvdWROYXRpdmVQRyBydW5zIGl0IHdoZW4gdGhlIGNsdXN0ZXIgaXMgY3JlYXRlZDogMDMtcG9zdGdyZXMtY2x1c3Rlci5zaCBsb2FkcyBpdAotLSBpbnRvIHRoZSBkeC1wZy1zZXR1cC1zcWwgQ29uZmlnTWFwIGFuZCBjbHVzdGVyLWR4LXBnLnlhbWwgcmVmZXJlbmNlcyBpdCBpbgotLSBib290c3RyYXAuaW5pdGRiLnBvc3RJbml0QXBwbGljYXRpb25TUUxSZWZzLgotLQotLSBQcmVyZXF1aXNpdGVzIChjcmVhdGVkIGRlY2xhcmF0aXZlbHkgYnkgQ05QRyBpbiBjbHVzdGVyLWR4LXBnLnlhbWwpOgotLSAgIC0gZHhfY29yZSBkYXRhYmFzZSAoVVRGOCwgZW5fVVMuVVRGLTgpLCBvd25lZCBieSBkeHVzZXIKLS0gICAtIEpDUiB0YWJsZXNwYWNlczogaWNtbGZxMzIsIGljbWxuZjMyLCBpY212ZnEwNCwgaWNtc2ZxMDQsIGljbWxzbmR4IChvd25lZCBieSBkeHVzZXIpCi0tICAgLSBtYXhfY29ubmVjdGlvbnMgPSA1MDAgYW5kIG1heF9wcmVwYXJlZF90cmFuc2FjdGlvbnMgPSA1MDAgKERYIFhBIHRyYW5zYWN0aW9ucykKLS0KLS0gV2l0aCBhbiBleGlzdGluZyBjb3Jwb3JhdGUgUG9zdGdyZVNRTCwgdGhlIERCQSBmaXJzdCBjcmVhdGVzIHRoZSBkYXRhYmFzZSwgdGhlIGR4dXNlciB1c2VyCi0tIGFuZCB0aGUgdGFibGVzcGFjZXMsIGFuZCB0aGVuIHJ1bnMgdGhpcyBzY3JpcHQ6ICAgcHNxbCAtVSBwb3N0Z3JlcyAtZCBkeF9jb3JlIC1mIHNldHVwLXBvc3RncmVzLWR4LnNxbAotLQotLSBUaGUgdGFibGVzICh+NDY1KSBhcmUgTk9UIGNyZWF0ZWQgaGVyZTogdGhlIFdlYiBFbmdpbmUgY3JlYXRlcyB0aGVtIGR1cmluZyB0aGUgRGVyYnkgdHJhbnNmZXIuCi0tIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKLS0gRXh0ZW5zaW9ucwpDUkVBVEUgRVhURU5TSU9OIElGIE5PVCBFWElTVFMgInV1aWQtb3NzcCI7CkNSRUFURSBFWFRFTlNJT04gSUYgTk9UIEVYSVNUUyAicGdjcnlwdG8iOwoKLS0gZHhfY29yZSBkYXRhYmFzZSBwYXJhbWV0ZXJzCi0tIFRoZSBXZWIgRW5naW5lIE9wZW5KUEEgZ2VuZXJhdGVzIExJS0UgLi4uIEVTQ0FQRSAnXFwnIChEQjIvT3JhY2xlIHN0eWxlKS4gV2l0aAotLSBzdGFuZGFyZF9jb25mb3JtaW5nX3N0cmluZ3M9b24gKHRoZSBkZWZhdWx0KSBQb3N0Z3JlU1FMIHJlamVjdHMgaXQgKCJpbnZhbGlkIGVzY2FwZSBzdHJpbmciKS4KQUxURVIgREFUQUJBU0UgZHhfY29yZSBTRVQgc3RhbmRhcmRfY29uZm9ybWluZ19zdHJpbmdzID0gb2ZmOwpBTFRFUiBEQVRBQkFTRSBkeF9jb3JlIFNFVCBlc2NhcGVfc3RyaW5nX3dhcm5pbmcgPSBvZmY7CgotLSBEWCBzY2hlbWFzIChvbmUgcGVyIGRvbWFpbiksIG93bmVkIGJ5IGR4dXNlcgpDUkVBVEUgU0NIRU1BIElGIE5PVCBFWElTVFMgcmVsZWFzZSBBVVRIT1JJWkFUSU9OIGR4dXNlcjsKQ1JFQVRFIFNDSEVNQSBJRiBOT1QgRVhJU1RTIGNvbW11bml0eSBBVVRIT1JJWkFUSU9OIGR4dXNlcjsKQ1JFQVRFIFNDSEVNQSBJRiBOT1QgRVhJU1RTIGN1c3RvbWl6YXRpb24gQVVUSE9SSVpBVElPTiBkeHVzZXI7CkNSRUFURSBTQ0hFTUEgSUYgTk9UIEVYSVNUUyBqY3IgQVVUSE9SSVpBVElPTiBkeHVzZXI7CkNSRUFURSBTQ0hFTUEgSUYgTk9UIEVYSVNUUyBmZWVkYmFjayBBVVRIT1JJWkFUSU9OIGR4dXNlcjsKQ1JFQVRFIFNDSEVNQSBJRiBOT1QgRVhJU1RTIGxpa2VtaW5kcyBBVVRIT1JJWkFUSU9OIGR4dXNlcjsKCi0tIGR4dXNlciBncmFudHMgb24gdGhlIGRhdGFiYXNlIGFuZCB0aGUgc2NoZW1hcwpHUkFOVCBBTEwgUFJJVklMRUdFUyBPTiBEQVRBQkFTRSBkeF9jb3JlIFRPIGR4dXNlcjsKR1JBTlQgQUxMIE9OIFNDSEVNQSByZWxlYXNlLCBjb21tdW5pdHksIGN1c3RvbWl6YXRpb24sIGpjciwgZmVlZGJhY2ssIGxpa2VtaW5kcyBUTyBkeHVzZXI7CkFMVEVSIERFRkFVTFQgUFJJVklMRUdFUyBGT1IgVVNFUiBkeHVzZXIgSU4gU0NIRU1BIHJlbGVhc2UsIGNvbW11bml0eSwgY3VzdG9taXphdGlvbiwgamNyLCBmZWVkYmFjaywgbGlrZW1pbmRzIEdSQU5UIEFMTCBPTiBUQUJMRVMgVE8gZHh1c2VyOwpBTFRFUiBERUZBVUxUIFBSSVZJTEVHRVMgRk9SIFVTRVIgZHh1c2VyIElOIFNDSEVNQSByZWxlYXNlLCBjb21tdW5pdHksIGN1c3RvbWl6YXRpb24sIGpjciwgZmVlZGJhY2ssIGxpa2VtaW5kcyBHUkFOVCBBTEwgT04gU0VRVUVOQ0VTIFRPIGR4dXNlcjsKCi0tIERYIHJvbGVzICh1bnF1b3RlZDogUG9zdGdyZVNRTCBzdG9yZXMgdGhlbSBpbiBsb3dlciBjYXNlLCBhcyBEWCByZWZlcmVuY2VzIHRoZW0pCkNSRUFURSBST0xFIFdQX0JBU0VfQ09ORklHX1VTRVJTOwpDUkVBVEUgUk9MRSBXUF9CQVNFX1JVTlRJTUVfVVNFUlM7CkNSRUFURSBST0xFIFdQX0pDUl9DT05GSUdfVVNFUlM7CkNSRUFURSBST0xFIFdQX0pDUl9SVU5USU1FX1VTRVJTOwpDUkVBVEUgUk9MRSBXUF9QWk5fQ09ORklHX1VTRVJTOwpDUkVBVEUgUk9MRSBXUF9QWk5fUlVOVElNRV9VU0VSUzsKCi0tIFJvbGUgZ3JhbnRzIG9uIHRoZSBzY2hlbWFzIGFuZCBkeHVzZXIgbWVtYmVyc2hpcApHUkFOVCBBTEwgUFJJVklMRUdFUyBPTiBTQ0hFTUEgcmVsZWFzZSwgY29tbXVuaXR5LCBjdXN0b21pemF0aW9uIFRPIFdQX0JBU0VfQ09ORklHX1VTRVJTOwpHUkFOVCBBTEwgUFJJVklMRUdFUyBPTiBTQ0hFTUEgamNyIFRPIFdQX0pDUl9DT05GSUdfVVNFUlM7CkdSQU5UIEFMTCBQUklWSUxFR0VTIE9OIFNDSEVNQSBmZWVkYmFjaywgbGlrZW1pbmRzIFRPIFdQX1BaTl9DT05GSUdfVVNFUlM7CkdSQU5UIFdQX0JBU0VfQ09ORklHX1VTRVJTLCBXUF9CQVNFX1JVTlRJTUVfVVNFUlMgVE8gZHh1c2VyOwpHUkFOVCBXUF9KQ1JfQ09ORklHX1VTRVJTLCBXUF9KQ1JfUlVOVElNRV9VU0VSUyBUTyBkeHVzZXI7CkdSQU5UIFdQX1BaTl9DT05GSUdfVVNFUlMsIFdQX1BaTl9SVU5USU1FX1VTRVJTIFRPIGR4dXNlcjsK";
+const pgSqlFor = s => s.db === "postgres" && /@(europesip\.com|hcl-software\.com|hcl\.com)$/i.test(s.HCL_HARBOR_USER || "");
+const pgSql = () => new TextDecoder().decode(Uint8Array.from(atob(PG_SQL_B64), c => c.charCodeAt(0)));
 const PH = {   // placeholders for the values the user left empty
   user: "PUT-YOUR-HCL-ACCOUNT-EMAIL-HERE", token: "PUT-YOUR-HCL-HARBOR-CLI-SECRET-HERE",
   openrouter: "PUT-YOUR-OPENROUTER-API-KEY-HERE", adpw: "PUT-YOUR-AD-BIND-PASSWORD-HERE", orapw: "PUT-YOUR-ORACLE-PASSWORD-HERE",
@@ -1015,33 +1260,40 @@ controller:
     [["networking:\n  haproxy:", `networking:\n  webEngine:\n    host: "${s.DX_HOST}"\n  haproxy:`]]));
   const exp = s.openshift ? "route-dx-openshift.yaml" : s.INGRESS_CLASS === "traefik" ? "ingressroute-dx-traefik.yaml" : "ingress-dx.yaml";
   add("1-dx/" + exp, doc(s, "lab1-dx-base/" + exp, {DX_NS: ns, DX_RELEASE: s.DX_RELEASE, DX_HOST: s.DX_HOST, INGRESS_CLASS: s.INGRESS_CLASS}));
-  // Lab 2A
-  if (s.dir === "openldap") {
+  // OpenLDAP (external dependency) and its DX layer (Lab 2A)
+  if (s.deps.ldap) {
     add("2a-ldap/secrets.yaml", secretsFile(s, "Lab 2A secrets: OpenLDAP administrator and the DX bind user", [
       secretDoc("openldap-admin", sh, {LDAP_ADMIN_USERNAME: "admin", LDAP_ADMIN_PASSWORD: pw, LDAP_CONFIG_ADMIN_PASSWORD: pw}),
       secretDoc("dx-ldap-bind", ns, {bindUser: "cn=admin,dc=dxdemo,dc=com", bindPassword: pw})]), 0o100600);
     const ldif = stripLead(TPL["lab2-ldap-postgres/a-ldap/demo-users.ldif"]).split("${LDAP_USERS_PASSWORD}").map((x, i, a) => i < a.length - 1 ? x + ssha(pw) : x).join("");
     add("2a-ldap/demo-users.ldif", `# Lab 2A · Demo users and groups (groupOfUniqueNames / uniqueMember, as the DX chart expects).\n# Generated by the configuration wizard: every userPassword is a salted {SSHA} hash of "${pw}".\n\n` + ldif);
     add("2a-ldap/openldap-values.yaml", doc(s, "lab2-ldap-postgres/a-ldap/openldap-values.yaml"));
-    add("2a-ldap/custom-values.ldap.yaml", doc(s, "lab2-ldap-postgres/a-ldap/custom-values.ldap.yaml"));
-  } else if (s.dir === "ad") {
+  }
+  if (s.dir === "openldap") add("2a-ldap/custom-values.ldap.yaml", doc(s, "lab2-ldap-postgres/a-ldap/custom-values.ldap.yaml"));
+  if (s.dir === "ad") {
     add("2a-ad/secrets.yaml", secretsFile(s, "Lab 2A secret: Active Directory connection (environment variables of the Web Engine)", [
       secretDoc("dx-ad-bind", ns, {AD_HOST: s.AD_HOST || "PUT-YOUR-AD-HOST-HERE", AD_PORT: s.AD_PORT, AD_SSL: s.AD_PORT === "636" ? "true" : "false",
         AD_BASE_DN: s.AD_BASE_DN || "PUT-YOUR-AD-BASE-DN-HERE", AD_BIND_USER: s.AD_BIND_USER || "PUT-YOUR-AD-BIND-USER-HERE", AD_BIND_PASSWORD: s.AD_BIND_PASSWORD || PH.adpw})]), 0o100600);
     add("2a-ad/custom-values.ad.yaml", doc(s, "lab2-ldap-postgres/enterprise/active-directory/custom-values.ad.yaml", {}, [], true));
   }
-  // Lab 2B
-  if (s.db === "postgres") {
+  // PostgreSQL (external dependency)
+  if (s.deps.pg) {
     const lab = {"cnpg.io/reload": "true"}, ba = "kubernetes.io/basic-auth";
     add("2b-postgres/secrets.yaml", secretsFile(s, "Lab 2B secrets: PostgreSQL users (CloudNativePG applies password changes thanks to the label)", [
       secretDoc("dx-pg-superuser", sh, {username: "postgres", password: pw}, {type: ba, labels: lab}),
       secretDoc("dx-pg-dxuser", sh, {username: "dxuser", password: pw}, {type: ba, labels: lab}),
       secretDoc("dx-pg-iquser", sh, {username: "dx_iq_db_user", password: pw}, {type: ba, labels: lab})]), 0o100600);
-    add("2b-postgres/cluster-dx-pg.yaml", doc(s, "lab2-ldap-postgres/b-postgres/cluster-dx-pg.yaml", {SHARED_NS: sh, PG_CLUSTER: s.PG_CLUSTER, SC_RWO: s.SC_RWO}));
+    let cluster = doc(s, "lab2-ldap-postgres/b-postgres/cluster-dx-pg.yaml", {SHARED_NS: sh, PG_CLUSTER: s.PG_CLUSTER, SC_RWO: s.SC_RWO});
+    // Without setup-postgres-dx.sql (not supplied) dx_core is created empty: drop its reference
+    if (s.db !== "postgres") cluster = cluster.replace(/\n *# Schemas, roles, grants[\s\S]*?key: setup-postgres-dx\.sql/, "");
+    add("2b-postgres/cluster-dx-pg.yaml", cluster);
+  }
+  if (s.db === "postgres") {
     add("2b-postgres/dx_dbtype.properties", TPL["lab2-ldap-postgres/b-postgres/dx_dbtype.properties"]);
     add("2b-postgres/dx_dbdomain.properties", fill(s, "lab2-ldap-postgres/b-postgres/dx_dbdomain.properties.template", {PG_HOST: s.PG_HOST, DXUSER_PASSWORD: pw}), 0o100600);
     add("2b-postgres/custom-values.postgres.yaml", doc(s, "lab2-ldap-postgres/b-postgres/custom-values.postgres.yaml"));
-    add("2b-postgres/COPY-setup-postgres-dx.sql-HERE.txt", "Copy setup-postgres-dx.sql into this folder before running step 2B-3.\n" +
+    if (pgSqlFor(s)) add("2b-postgres/setup-postgres-dx.sql", pgSql());
+    else add("2b-postgres/COPY-setup-postgres-dx.sql-HERE.txt", "Copy setup-postgres-dx.sql, the table creation script that HCL gives you (not supplied with the labs yet),\ninto this folder before running install.sh: step D-4 loads it when the PostgreSQL cluster is created.\n" +
       "It prepares the dx_core database (schemas, roles, grants and parameters): see the Lab 2 guide, 2B step 3,\n" +
       "https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab2-ldap-postgres/GUIDE.md\n");
   } else if (s.db === "oracle") {
@@ -1053,8 +1305,8 @@ controller:
       ? doc(s, "lab2-ldap-postgres/enterprise/oracle/custom-values.oracle.yaml")
       : doc(s, "lab2-ldap-postgres/b-postgres/custom-values.postgres.yaml"));
   }
-  // Lab 3
-  if (s.lab3) {
+  // LiteLLM (external dependency) and IQ (Lab 3)
+  if (s.deps.llm) {
     const docs = [
       secretDoc("litellm-env", sh, {OPENROUTER_API_KEY: s.OPENROUTER_API_KEY || PH.openrouter, PROXY_MASTER_KEY: litellmKey}),
       secretDoc("iq-litellm-api-secret", ns, {virtualKey: litellmKey})];
@@ -1062,15 +1314,18 @@ controller:
     add("3-iq/secrets.yaml", secretsFile(s, "Lab 3 secrets: OpenRouter key and LiteLLM master key (the key IQ uses to call LiteLLM)", docs), 0o100600);
     add("3-iq/litellm-values.yaml", doc(s, "lab3-iq-openrouter/litellm-values.yaml"));
     if (s.IQ_LLM === "qwen") add("3-iq/litellm-values.qwen.yaml", doc(s, "lab3-iq-openrouter/litellm-values.qwen.yaml"));
+  }
+  if (s.deps.mcp) add("3b-mcp/europesip-mcp.yaml", doc(s, "lab3-iq-openrouter/custom-mcp/europesip-mcp.yaml", {SHARED_NS: sh, DX_NS: ns, DX_RELEASE: s.DX_RELEASE}));
+  if (s.lab3) {
     add("3-iq/custom-iq-values.yaml", doc(s, "lab3-iq-openrouter/custom-iq-values.yaml", {},
       [['externalHost: ""', `externalHost: "${s.DX_HOST}"`]]));
     if (s.iqdb) add("3-iq/custom-iq-values.db-external.yaml", doc(s, "lab3-iq-openrouter/custom-iq-values.db-external.yaml"));
     add("3-iq/custom-values.iq.yaml", doc(s, "lab3-iq-openrouter/custom-values.iq.yaml"));
     add("3-iq/iq-chat.py", TPL["lab3-iq-openrouter/iq-chat.py"]);
-    if (s.lab3b) {
-      add("3b-mcp/europesip-mcp.yaml", doc(s, "lab3-iq-openrouter/custom-mcp/europesip-mcp.yaml", {SHARED_NS: sh, DX_NS: ns, DX_RELEASE: s.DX_RELEASE}));
-    }
   }
+  // Lab 1B: the DX user the Script Application chart pushes with (the CA is taken from dx-tls-cert)
+  if (s.lab1b) add("1b-scriptapp/secrets.yaml", secretsFile(s, "Lab 1B secret: DX user for the Script Application push (in a real project, a technical user with Editor access to the Script Application Library)", [
+    secretDoc("scriptapp-dx", sh, {username: "wpsadmin", password: pw})]), 0o100600);
   // Support data collector (standalone copy of common/collect-support-data.sh), used by install.sh --collect
   add("support/collect-support-data.sh", TPL["common/collect-support-data.sh"], 0o100755);
   // Lab 4
@@ -1089,9 +1344,12 @@ function directSteps(s){
   const user = s.HCL_HARBOR_USER || PH.user, token = s.HCL_HARBOR_TOKEN || PH.token;
   const steps = [];
   const add = (lab, id, title, note, cmd, o = {}) => steps.push({lab, id, title, note, cmd, opt: !!o.opt, manual: o.manual || ""});
-  const L0 = "Lab 0 · PoC WSL2", L1 = t("Lab 1 · Base DX", "Lab 1 · DX base"), L2A = s.dir === "ad" ? "Lab 2A · Active Directory" : "Lab 2A · OpenLDAP",
+  const L0 = "Lab 0 · PoC WSL2", LD = t("External dependencies", "Dependencias externas"), L1 = t("Lab 1 · Base DX", "Lab 1 · DX base"),
+        L1B = t("Lab 1B · Sample Script Application", "Lab 1B · Script Application de ejemplo"),
+        L2A = s.dir === "ad" ? "Lab 2A · Active Directory" : "Lab 2A · OpenLDAP",
         L2B = s.db === "oracle" ? "Lab 2B · Oracle" : "Lab 2B · PostgreSQL", L3 = t("Lab 3A · IQ with OpenRouter", "Lab 3A · IQ con OpenRouter"),
-        L3B = t("Lab 3B · Custom MCP", "Lab 3B · MCP propio"), L4 = t("Lab 4 · Search", "Lab 4 · Búsqueda");
+        L3B = t("Lab 3B · Custom MCP", "Lab 3B · MCP propio"), L4 = t("Lab 4 · Search", "Lab 4 · Búsqueda"),
+        LF = t("Fast demo · one DX upgrade", "Demo rápida · un único upgrade de DX");
   const dx = upto => {
     const fl = ["1-dx/custom-values.yaml"];
     if (upto >= 2 && s.dir === "openldap") fl.push("2a-ldap/custom-values.ldap.yaml");
@@ -1108,7 +1366,12 @@ function directSteps(s){
 curl -sk -b cookies.txt -c cookies.txt -L -o /dev/null https://${H}/wps/myportal
 python3 -I 3-iq/iq-chat.py ${H} cookies.txt ${sq(q)} ${es ? "es" : "en"}
 rm -f cookies.txt     # it holds the DX session`;
+  const adminLdap = t("Give the **Administrator** role to the `dxadmins` group: portal as wpsadmin → *Administration → Access → Resource Permissions → Virtual Resources → PORTAL*.",
+                      "Da el rol **Administrator** al grupo `dxadmins`: portal como wpsadmin → *Administración → Acceso → Permisos de recursos → Recursos virtuales → PORTAL*.");
+  const adminAd = t("Give the **Administrator** role to your AD admin group in the portal.", "Da el rol **Administrator** a tu grupo de administradores del AD en el portal.");
+  const mcpList = `http://${s.IQ_RELEASE}-mcp-server:3000,http://europesip-mcp.${sh}.svc.cluster.local:3000`;
 
+  // ---- Lab 0 (PoC on WSL2)
   if (s.poc) {
     add(L0, "0-1", t("StorageClasses and DAM volume (single node)", "StorageClasses y volumen de DAM (un nodo)"),
       t("RWO with the k3s local-path; RWX simulated with a hostPath volume owned by DAM's uid/gid.", "RWO con el local-path de k3s; RWX simulada con un volumen hostPath propiedad del uid/gid de DAM."),
@@ -1128,11 +1391,56 @@ helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx --version 4.15.
   -f 0-poc/ingress-nginx-values.yaml
 kubectl -n ingress-nginx rollout status ds/ingress-nginx-controller --timeout=300s`);
   }
-  add(L1, "1-0", t("Check the cluster (optional)", "Comprobar el clúster (opcional)"), "",
+
+  // ---- External dependencies: first of all (they only need the namespaces)
+  add(LD, "D-0", t("Check the cluster (optional)", "Comprobar el clúster (opcional)"), "",
 `kubectl get nodes
 kubectl get storageclass ${s.SC_RWO} ${s.SC_RWX}${s.openshift ? "" : `\nkubectl get ingressclass ${s.INGRESS_CLASS}`}`, {opt: true});
-  add(L1, "1-1", "Namespaces", t(`${ns}: HCL software only · ${sh}: third-party tools.`, `${ns}: solo software de HCL · ${sh}: herramientas de terceros.`),
+  add(LD, "D-1", "Namespaces", t(`${ns}: HCL software only · ${sh}: third-party tools (the dependencies).`, `${ns}: solo software de HCL · ${sh}: herramientas de terceros (las dependencias).`),
     `kubectl apply -f 1-dx/namespaces.yaml`);
+  if (s.deps.ldap) {
+    add(LD, "D-2", t("OpenLDAP with the demo users", "OpenLDAP con los usuarios de demo"),
+      t("The LDIF already carries the users with {SSHA} hashed passwords.", "El LDIF ya lleva los usuarios con las contraseñas en hash {SSHA}."),
+`kubectl apply -f 2a-ldap/secrets.yaml
+kubectl -n ${sh} create configmap openldap-demo-ldif --from-file=00-demo-users.ldif=2a-ldap/demo-users.ldif ${kapply}
+helm repo add helm-openldap https://jp-gouin.github.io/helm-openldap/
+helm upgrade --install ${s.LDAP_RELEASE} helm-openldap/openldap-stack-ha --version 4.3.3 -n ${sh} \\
+  -f 2a-ldap/openldap-values.yaml ${W} --timeout 10m`);
+    add(LD, "D-3", t("Check groups and members (optional)", "Comprobar grupos y miembros (opcional)"), "",
+`kubectl -n ${sh} exec ${s.LDAP_RELEASE}-0 -c openldap-stack-ha -- \\
+  ldapsearch -x -LLL -H ldap://localhost:1389 -D cn=admin,dc=dxdemo,dc=com -w ${sq(pw)} -b ou=groups,dc=dxdemo,dc=com cn uniqueMember`, {opt: true});
+  }
+  if (s.deps.pg) {
+    add(LD, "D-4", t("PostgreSQL 18: CloudNativePG operator, users and cluster", "PostgreSQL 18: operador CloudNativePG, usuarios y cluster"),
+      s.db === "postgres" ? t("dx_core is prepared by your setup-postgres-dx.sql when the cluster is created.", "dx_core la prepara tu setup-postgres-dx.sql al crearse el cluster.")
+        : t("dx_core is created empty: the Web Engine keeps its own database (Derby or Oracle).", "dx_core se crea vacía: el Web Engine conserva su propia base de datos (Derby u Oracle)."),
+`helm repo add cnpg https://cloudnative-pg.github.io/charts
+helm upgrade --install cnpg cnpg/cloudnative-pg --version 0.29.1 -n ${sh} ${W} --timeout 10m
+kubectl apply -f 2b-postgres/secrets.yaml${s.db === "postgres" ? `
+kubectl -n ${sh} create configmap dx-pg-setup-sql --from-file=2b-postgres/setup-postgres-dx.sql ${kapply}     # your table creation script` : ""}
+kubectl apply -f 2b-postgres/cluster-dx-pg.yaml
+kubectl -n ${sh} wait clusters.postgresql.cnpg.io/${s.PG_CLUSTER} --for=condition=Ready --timeout=10m`);
+  }
+  if (s.deps.llm) {
+    add(LD, "D-5", "LiteLLM", (s.IQ_LLM === "qwen"
+      ? t("Not supplied by HCL: official BerriAI chart, routing IQ's two models to Qwen on OpenRouter (PoC/lab option: cheaper, less DX knowledge; Claude is recommended for production).", "No lo suministra HCL: chart oficial de BerriAI, que enruta los dos modelos de IQ a Qwen en OpenRouter (opción para PoC/laboratorio: más barato, menos conocimiento de DX; para producción se recomienda Claude).")
+      : t("Not supplied by HCL: official BerriAI chart, routing IQ's two models to Claude on OpenRouter.", "No lo suministra HCL: chart oficial de BerriAI, que enruta los dos modelos de IQ a Claude en OpenRouter.")),
+`kubectl apply -f 3-iq/secrets.yaml
+helm upgrade --install ${s.LITELLM_RELEASE} oci://ghcr.io/berriai/litellm-helm --version 1.106.5 -n ${sh} -f 3-iq/litellm-values.yaml${s.IQ_LLM === "qwen" ? " -f 3-iq/litellm-values.qwen.yaml" : ""}
+kubectl -n ${sh} rollout status deployment/${s.LITELLM_RELEASE} --timeout=300s`);
+    add(LD, "D-6", t(`Ask ${s.IQ_LLM === "qwen" ? "Qwen" : "Claude"} through LiteLLM (optional)`, `Preguntar a ${s.IQ_LLM === "qwen" ? "Qwen" : "Claude"} a través de LiteLLM (opcional)`), "",
+`kubectl -n ${sh} port-forward svc/${s.LITELLM_RELEASE} 8000:4000 >/dev/null 2>&1 & PF=$!; sleep 5
+curl -s http://localhost:8000/v1/chat/completions -H 'Authorization: Bearer ${litellmKey}' -H 'Content-Type: application/json' \\
+  -d '{"model":"iq-general-purpose","max_tokens":1000,"messages":[{"role":"user","content":"Answer only: ready"}]}'; echo
+kill $PF`, {opt: true});
+  }
+  if (s.deps.mcp) {
+    add(LD, "D-7", t("EUROPESIP MCP Server", "MCP Server de EUROPESIP"), t("IQ registers it when IQ is installed (Lab 3).", "IQ lo registra cuando se instala (Lab 3)."),
+`kubectl apply -f 3b-mcp/europesip-mcp.yaml
+kubectl -n ${sh} rollout status deployment/europesip-mcp --timeout=300s`);
+  }
+
+  // ---- Lab 1
   const pulls = ["[ -f charts/hcl-dx-deployment-2.50.0.tgz ] || helm pull oci://hclcr.io/dx-compose/hcl-dx-deployment --version 2.50.0 -d charts"];
   if (s.lab3) pulls.push("[ -f charts/hcl-dx-iq-1.0.3.tgz ] || helm pull oci://hclcr.io/dx/hcl-dx-iq --version 1.0.3 -d charts");
   if (s.lab4) pulls.push("[ -f charts/hcl-dx-search-2.37.0.tgz ] || helm pull oci://hclcr.io/dx-compose/hcl-dx-search --version 2.37.0 -d charts");
@@ -1146,97 +1454,89 @@ ${s.TLS_CERT ? `kubectl -n ${ns} create secret tls dx-tls-cert --cert=${sq(s.TLS
 `[ -f 1-dx/dx-tls.crt ] || openssl req -x509 -newkey rsa:2048 -nodes -sha256 -days 365 -keyout 1-dx/dx-tls.key -out 1-dx/dx-tls.crt \\
   -subj "/CN=${H}" -addext "subjectAltName=DNS:${H}"
 kubectl -n ${ns} create secret tls dx-tls-cert --cert=1-dx/dx-tls.crt --key=1-dx/dx-tls.key ${kapply}`}`);
+  const adSecret = () => add(L2A, "AD-1", t("Active Directory connection secret", "Secret de conexión al Active Directory"), "",
+      `kubectl apply -f 2a-ad/secrets.yaml${s.AD_CA_FILE ? `\nkubectl -n ${ns} create secret generic dx-ad-ca --from-file=ad-ca.crt=${sq(s.AD_CA_FILE)} ${kapply}` : ""}`);
+  if (s.fast && s.dir === "ad") adSecret();
+  const dirNote = s.fast && s.dir !== "none" ? t(" Fast demo: already connected to the directory (Lab 2A layer).", " Demo rápida: ya conectado al directorio (capa del Lab 2A).") : "";
   add(L1, "1-4", t("Install DX Compose (15-25 min the first time)", "Instalar DX Compose (15-25 min la primera vez)"),
-    t(`In another terminal: kubectl -n ${ns} get pods -w`, `En otra terminal: kubectl -n ${ns} get pods -w`), dx(1));
+    t(`In another terminal: kubectl -n ${ns} get pods -w.`, `En otra terminal: kubectl -n ${ns} get pods -w.`) + dirNote, dx(s.fast ? 2 : 1),
+    {manual: s.fast ? (s.dir === "openldap" ? adminLdap : s.dir === "ad" ? adminAd : "") : ""});
   const exp = s.openshift ? "route-dx-openshift.yaml" : s.INGRESS_CLASS === "traefik" ? "ingressroute-dx-traefik.yaml" : "ingress-dx.yaml";
   add(L1, "1-5", t("External access", "Acceso externo"), "", `kubectl apply -f 1-dx/${exp}`);
   add(L1, "1-6", t("Check the portal (optional)", "Comprobar el portal (opcional)"), "",
 `kubectl -n ${ns} get pods
 curl -sk -o /dev/null -w 'https://${H}/wps/portal -> HTTP %{http_code}\\n' https://${H}/wps/portal`, {opt: true});
 
-  if (s.dir === "openldap") {
-    add(L2A, "2A-1", t("Lab OpenLDAP with the demo users", "OpenLDAP de laboratorio con los usuarios de demo"),
-      t("The LDIF already carries the users with {SSHA} hashed passwords.", "El LDIF ya lleva los usuarios con las contraseñas en hash {SSHA}."),
-`kubectl apply -f 2a-ldap/secrets.yaml
-kubectl -n ${sh} create configmap openldap-demo-ldif --from-file=00-demo-users.ldif=2a-ldap/demo-users.ldif ${kapply}
-helm repo add helm-openldap https://jp-gouin.github.io/helm-openldap/
-helm upgrade --install ${s.LDAP_RELEASE} helm-openldap/openldap-stack-ha --version 4.3.3 -n ${sh} \\
-  -f 2a-ldap/openldap-values.yaml ${W} --timeout 10m`);
-    add(L2A, "2A-2", t("Check groups and members (optional)", "Comprobar grupos y miembros (opcional)"), "",
-`kubectl -n ${sh} exec ${s.LDAP_RELEASE}-0 -c openldap-stack-ha -- \\
-  ldapsearch -x -LLL -H ldap://localhost:1389 -D cn=admin,dc=dxdemo,dc=com -w ${sq(pw)} -b ou=groups,dc=dxdemo,dc=com cn uniqueMember`, {opt: true});
-    add(L2A, "2A-3", t("Connect DX to the LDAP (~5 min)", "Conectar DX al LDAP (~5 min)"), t("Adds the LDAP layer to DX.", "Añade la capa LDAP a DX."), dx(2),
-      {manual: t("Give the **Administrator** role to the `dxadmins` group: portal as wpsadmin → *Administration → Access → Resource Permissions → Virtual Resources → PORTAL*.",
-                 "Da el rol **Administrator** al grupo `dxadmins`: portal como wpsadmin → *Administración → Acceso → Permisos de recursos → Recursos virtuales → PORTAL*.")});
-  } else if (s.dir === "ad") {
-    add(L2A, "AD-1", t("Active Directory connection secret", "Secret de conexión al Active Directory"), "",
-      `kubectl apply -f 2a-ad/secrets.yaml${s.AD_CA_FILE ? `\nkubectl -n ${ns} create secret generic dx-ad-ca --from-file=ad-ca.crt=${sq(s.AD_CA_FILE)} ${kapply}` : ""}`);
-    add(L2A, "AD-2", t("Connect DX to Active Directory (~5 min)", "Conectar DX al Active Directory (~5 min)"), "", dx(2),
-      {manual: t("Give the **Administrator** role to your AD admin group in the portal.", "Da el rol **Administrator** a tu grupo de administradores del AD en el portal.")});
-  }
-  if (s.db === "postgres") {
-    add(L2B, "2B-1", t("CloudNativePG operator", "Operador CloudNativePG"), "",
-`helm repo add cnpg https://cloudnative-pg.github.io/charts
-helm upgrade --install cnpg cnpg/cloudnative-pg --version 0.29.1 -n ${sh} ${W} --timeout 10m`);
-    add(L2B, "2B-2", t("PostgreSQL users", "Usuarios de PostgreSQL"), "", `kubectl apply -f 2b-postgres/secrets.yaml`);
-    add(L2B, "2B-3", t("PostgreSQL 18 cluster and dx_core preparation", "Cluster PostgreSQL 18 y preparación de dx_core"),
-      t("setup-postgres-dx.sql runs once when the cluster is created.", "setup-postgres-dx.sql se ejecuta una vez al crear el cluster."),
-`kubectl -n ${sh} create configmap dx-pg-setup-sql --from-file=2b-postgres/setup-postgres-dx.sql ${kapply}
-kubectl apply -f 2b-postgres/cluster-dx-pg.yaml
-kubectl -n ${sh} wait clusters.postgresql.cnpg.io/${s.PG_CLUSTER} --for=condition=Ready --timeout=10m`);
-    add(L2B, "2B-4", t("Web Engine database properties", "Propiedades de base de datos del Web Engine"), "",
+  // ---- Lab 1B (sample Script Application): the last step in the fast demo
+  const lab1b = () => {
+    add(L1B, "1B-1", t("Deploy Hello DX with its Helm chart", "Desplegar Hello DX con su chart de Helm"),
+      t("A Job runs HCL DXClient and pushes the app into WCM (github.com/europesip/hcl-dx-scriptapp-helm).", "Un Job ejecuta DXClient de HCL y sube la app a WCM (github.com/europesip/hcl-dx-scriptapp-helm)."),
+`kubectl apply -f 1b-scriptapp/secrets.yaml
+kubectl -n ${ns} get secret dx-tls-cert -o jsonpath='{.data.tls\\.crt}' | base64 -d > 1b-scriptapp/dx-ca.crt
+kubectl -n ${sh} create secret generic scriptapp-dx-ca --from-file=ca.crt=1b-scriptapp/dx-ca.crt ${kapply}
+helm upgrade --install hello-dx oci://ghcr.io/europesip/charts/hcl-dx-scriptapp --version 0.1.4 -n ${sh} \\
+  --set dx.host=${H} --set dx.credentialsSecret=scriptapp-dx --set dx.caSecret=scriptapp-dx-ca \\
+  --set dxclient.acceptLicense=true      # you accepted the DXClient license in the wizard
+kubectl -n ${sh} logs job/hello-dx-hcl-dx-scriptapp-push -c dxclient | tail -1`,
+      {manual: t("Add it to a page once: edit a page > add a component > *Script Applications* > **Hello DX**.", "Añádela una vez a una página: edita una página > añade un componente > *Script Applications* > **Hello DX**.")});
+  };
+  if (s.lab1b && !s.fast) lab1b();
+
+  // ---- Lab 2 (step by step only: the fast demo already installed DX with its directory)
+  if (!s.fast) {
+    if (s.dir === "openldap") {
+      add(L2A, "2A-3", t("Connect DX to the LDAP (~5 min)", "Conectar DX al LDAP (~5 min)"),
+        t("OpenLDAP is already installed (external dependencies): this adds the LDAP layer to DX.", "OpenLDAP ya está instalado (dependencias externas): esto añade la capa LDAP a DX."), dx(2), {manual: adminLdap});
+    } else if (s.dir === "ad") {
+      adSecret();
+      add(L2A, "AD-2", t("Connect DX to Active Directory (~5 min)", "Conectar DX al Active Directory (~5 min)"), "", dx(2), {manual: adminAd});
+    }
+    if (s.db === "postgres") {
+      add(L2B, "2B-4", t("Web Engine database properties", "Propiedades de base de datos del Web Engine"), "",
 `kubectl -n ${ns} create secret generic custom-credentials-webengine-dbtype-secret --from-file=2b-postgres/dx_dbtype.properties ${kapply}
 kubectl -n ${ns} create secret generic custom-credentials-webengine-dbdomain-secret --from-file=2b-postgres/dx_dbdomain.properties ${kapply}`);
-    add(L2B, "2B-5", t("Transfer Derby → PostgreSQL (~14 min)", "Transferencia Derby → PostgreSQL (~14 min)"),
-      t(`Follow it: kubectl -n ${ns} logs -f ${s.DX_RELEASE}-web-engine-0 -c system-out-log`, `Síguela: kubectl -n ${ns} logs -f ${s.DX_RELEASE}-web-engine-0 -c system-out-log`), dx(2.5));
-    add(L2B, "2B-6", t("Count the transferred tables (optional, ~465)", "Contar las tablas transferidas (opcional, ~465)"), "",
+      add(L2B, "2B-5", t("Transfer Derby → PostgreSQL (~14 min)", "Transferencia Derby → PostgreSQL (~14 min)"),
+        t(`Follow it: kubectl -n ${ns} logs -f ${s.DX_RELEASE}-web-engine-0 -c system-out-log`, `Síguela: kubectl -n ${ns} logs -f ${s.DX_RELEASE}-web-engine-0 -c system-out-log`), dx(2.5));
+      add(L2B, "2B-6", t("Count the transferred tables (optional, ~465)", "Contar las tablas transferidas (opcional, ~465)"), "",
 `kubectl -n ${sh} exec ${s.PG_CLUSTER}-1 -c postgres -- psql -U postgres -d dx_core -Atc \\
   "select count(*) from pg_tables where schemaname in ('release','jcr','community','customization','feedback','likeminds')"`, {opt: true});
-  } else if (s.db === "oracle") {
-    const tcps = /tcps:\/\//i.test(s.ORACLE_JDBC_URL) || !s.ORACLE_JDBC_URL;
-    add(L2B, "ORA-1", t("Web Engine secrets for Oracle", "Secrets del Web Engine para Oracle"),
-      t("Before: your DBA runs setup-oracle-dx.sql on the PDB.", "Antes: tu DBA ejecuta setup-oracle-dx.sql en la PDB."),
+    }
+    if (s.db === "oracle") {
+      const tcps = /tcps:\/\//i.test(s.ORACLE_JDBC_URL) || !s.ORACLE_JDBC_URL;
+      add(L2B, "ORA-1", t("Web Engine secrets for Oracle", "Secrets del Web Engine para Oracle"),
+        t("Before: your DBA runs setup-oracle-dx.sql on the PDB.", "Antes: tu DBA ejecuta setup-oracle-dx.sql en la PDB."),
 `${tcps ? `kubectl -n ${ns} create secret generic dx-oracle-ca --from-file=oracle-ca.crt=${sq(s.ORACLE_CA_FILE || "PUT-YOUR-LISTENER-CA-FILE-HERE")} ${kapply}\n` : ""}kubectl -n ${ns} create secret generic custom-credentials-webengine-dbtype-secret --from-file=2b-oracle/dx_dbtype.properties ${kapply}
 kubectl -n ${ns} create secret generic custom-credentials-webengine-dbdomain-secret --from-file=2b-oracle/dx_dbdomain.properties ${kapply}`);
-    add(L2B, "ORA-2", t("Transfer Derby → Oracle", "Transferencia Derby → Oracle"), "", dx(2.5));
+      add(L2B, "ORA-2", t("Transfer Derby → Oracle", "Transferencia Derby → Oracle"), "", dx(2.5));
+    }
   }
+
+  // ---- Lab 3
   if (s.lab3) {
-    add(L3, "3-1", t("Secrets: OpenRouter key and LiteLLM master key", "Secrets: clave de OpenRouter y master key de LiteLLM"), "", `kubectl apply -f 3-iq/secrets.yaml`);
-    add(L3, "3-2", "LiteLLM", s.IQ_LLM === "qwen"
-      ? t("Not supplied by HCL: official BerriAI chart, routing IQ's two models to Qwen on OpenRouter (PoC/lab option: cheaper, less DX knowledge; Claude is recommended for production).", "No lo suministra HCL: chart oficial de BerriAI, que enruta los dos modelos de IQ a Qwen en OpenRouter (opción para PoC/laboratorio: más barato, menos conocimiento de DX; para producción se recomienda Claude).")
-      : t("Not supplied by HCL: official BerriAI chart, routing IQ's two models to Claude on OpenRouter.", "No lo suministra HCL: chart oficial de BerriAI, que enruta los dos modelos de IQ a Claude en OpenRouter."),
-`helm upgrade --install ${s.LITELLM_RELEASE} oci://ghcr.io/berriai/litellm-helm --version 1.106.5 -n ${sh} -f 3-iq/litellm-values.yaml${s.IQ_LLM === "qwen" ? " -f 3-iq/litellm-values.qwen.yaml" : ""}
-kubectl -n ${sh} rollout status deployment/${s.LITELLM_RELEASE} --timeout=300s`);
-    add(L3, "3-3", t(`Ask ${s.IQ_LLM === "qwen" ? "Qwen" : "Claude"} through LiteLLM (optional)`, `Preguntar a ${s.IQ_LLM === "qwen" ? "Qwen" : "Claude"} a través de LiteLLM (opcional)`), "",
-`kubectl -n ${sh} port-forward svc/${s.LITELLM_RELEASE} 8000:4000 >/dev/null 2>&1 & PF=$!; sleep 5
-curl -s http://localhost:8000/v1/chat/completions -H 'Authorization: Bearer ${litellmKey}' -H 'Content-Type: application/json' \\
-  -d '{"model":"iq-general-purpose","max_tokens":1000,"messages":[{"role":"user","content":"Answer only: ready"}]}'; echo
-kill $PF`, {opt: true});
-    if (s.iqdb) add(L3, "A1", t("iqdb database for the IQ sessions (appendix)", "Base de datos iqdb para las sesiones de IQ (apéndice)"), "",
+    if (s.iqdb) add(L3, "A1", t("iqdb database for the IQ sessions (appendix)", "Base de datos iqdb para las sesiones de IQ (apéndice)"),
+      t("In the PostgreSQL of the external dependencies, before installing IQ.", "En el PostgreSQL de las dependencias externas, antes de instalar IQ."),
 `kubectl -n ${sh} exec ${s.PG_CLUSTER}-1 -c postgres -- psql -U postgres -c "CREATE DATABASE iqdb OWNER dx_iq_db_user" || echo "iqdb already exists"
 kubectl -n ${sh} exec ${s.PG_CLUSTER}-1 -c postgres -- psql -U postgres -c "REVOKE ALL ON DATABASE iqdb FROM PUBLIC" -c "GRANT CONNECT, TEMPORARY ON DATABASE iqdb TO dx_iq_db_user"`);
-    add(L3, "3-4", t("Install IQ (Integrator and MCP Server)", "Instalar IQ (Integrator y MCP Server)"), "",
+    add(L3, "3-4", t("Install IQ (Integrator and MCP Server)", "Instalar IQ (Integrator y MCP Server)"),
+      s.deps.mcp ? t("It also registers the EUROPESIP MCP Server of the external dependencies.", "También registra el MCP Server de EUROPESIP de las dependencias externas.") : "",
 `helm upgrade --install ${s.IQ_RELEASE} charts/hcl-dx-iq-1.0.3.tgz -n ${ns} \\
-  -f 3-iq/custom-iq-values.yaml${s.iqdb ? " \\\n  -f 3-iq/custom-iq-values.db-external.yaml" : ""}${s.helm === "3" ? "" : " \\\n  --force-conflicts     # Helm 4: if run again after 3B-2, the MCP list belongs to kubectl patch"}
-kubectl -n ${ns} rollout status deployment/${s.IQ_RELEASE}-mcp-server --timeout=300s
+  -f 3-iq/custom-iq-values.yaml${s.iqdb ? " \\\n  -f 3-iq/custom-iq-values.db-external.yaml" : ""}${s.helm === "3" ? "" : " \\\n  --force-conflicts     # Helm 4: if run again, the MCP list belongs to kubectl patch"}
+kubectl -n ${ns} rollout status deployment/${s.IQ_RELEASE}-mcp-server --timeout=300s${s.deps.mcp ? `
+kubectl -n ${ns} patch configmap ${s.IQ_RELEASE}-integrator --type merge -p \\
+  '{"data":{"dx.config.integrator.mcp_server_list":"${mcpList}"}}'` : ""}
 kubectl -n ${ns} rollout restart deployment/${s.IQ_RELEASE}-integrator     # it lists the MCP tools when it starts
 kubectl -n ${ns} rollout status deployment/${s.IQ_RELEASE}-integrator --timeout=300s`);
-    add(L3, "3-5", t("Enable IQ in DX (~5 min)", "Habilitar IQ en DX (~5 min)"), "", dx(3));
-    add(L3, "3-6", t("Ask IQ from the terminal (optional)", "Preguntar a IQ desde la terminal (opcional)"), "",
-      chat(t("Which WCM libraries are there?", "¿Qué bibliotecas de WCM hay?")), {opt: true});
-    if (s.lab3b) {
-      add(L3B, "3B-1", t("Deploy the EUROPESIP MCP Server", "Desplegar el MCP Server de EUROPESIP"), "",
-`kubectl apply -f 3b-mcp/europesip-mcp.yaml
-kubectl -n ${sh} rollout status deployment/europesip-mcp --timeout=300s`);
-      add(L3B, "3B-2", t("Register it in IQ", "Registrarlo en IQ"), t("The Integrator reads the MCP server list from its ConfigMap when it starts.", "El Integrator lee la lista de MCP Servers de su ConfigMap al arrancar."),
-`kubectl -n ${ns} patch configmap ${s.IQ_RELEASE}-integrator --type merge -p \\
-  '{"data":{"dx.config.integrator.mcp_server_list":"http://${s.IQ_RELEASE}-mcp-server:3000,http://europesip-mcp.${sh}.svc.cluster.local:3000"}}'
-kubectl -n ${ns} rollout restart deployment/${s.IQ_RELEASE}-integrator
-kubectl -n ${ns} rollout status deployment/${s.IQ_RELEASE}-integrator --timeout=300s`);
-      add(L3B, "3B-3", t("Ask IQ about EUROPESIP (optional)", "Preguntar a IQ por EUROPESIP (opcional)"), "",
+    if (!s.fast) {
+      add(L3, "3-5", t("Enable IQ in DX (~5 min)", "Habilitar IQ en DX (~5 min)"), "", dx(3));
+      add(L3, "3-6", t("Ask IQ from the terminal (optional)", "Preguntar a IQ desde la terminal (opcional)"), "",
+        chat(t("Which WCM libraries are there?", "¿Qué bibliotecas de WCM hay?")), {opt: true});
+      if (s.lab3b) add(L3B, "3B-3", t("Ask IQ about EUROPESIP (optional)", "Preguntar a IQ por EUROPESIP (opcional)"),
+        t("The MCP Server was deployed in the external dependencies and registered by step 3-4.", "El MCP Server se desplegó en las dependencias externas y lo registró el paso 3-4."),
         "sleep 15\n" + chat(t("Which services does EUROPESIP offer?", "¿Qué servicios ofrece EUROPESIP?")), {opt: true});
     }
   }
+
+  // ---- Lab 4
   if (s.lab4) {
     add(L4, "4-1", t("OpenSearch certificates", "Certificados de OpenSearch"),
       t("A lab CA and the admin, node and client certificates (mutual TLS), stored as secrets.", "Una CA del lab y los certificados admin, node y client (TLS mutuo), guardados como secrets."),
@@ -1259,10 +1559,23 @@ done`);
 `helm upgrade --install ${s.SEARCH_RELEASE} charts/hcl-dx-search-2.37.0.tgz -n ${ns} \\
   -f 4-search/custom-search-values.yaml${s.poc ? " \\\n  -f 0-poc/custom-search-values.poc.yaml" : ""} \\
   --timeout 20m ${W}`);
-    add(L4, "4-3", t("Enable Search V2 in DX (~5 min)", "Activar Search V2 en DX (~5 min)"), "", dx(4));
-    add(L4, "4-4", t("Check the search API (optional)", "Comprobar la API de búsqueda (opcional)"), "",
-      `curl -sk -o /dev/null -w 'https://${H}/dx/api/search/v2/explorer/ -> HTTP %{http_code}\\n' https://${H}/dx/api/search/v2/explorer/`, {opt: true});
+    if (!s.fast) add(L4, "4-3", t("Enable Search V2 in DX (~5 min)", "Activar Search V2 en DX (~5 min)"), "", dx(4));
   }
+
+  // ---- Fast demo: ONE DX upgrade enables IQ and search together, then the checks and Lab 1B
+  if (s.fast) {
+    if (s.lab3 || s.lab4) add(LF, "F-1", t("Enable IQ and search in DX with one upgrade (~5 min)", "Habilitar IQ y la búsqueda en DX con un solo upgrade (~5 min)"),
+      t("The step-by-step path does one upgrade per lab; here a single one carries every layer.", "El paso a paso hace un upgrade por lab; aquí uno solo lleva todas las capas."), dx(4));
+    if (s.lab3) {
+      add(LF, "F-2", t("Ask IQ from the terminal (optional)", "Preguntar a IQ desde la terminal (opcional)"), "",
+        chat(t("Which WCM libraries are there?", "¿Qué bibliotecas de WCM hay?")), {opt: true});
+      if (s.lab3b) add(LF, "F-3", t("Ask IQ about EUROPESIP (optional)", "Preguntar a IQ por EUROPESIP (opcional)"), "",
+        chat(t("Which services does EUROPESIP offer?", "¿Qué servicios ofrece EUROPESIP?")), {opt: true});
+    }
+    if (s.lab1b) lab1b();
+  }
+  if (s.lab4) add(s.fast ? LF : L4, "4-4", t("Check the search API (optional)", "Comprobar la API de búsqueda (opcional)"), "",
+      `curl -sk -o /dev/null -w 'https://${H}/dx/api/search/v2/explorer/ -> HTTP %{http_code}\\n' https://${H}/dx/api/search/v2/explorer/`, {opt: true});
   return steps;
 }
 
@@ -1272,15 +1585,15 @@ const D = {
     intro: "A tailor-made installation built from the values you gave the configuration wizard. **This folder is self-contained**: every file is already filled in (values, properties, LDIF, secrets), the commands are short and run from this folder, and you do not need the labs repository. `install.sh` runs exactly these same commands one after the other.",
     warn: "> ⚠️ **PoC, not production. Credentials in plain text:** passwords and keys are written in the files of this folder so that everything is easy to follow. Keep it private and rotate the secrets afterwards. The wizard is experimental: the recommended path is still the manual one with the guides.",
     prep: "Before you start", need: "You need `kubectl` (with access to the cluster), `helm`, `openssl`, `curl` and `python3` (only for the optional IQ checks).",
-    sql: "**Lab 2B:** copy `setup-postgres-dx.sql` into `2b-postgres/` (see the [Lab 2 guide, 2B step 3](https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab2-ldap-postgres/GUIDE.md)).",
+    sql: "**PostgreSQL for the Web Engine:** copy the table creation script that HCL gives you, `setup-postgres-dx.sql`, into `2b-postgres/` before running `install.sh` (not supplied with the labs yet: see the [Lab 2 guide, 2B step 3](https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab2-ldap-postgres/GUIDE.md)). `install.sh` stops at the start if it is missing.",
     ph: "Some values were left empty in the wizard: replace every `PUT-YOUR-...-HERE` in this folder (`grep -rn PUT-YOUR- .` lists them).",
     files: "What is in this folder", run: "Run it", runT: "From this folder, step by step with the commands below, or all at once:",
     opt: "Optional check", manual: "Manual step", end: "Done", endT: url => `Portal: ${url} (wpsadmin / your lab password).`,
     dirs: {"install.sh": "runs all the steps, showing the lab and step", "uninstall.sh": "deletes everything that was installed, to start again (same as ./install.sh --cleanup)", "0-poc/": "Lab 0: single-node storage, ingress and reduced resources",
-      "1-dx/": "Lab 1: namespaces, secrets, DX values and external access", "2a-ldap/": "Lab 2A: OpenLDAP, demo users and the DX LDAP layer",
-      "2a-ad/": "Lab 2A: Active Directory secret and DX layer", "2b-postgres/": "Lab 2B: PostgreSQL cluster, users, Web Engine properties and DX layer",
-      "2b-oracle/": "Lab 2B: Oracle properties and DX layer", "3-iq/": "Lab 3A: LiteLLM, IQ values, secrets and the terminal chat client",
-      "3b-mcp/": "Lab 3B: the EUROPESIP MCP Server", "4-search/": "Lab 4: OpenSearch values and DX layer (certificates are created by step 4-1)",
+      "1-dx/": "Namespaces, and Lab 1: secrets, DX values and external access", "2a-ldap/": "External dependency OpenLDAP (demo users) and the DX LDAP layer of Lab 2A",
+      "2a-ad/": "Lab 2A: Active Directory secret and DX layer", "2b-postgres/": "External dependency PostgreSQL: users and cluster",
+      "2b-oracle/": "Lab 2B: Oracle properties and DX layer", "3-iq/": "External dependency LiteLLM and Lab 3A: IQ values, secrets and the terminal chat client",
+      "3b-mcp/": "External dependency: the EUROPESIP MCP Server (Lab 3B)", "1b-scriptapp/": "Lab 1B: the DX user for the Script Application chart", "4-search/": "Lab 4: OpenSearch values and DX layer (certificates are created by step 4-1)",
       "charts/": "HCL charts, downloaded by step 1-2", "support/": "the HCL Support data collector (./install.sh --collect)"},
   },
   es: {
@@ -1288,15 +1601,15 @@ const D = {
     intro: "Una instalación a medida, construida con los valores que diste al asistente de configuración. **Esta carpeta es autónoma**: todos los ficheros ya están rellenos (values, properties, LDIF, secrets), los comandos son cortos y se ejecutan desde esta carpeta, y no necesitas el repositorio de los labs. `install.sh` ejecuta exactamente estos mismos comandos, uno tras otro.",
     warn: "> ⚠️ **PoC, no producción. Credenciales en claro:** las contraseñas y claves están escritas en los ficheros de esta carpeta para que todo sea fácil de seguir. Guárdala en privado y rota los secretos después. El asistente es experimental: la vía recomendada sigue siendo la manual con las guías.",
     prep: "Antes de empezar", need: "Necesitas `kubectl` (con acceso al clúster), `helm`, `openssl`, `curl` y `python3` (solo para las comprobaciones opcionales de IQ).",
-    sql: "**Lab 2B:** copia `setup-postgres-dx.sql` en `2b-postgres/` (ver la [guía del Lab 2, 2B paso 3](https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab2-ldap-postgres/GUIDE.es.md)).",
+    sql: "**PostgreSQL para el Web Engine:** copia el script de creación de las tablas que te da HCL, `setup-postgres-dx.sql`, en `2b-postgres/` antes de ejecutar `install.sh` (aún no se suministra con los labs: ver la [guía del Lab 2, 2B paso 3](https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab2-ldap-postgres/GUIDE.es.md)). `install.sh` se para al empezar si falta.",
     ph: "Algunos valores se dejaron vacíos en el asistente: sustituye cada `PUT-YOUR-...-HERE` de esta carpeta (`grep -rn PUT-YOUR- .` los lista).",
     files: "Qué hay en esta carpeta", run: "Ejecutarlo", runT: "Desde esta carpeta, paso a paso con los comandos de abajo, o todo de una vez:",
     opt: "Comprobación opcional", manual: "Paso manual", end: "Fin", endT: url => `Portal: ${url} (wpsadmin / tu contraseña del lab).`,
     dirs: {"install.sh": "ejecuta todos los pasos, mostrando el lab y el paso", "uninstall.sh": "borra todo lo instalado, para empezar de cero (igual que ./install.sh --cleanup)", "0-poc/": "Lab 0: almacenamiento de un nodo, Ingress y recursos reducidos",
-      "1-dx/": "Lab 1: namespaces, secrets, values de DX y acceso externo", "2a-ldap/": "Lab 2A: OpenLDAP, usuarios de demo y la capa LDAP de DX",
-      "2a-ad/": "Lab 2A: secret de Active Directory y capa de DX", "2b-postgres/": "Lab 2B: cluster PostgreSQL, usuarios, properties del Web Engine y capa de DX",
-      "2b-oracle/": "Lab 2B: properties de Oracle y capa de DX", "3-iq/": "Lab 3A: LiteLLM, values de IQ, secrets y el cliente de chat de terminal",
-      "3b-mcp/": "Lab 3B: el MCP Server de EUROPESIP", "4-search/": "Lab 4: values de OpenSearch y capa de DX (los certificados los crea el paso 4-1)",
+      "1-dx/": "Namespaces, y Lab 1: secrets, values de DX y acceso externo", "2a-ldap/": "Dependencia externa OpenLDAP (usuarios de demo) y la capa LDAP de DX del Lab 2A",
+      "2a-ad/": "Lab 2A: secret de Active Directory y capa de DX", "2b-postgres/": "Dependencia externa PostgreSQL: usuarios y cluster",
+      "2b-oracle/": "Lab 2B: properties de Oracle y capa de DX", "3-iq/": "Dependencia externa LiteLLM y Lab 3A: values de IQ, secrets y el cliente de chat de terminal",
+      "3b-mcp/": "Dependencia externa: el MCP Server de EUROPESIP (Lab 3B)", "1b-scriptapp/": "Lab 1B: el usuario de DX para el chart de la Script Application", "4-search/": "Lab 4: values de OpenSearch y capa de DX (los certificados los crea el paso 4-1)",
       "charts/": "charts de HCL, los descarga el paso 1-2", "support/": "el recolector de datos para HCL Support (./install.sh --collect)"},
   }
 };
@@ -1308,13 +1621,13 @@ function buildDirectRunbook(s, steps, files){
   o.push(`# ${d.title}`, "", `${lang === "es" ? "Generado por el asistente de configuración el" : "Generated by the configuration wizard on"} ${now} UTC · https://${s.DX_HOST}`, "", d.intro, "", d.warn, "");
   o.push(`## ${d.files}`, "", "| | |", "|---|---|", ...["install.sh", "uninstall.sh", ...dirs, "charts/"].map(k => `| \`${k}\` | ${d.dirs[k] || ""} |`), "");
   o.push(`## ${d.prep}`, "", `- ${d.need}`);
-  if (s.db === "postgres") o.push(`- ${d.sql}`);
+  if (s.db === "postgres" && !pgSqlFor(s)) o.push(`- ${d.sql}`);
   if (missing) o.push(`- ${d.ph}`);
   o.push("", `## ${d.run}`, "", d.runT, "", "```bash", "cd dx-install",
     "./install.sh            # " + (lang === "es" ? "todo, sin las comprobaciones opcionales" : "everything, without the optional checks"),
     "./install.sh --verify   # " + (lang === "es" ? "también las comprobaciones opcionales" : "also the optional checks"),
     "./install.sh --list     # " + (lang === "es" ? "lista de pasos" : "list of steps"),
-    "./install.sh --from 2B-1   # " + (lang === "es" ? "continuar desde un paso" : "resume from a step"), "```", "",
+    "./install.sh --from 1-4    # " + (lang === "es" ? "continuar desde un paso" : "resume from a step"), "```", "",
     lang === "es" ? "Herramientas, en cualquier momento: si algo falla y tienes que abrir un case con HCL Support, `./install.sh --collect <case>` recoge los datos que pide (solo lectura, un `.tar.gz` con los secretos enmascarados); para empezar de cero, `./uninstall.sh` (o `./install.sh --cleanup`) borra todo lo instalado. Si necesitas las dos, recoge primero."
                   : "Tools, at any time: if something fails and you need to open a case with HCL Support, `./install.sh --collect <case>` collects the data it asks for (read-only, a `.tar.gz` with secrets masked); to start again from scratch, `./uninstall.sh` (or `./install.sh --cleanup`) deletes everything that was installed. If you need both, collect first.", "");
   let lab = "";
@@ -1512,7 +1825,7 @@ const NEXT = {
     goA: "Load it and follow the labs with their guides, starting with Lab 1:",
     goB: "Load it and follow <code>RUNBOOK.md</code> step by step:",
     noClone: "<b>No need to clone anything</b>: the folder is self-contained. Unzip it anywhere:",
-    sql: "Lab 2B: copy <code>setup-postgres-dx.sql</code> into <code>dx-install/2b-postgres/</code> (see the Lab 2 guide, 2B step 3).",
+    sql: "PostgreSQL for the Web Engine: copy the table creation script that HCL gives you, <code>setup-postgres-dx.sql</code>, into <code>dx-install/2b-postgres/</code> (not supplied with the labs yet).",
     ph: "Replace the values you left empty (<code>PUT-YOUR-…-HERE</code>); this lists where they are:",
     need: "Check you have <code>kubectl</code> (pointing to your cluster), <code>helm</code>, <code>openssl</code>, <code>curl</code> and <code>python3</code>.",
     run: "Run everything (it shows the lab and step, and asks for confirmation first), or follow <code>RUNBOOK.md</code> command by command:",
@@ -1532,7 +1845,7 @@ const NEXT = {
     goA: "Cárgalo y sigue los labs con sus guías, empezando por el Lab 1:",
     goB: "Cárgalo y sigue <code>RUNBOOK.md</code> paso a paso:",
     noClone: "<b>No hace falta clonar nada</b>: la carpeta es autónoma. Descomprímela donde quieras:",
-    sql: "Lab 2B: copia <code>setup-postgres-dx.sql</code> en <code>dx-install/2b-postgres/</code> (ver la guía del Lab 2, 2B paso 3).",
+    sql: "PostgreSQL para el Web Engine: copia el script de creación de las tablas que te da HCL, <code>setup-postgres-dx.sql</code>, en <code>dx-install/2b-postgres/</code> (aún no se suministra con los labs).",
     ph: "Sustituye los valores que dejaste vacíos (<code>PUT-YOUR-…-HERE</code>); esto lista dónde están:",
     need: "Comprueba que tienes <code>kubectl</code> (apuntando a tu clúster), <code>helm</code>, <code>openssl</code>, <code>curl</code> y <code>python3</code>.",
     run: "Ejecútalo todo (muestra el lab y el paso, y pide confirmación al empezar), o sigue <code>RUNBOOK.md</code> comando a comando:",
@@ -1555,7 +1868,7 @@ function showDone(opt){
     steps.push((opt === "A" ? n.goA : n.goB) + pre(opt === "A" ? "source ./env.sh\nless lab1-dx-base/" + (lang === "es" ? "GUIDE.es.md" : "GUIDE.md") : "source ./env.sh\nless RUNBOOK.md"));
   } else {
     steps.push(n.noClone + pre("unzip ~/Downloads/dx-compose-labs-install.zip\ncd dx-install"));
-    if (s.db === "postgres") steps.push(n.sql + pre("cp /path/to/setup-postgres-dx.sql 2b-postgres/"));
+    if (s.db === "postgres" && !pgSqlFor(s)) steps.push(n.sql + pre("cp /path/to/setup-postgres-dx.sql 2b-postgres/"));
     if (missing) steps.push(n.ph + pre("grep -rn PUT-YOUR- . --exclude=RUNBOOK.md"));
     steps.push(n.need);
     steps.push(n.run + pre("./install.sh --list      # " + (lang === "es" ? "los pasos" : "the steps") + "\n./install.sh             # " +
@@ -1586,6 +1899,27 @@ function update(){
     if (pf === "poc" && $("INGRESS_KIND").value === "nginx") $("INGRESS_KIND").value = "traefik";
     lastPlatform = pf;
   }
+  // Each lab needs its external dependency: without it the option is disabled, with the reason
+  const gate = (id, on) => {
+    const i = $(id), w = $(id + "W");
+    if (!on) i.checked = false;
+    i.disabled = !on; w.classList.toggle("off", !on);
+    w.querySelector(".needs").classList.toggle("hidden", on);
+  };
+  gate("lab3", $("depLlm").checked);
+  gate("lab3b", $("depMcp").checked && $("lab3").checked);
+  gate("iqdb", $("depPg").checked && $("lab3").checked);
+  const ldapOpt = $("dir").querySelector("option[value=openldap]");
+  ldapOpt.disabled = !$("depLdap").checked;
+  if (ldapOpt.disabled && $("dir").value === "openldap") $("dir").value = "none";
+  $("dirNeeds").classList.toggle("hidden", !ldapOpt.disabled);
+  $("pgSchemaWrap").classList.toggle("hidden", !$("depPg").checked);
+  if (!$("depPg").checked && $("db").value === "postgres") $("db").value = "none";   // PostgreSQL removed
+  $("pgSchema").checked = $("db").value === "postgres";
+  const pgS = pgSqlFor({db: $("db").value, HCL_HARBOR_USER: $("HCL_HARBOR_USER").value.trim()});
+  $("pgSqlYes").classList.toggle("hidden", !($("db").value === "postgres" && pgS));
+  $("pgSqlNo").classList.toggle("hidden", !($("db").value === "postgres" && !pgS));
+  $("dxcWrap").classList.toggle("hidden", !$("lab1b").checked);
   const s = state();
   $("pocWarn").classList.toggle("hidden", !s.poc);
   $("ingressWrap").classList.toggle("hidden", s.openshift);
@@ -1594,9 +1928,9 @@ function update(){
   $("INGRESS_CLASS").classList.toggle("hidden", $("INGRESS_KIND").value !== "other");
   $("adBox").classList.toggle("hidden", s.dir !== "ad");
   $("oraBox").classList.toggle("hidden", s.db !== "oracle");
-  $("orWrap").classList.toggle("hidden", !s.lab3);
-  $("llmWrap").classList.toggle("hidden", !s.lab3);
-  $("llmHint").classList.toggle("hidden", !s.lab3);
+  $("orWrap").classList.toggle("hidden", !s.deps.llm);
+  $("llmWrap").classList.toggle("hidden", !s.deps.llm);
+  $("llmHint").classList.toggle("hidden", !s.deps.llm);
   $("DX_HOST").placeholder = s.poc ? "dx-demo.127.0.0.1.nip.io" : "dx-demo.example.com";
   const {err, warn} = validate(s);
   const box = $("errors");
@@ -1610,19 +1944,33 @@ function update(){
 }
 function init(){
   captureEnglish();
+  // (registered BEFORE the generic update listeners, so they run first)
+  // PostgreSQL for the Web Engine: allowed, but only with the tables created by you (steps from HCL).
+  // Choosing it (in Lab 2B or with the schema flag of the dependency) explains when to use it.
+  $("db").addEventListener("change", () => {
+    if ($("db").value === "postgres") { $("depPg").checked = true; $("pgSchema").checked = true; update(); $("pgInfo").showModal(); }
+    else if ($("pgSchema").checked) { $("pgSchema").checked = false; update(); }
+  });
+  $("pgSchema").addEventListener("change", () => {
+    $("db").value = $("pgSchema").checked ? "postgres" : "none"; update();
+    if ($("pgSchema").checked) $("pgInfo").showModal();
+  });
   document.querySelectorAll("#wiz input, #wiz select").forEach(e => { e.addEventListener("input", update); e.addEventListener("change", update); });
   document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.lang)));
   document.querySelectorAll("[data-show]").forEach(b => b.addEventListener("click", () => {
     const i = $(b.dataset.show), show = i.type === "password"; i.type = show ? "text" : "password";
     b.textContent = show ? (lang === "es" ? T.es.hide : "Hide") : tr("show");
   }));
-  $("dlZip").addEventListener("click", () => { if (!ok) return; download("dx-compose-labs-config.zip", zip([{name: "env.sh", text: lastEnv, mode: 0o100644}, {name: "RUNBOOK.md", text: lastRun}])); showDone("B"); });
+  $("dlZip").addEventListener("click", () => { if (!ok) return; const files = [{name: "env.sh", text: lastEnv, mode: 0o100644}, {name: "RUNBOOK.md", text: lastRun}];
+    if (pgSqlFor(state())) files.push({name: "lab2-ldap-postgres/b-postgres/setup-postgres-dx.sql", text: pgSql()});
+    download("dx-compose-labs-config.zip", zip(files)); showDone("B"); });
   $("dlDirect").addEventListener("click", () => { if (!ok) return; download("dx-compose-labs-install.zip", zip(lastDirect)); showDone("C"); });
   $("doneClose").addEventListener("click", () => $("done").close());
   // Information dialogs: the button sits inside a <label>, so it must not toggle the checkbox
   document.querySelectorAll("[data-info]").forEach(b => b.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); $(b.dataset.info).showModal(); }));
   document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => $(b.dataset.close).close()));
   document.querySelectorAll("dialog.dlg").forEach(d => d.addEventListener("click", e => { if (e.target === d) d.close(); }));
+  // PostgreSQL for the Web Engine is not available yet: explain it and undo the choice
   $("dlEnv").addEventListener("click", () => { if (!ok) return; download("env.sh", new Blob([lastEnv], {type: "text/x-shellscript"})); showDone("A"); });
   let l = null;
   try { l = new URL(location.href).searchParams.get("lang"); } catch (e) {}

@@ -13,12 +13,20 @@ in four labs, each one on top of the previous one.
 
 | Lab | What you do | ⏱ Run time |
 |---|---|---|
-| ▶ [Lab 1 · Base DX](lab1-dx-base/GUIDE.md) · **start here** | The start of the installation: a **minimal, working base installation** of DX Compose. It checks the base requirements and covers namespaces, secrets, the Helm chart from the HCL Harbor, the installation and external access. The other labs are built on top of it | ~10 min |
-| [Lab 2 · LDAP and PostgreSQL](lab2-ldap-postgres/GUIDE.md) | **2A**: authentication against OpenLDAP. **2B**: transfer of the Web Engine database from Derby to PostgreSQL | ~27 min (2A ~10 · 2B ~17) |
+| [External dependencies](external-deps/GUIDE.md) *(before Lab 1)* | The third-party software some labs use, installed **first** in the shared namespace: **OpenLDAP** (Lab 2A), **PostgreSQL** (Lab 3 appendix), **LiteLLM** (Lab 3A) and the **EUROPESIP MCP Server** (Lab 3B). Install only what you need; then the labs only connect DX to it | ~3-7 min |
+| ▶ [Lab 1 · Base DX](lab1-dx-base/GUIDE.md) · **start here** · **the only mandatory one** | The start of the installation: a **minimal, working base installation** of DX Compose. It checks the base requirements and covers namespaces, secrets, the Helm chart from the HCL Harbor, the installation and external access. The other labs are built on top of it | ~10 min |
+| ↳ [Lab 1B · Sample Script Application](lab1b-scriptapp/GUIDE.md) *(optional)* | **Hello DX**, a React Script Application deployed **with a Helm chart** (a Job that runs DXClient): the way to build your own apps on DX Compose without Java portlets | ~1 min |
+| [Lab 2 · LDAP and PostgreSQL](lab2-ldap-postgres/GUIDE.md) | **2A**: authentication against OpenLDAP. **2B**: the Web Engine database. By default it stays on **Derby**, the internal database of the product; the transfer to PostgreSQL needs a script that is not supplied yet (see the guide), and Oracle is in the enterprise branch | ~27 min (2A ~10 · 2B ~17) |
 | ↳ [Lab 2 · enterprise branch](lab2-ldap-postgres/GUIDE-enterprise.md) *(optional)* | The same iterations against **Active Directory** (with `configOverrideFiles`) and **Oracle** (TCPS), common in corporate environments | reference |
 | [Lab 3 · IQ with OpenRouter](lab3-iq-openrouter/GUIDE.md) | **3A**: the DX AI assistant (IQ) using LiteLLM as a proxy to OpenRouter (Claude, or Qwen for a cheaper PoC) instead of AWS Bedrock. **3B**: EUROPESIP custom MCP Server (services, support, labs and the figma&web-to-dx tool) | ~13 min (3A ~10 · 3B ~3) |
 | [Lab 4 · Search with OpenSearch](lab4-opensearch/GUIDE.md) | Search V2: OpenSearch + Search Middleware (`hcl-dx-search` 2.37.0), certificates and `adminDN`, crawling of WCM, portal and JCR, and search through the API | ~10 min |
 | | **Total run time** (Labs 1 to 4) | **~60 min** |
+
+> **Short on time? Fast demo.** With the external dependencies in place, `common/demo-fast.sh`
+> installs everything you chose in the fastest order: DX **once**, already connected to its
+> directory, then IQ and search, and **one single** DX upgrade that enables both (about 15 minutes
+> less than the labs one by one). The [configuration wizard](https://europesip.github.io/hcl-dx-compose-labs/)
+> offers the same as its *Fast demo* mode.
 
 > **No cluster? Lab 0 (optional).** Only if you have **no Kubernetes environment already deployed**
 > where you can do the PoC and you want to **emulate one on your own PC**: [Lab 0 · PoC on your
@@ -76,9 +84,9 @@ validated on:
 ```
  ┌──────────────── dx-demo (HCL software) ───────────────────┐   ┌──── dx-shared (3rd party) ───┐
  │                                                           │   │                              │
- │  Ingress ─► HAProxy ─► Web Engine (DX Compose) ───────────┼──►│  OpenLDAP          (Lab 2A)  │
+ │  Ingress ─► HAProxy ─► Web Engine (DX Compose) ───────────┼──►│  OpenLDAP     (deps · 2A)    │
  │                │            │                             │   │                              │
- │                │            └────── JDBC ─────────────────┼──►│  PostgreSQL 18     (Lab 2B)  │
+ │                │            └────── JDBC ─────────────────┼──►│  PostgreSQL 18  (deps · A1)  │
  │                │                                          │   │   (CloudNativePG operator)   │
  │                ├─► DAM, Image Processor, Ring API...      │   │                              │
  │                │   Persistence Node (DAM PostgreSQL)      │   │                              │
@@ -169,7 +177,7 @@ makes things easier in one of two ways:
   - **Option C · direct installation** (`dx-install/` folder): every file already filled in with
     your values and an `install.sh` that runs all the steps of the labs you chose, showing the lab
     and step it is in. It does not even need this repository, so it can be sent to someone who
-    has nothing else (only `setup-postgres-dx.sql`, for Lab 2B, is copied in by hand). It carries
+    has nothing else. It carries
     credentials in plain text: keep it private.
 
     ```bash

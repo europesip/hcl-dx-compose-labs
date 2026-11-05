@@ -77,6 +77,8 @@ HCL documentation:
 All of them with the password **EuropeS1P** (`LDAP_USERS_PASSWORD`). `wpsadmin` (basic registry,
 `wpsadmins` group) is still the initial administrator.
 
+> **Installed it in the [external dependencies](../external-deps/GUIDE.md)?** Skip steps 1 and 2 and go to step 3.
+
 ### Step 1 · Lab OpenLDAP
 
 ```bash
@@ -214,6 +216,14 @@ travels with the transfer.
 ---
 
 ## 2B · Database transfer to PostgreSQL
+
+> **When to use it.** Right now the Web Engine can use PostgreSQL **only if you create yourself the
+> tables it needs**, following the steps HCL gives you: the script that does it
+> (`setup-postgres-dx.sql`, step 3) is **not supplied with the labs yet**, because it has not been
+> validated yet. Put it in `lab2-ldap-postgres/b-postgres/` **before** PostgreSQL is installed
+> (step 3 here, or the [external dependencies](../external-deps/GUIDE.md)): the cluster runs it once,
+> when it is created. Without it, keep **Derby** (the internal database of the product) or use an
+> existing **Oracle** ([enterprise branch](GUIDE-enterprise.md)).
 
 HCL documentation:
 [External database and database transfer (CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/manage/cfg_webengine/external_db_database_transfer/)

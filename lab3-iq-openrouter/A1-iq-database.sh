@@ -7,7 +7,7 @@ source "$(dirname "$0")/../common/lib.sh"
 require_vars SHARED_NS DX_NS PG_CLUSTER IQ_DB_PASSWORD
 
 POD=$(kubectl -n "$SHARED_NS" get pod -l cnpg.io/cluster="$PG_CLUSTER",cnpg.io/instanceRole=primary -o name | head -1)
-[[ -n "$POD" ]] || die "No cluster $PG_CLUSTER in $SHARED_NS: do Lab 2B first"
+[[ -n "$POD" ]] || die "No cluster $PG_CLUSTER in $SHARED_NS: install PostgreSQL first (external-deps/02-postgres.sh)"
 
 info "iqdb database"
 if kubectl -n "$SHARED_NS" exec -i "$POD" -c postgres -- psql -U postgres -Atc "select 1 from pg_database where datname='iqdb'" </dev/null | grep -q 1; then

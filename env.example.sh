@@ -86,6 +86,21 @@ export PG_SUPERUSER_PASSWORD="${PG_SUPERUSER_PASSWORD:-EuropeS1P}"  # Lab 2B: po
 export DXUSER_PASSWORD="${DXUSER_PASSWORD:-EuropeS1P}"              # Lab 2B: dxuser (owner of dx_core, Web Engine DB)
 export IQ_DB_PASSWORD="${IQ_DB_PASSWORD:-EuropeS1P}"                # Lab 2B/3: dx_iq_db_user (optional in Lab 3)
 
+# --- Fast demo mode (common/demo-fast.sh) -------------------------------------------------
+# What it installs. Dependencies: openldap postgres litellm mcp
+# Labs (Lab 1 is always installed): 1b 2a-openldap | 2a-ad 3a 3b iqdb 4
+export DEMO_DEPS="${DEMO_DEPS:-openldap litellm}"
+export DEMO_LABS="${DEMO_LABS:-2a-openldap 3a 4}"
+
+# --- Lab 1B (optional): sample Script Application deployed with Helm ----------------------
+# github.com/europesip/hcl-dx-scriptapp-helm. DXClient (HCL) asks to accept its license: read it
+# (see lab1b-scriptapp/GUIDE.md) and set yes to accept it.
+export SCRIPTAPP_RELEASE="${SCRIPTAPP_RELEASE:-hello-dx}"
+export SCRIPTAPP_CHART="${SCRIPTAPP_CHART:-oci://ghcr.io/europesip/charts/hcl-dx-scriptapp}"
+export SCRIPTAPP_CHART_VERSION="${SCRIPTAPP_CHART_VERSION:-0.1.4}"
+export DXCLIENT_IMAGE="${DXCLIENT_IMAGE:-hclcr.io/dx-public/dxclient:v95_CF239_20261103-1404}"
+export DXCLIENT_ACCEPT_LICENSE="${DXCLIENT_ACCEPT_LICENSE:-}"      # <<< Lab 1B: yes
+
 # --- Lab 3: IQ with OpenRouter ------------------------------------------------------------
 export OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}"        # <<< Lab 3: sk-or-v1-...
 # LLM behind IQ: claude = Claude Sonnet 4.6 + Haiku 4.5 (validated by HCL, recommended for

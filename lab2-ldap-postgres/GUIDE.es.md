@@ -78,6 +78,8 @@ Documentación de HCL:
 Todos con la contraseña **EuropeS1P** (`LDAP_USERS_PASSWORD`). `wpsadmin` (registro básico, grupo `wpsadmins`)
 sigue siendo el administrador inicial.
 
+> **¿Lo instalaste en las [dependencias externas](../external-deps/GUIDE.es.md)?** Sáltate los pasos 1 y 2 y ve al paso 3.
+
 ### Paso 1 · OpenLDAP de laboratorio
 
 ```bash
@@ -211,6 +213,14 @@ LDAP. El permiso queda en la base de datos de DX, así que en el Lab 2B viaja co
 ---
 
 ## 2B · Transferencia de la base de datos a PostgreSQL
+
+> **Cuándo usarlo.** Ahora mismo el Web Engine puede usar PostgreSQL **solo si creas tú mismo las
+> tablas que necesita**, siguiendo los pasos que te dará HCL: el script que lo hace
+> (`setup-postgres-dx.sql`, paso 3) **aún no se suministra con los labs**, porque todavía no ha sido
+> validado. Déjalo en `lab2-ldap-postgres/b-postgres/` **antes** de instalar PostgreSQL (paso 3 de
+> aquí, o las [dependencias externas](../external-deps/GUIDE.es.md)): el cluster lo ejecuta una vez,
+> al crearse. Sin él, mantén **Derby** (la base de datos interna del producto) o usa un **Oracle**
+> existente ([rama empresarial](GUIDE-enterprise.es.md)).
 
 Documentación de HCL:
 [External database and database transfer (CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/manage/cfg_webengine/external_db_database_transfer/)
