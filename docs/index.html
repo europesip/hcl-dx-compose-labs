@@ -52,15 +52,17 @@ table.cmp th,table.cmp td{border:1px solid var(--line);padding:7px 9px;text-alig
 table.cmp tr:first-child th{background:var(--accent-soft)}
 table.cmp th:first-child{background:var(--bg);white-space:nowrap}
 .tw{overflow-x:auto}
-dialog#done{border:1px solid var(--line);border-radius:14px;padding:0;max-width:720px;width:calc(100% - 32px);background:var(--panel);color:var(--text);box-shadow:0 20px 60px rgba(0,0,0,.35)}
-dialog#done::backdrop{background:rgba(10,15,25,.55)}
-dialog#done .dh{padding:18px 22px 6px}
-dialog#done .dh h2{font-size:20px;margin:0 0 4px}
-dialog#done .db{padding:4px 22px 8px;max-height:65vh;overflow:auto}
-dialog#done ol{padding-left:22px;margin:8px 0}
-dialog#done li{margin:10px 0}
-dialog#done pre{max-height:none;margin:6px 0 0}
-dialog#done .df{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding:12px 22px 18px;border-top:1px solid var(--line)}
+dialog.dlg{border:1px solid var(--line);border-radius:14px;padding:0;max-width:720px;width:calc(100% - 32px);background:var(--panel);color:var(--text);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog.dlg::backdrop{background:rgba(10,15,25,.55)}
+dialog.dlg .dh{padding:18px 22px 6px}
+dialog.dlg .dh h2{font-size:20px;margin:0 0 4px}
+dialog.dlg .db{padding:4px 22px 8px;max-height:65vh;overflow:auto}
+dialog.dlg ol{padding-left:22px;margin:8px 0}
+dialog.dlg li{margin:10px 0}
+dialog.dlg .db p{margin:8px 0}
+.info-btn{border:0;background:none;color:var(--accent);font:inherit;font-size:13px;font-weight:600;padding:0 0 0 4px;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+dialog.dlg pre{max-height:none;margin:6px 0 0}
+dialog.dlg .df{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;padding:12px 22px 18px;border-top:1px solid var(--line)}
 .opts3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 .opt{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--bg);display:flex;flex-direction:column;gap:8px}
 .opt h3{margin:0;font-size:15px}
@@ -191,7 +193,7 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
           <option value="oracle" data-i18n="ora">Oracle 19c/21c (existing, pre-configured installation)</option></select></label>
     </div>
     <div class="choices">
-      <label class="choice"><input type="checkbox" id="lab3" checked><span><b data-i18n="l3">Lab 3A · IQ with OpenRouter</b><small data-i18n="l3h">LiteLLM proxy → OpenRouter (Claude or Qwen), instead of AWS Bedrock</small></span></label>
+      <label class="choice"><input type="checkbox" id="lab3" checked><span><b data-i18n="l3">Lab 3A · IQ with OpenRouter</b><small><span data-i18n="l3h">LiteLLM proxy → OpenRouter (Claude or Qwen), instead of AWS Bedrock</span> <button type="button" class="info-btn" data-info="orInfo" data-i18n="orWhy">ⓘ Why OpenRouter?</button></small></span></label>
       <label class="choice"><input type="checkbox" id="lab3b" checked><span><b data-i18n="l3b">Lab 3B · Custom MCP Server</b><small data-i18n="l3bh">EUROPESIP MCP with the figma&amp;web-to-dx tool</small></span></label>
       <label class="choice"><input type="checkbox" id="iqdb"><span><b data-i18n="iqdb">Lab 3 appendix · IQ sessions in PostgreSQL</b><small data-i18n="iqdbh">Requires Lab 2B with PostgreSQL</small></span></label>
       <label class="choice"><input type="checkbox" id="lab4" checked><span><b data-i18n="l4">Lab 4 · Search with OpenSearch</b><small data-i18n="l4h">hcl-dx-search 2.37.0, Search V2</small></span></label>
@@ -216,7 +218,7 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
       <label class="f"><span class="n" data-i18n="ht">HCL Harbor CLI secret</span>
         <span class="pw"><input type="password" id="HCL_HARBOR_TOKEN" spellcheck="false"><button type="button" class="btn small" data-show="HCL_HARBOR_TOKEN" data-i18n="show">Show</button></span>
         <code>HCL_HARBOR_TOKEN</code></label>
-      <label class="f" id="orWrap"><span class="n" data-i18n="or">OpenRouter API key (Lab 3)</span>
+      <label class="f" id="orWrap"><span class="n"><span data-i18n="or">OpenRouter API key (Lab 3)</span> <button type="button" class="info-btn" data-info="orInfo" data-i18n="orWhy">ⓘ Why OpenRouter?</button></span>
         <span class="pw"><input type="password" id="OPENROUTER_API_KEY" placeholder="sk-or-v1-…" spellcheck="false"><button type="button" class="btn small" data-show="OPENROUTER_API_KEY" data-i18n="show">Show</button></span>
         <code>OPENROUTER_API_KEY</code></label>
       <label class="f"><span class="n" data-i18n="pwa">Password for every lab account</span>
@@ -313,10 +315,19 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
   </form>
 </main>
 
-<dialog id="done" aria-labelledby="doneTitle">
+<dialog id="done" class="dlg" aria-labelledby="doneTitle">
   <div class="dh"><h2 id="doneTitle"></h2><p class="hint" id="doneSub"></p></div>
   <div class="db" id="doneBody"></div>
   <div class="df"><a class="btn" id="doneGuide" target="_blank" rel="noopener"></a><button type="button" class="btn primary" id="doneClose"></button></div>
+</dialog>
+
+<dialog id="orInfo" class="dlg" aria-labelledby="orInfoTitle">
+  <div class="dh"><h2 id="orInfoTitle" data-i18n="orInfoT">Why OpenRouter?</h2></div>
+  <div class="db" data-i18n-html="orInfoB"><p>OpenRouter is <b>not in the HCL configuration guides</b>, which use AWS Bedrock. It is an option we are validating in these labs (IQ works with it on CF238 and CF239), and it behaves <b>like AWS Bedrock</b>: a cloud service that gives access to many LLMs through a single API, so you can choose the model behind IQ.</p>
+<p><b>Why not Bedrock for a PoC?</b> Signing up for AWS Bedrock is laborious: an AWS account, IAM users and policies, access requests for each model, regions… <b>OpenRouter</b> offers the same functionality with a practical, comfortable interface: one account, one API key, and you can choose and try many AI models, all <b>billed in a single place</b>. That makes it very suitable for PoCs and labs.</p>
+<p><b>Sovereign AI.</b> Besides the large models of today's vendors (Claude, GPT, Gemini…), OpenRouter offers <b>open-weight models</b> (Qwen, DeepSeek, Mistral, gpt-oss…) that you can later <b>download and run on your own hardware</b>. You can test them with IQ first, at almost no cost, and then decide whether to move to a local model so that your data never leaves your infrastructure.</p>
+<p><b>Getting started.</b> If you do not have an account yet, <a href="https://openrouter.ai" target="_blank" rel="noopener">sign up at openrouter.ai</a>, create an API key and buy credits: <b>about €20 is enough for a PoC</b>. OpenRouter lets you set a <b>spending limit on each key</b> and shows every request with its tokens and cost in its <a href="https://openrouter.ai/activity" target="_blank" rel="noopener">activity</a> page, so you always know what you are spending.</p></div>
+  <div class="df"><a class="btn" href="https://openrouter.ai" target="_blank" rel="noopener" data-i18n="orSign">Sign up at OpenRouter</a><button type="button" class="btn primary" data-close="orInfo" data-i18n="close">Close</button></div>
 </dialog>
 
 <footer>
@@ -358,6 +369,8 @@ const T = {
     l2b: "Lab 2B · Base de datos del Web Engine", derby: "Derby (sin transferencia)", pg: "PostgreSQL 18 con CloudNativePG (demo)", ora: "Oracle 19c/21c (instalación previa preconfigurada)",
     l3: "Lab 3A · IQ con OpenRouter", l3h: "Proxy LiteLLM → OpenRouter (Claude o Qwen), en lugar de AWS Bedrock",
     llm: "Lab 3 · Modelo detrás de IQ (a través de OpenRouter)",
+    orWhy: "ⓘ ¿Por qué OpenRouter?", orInfoT: "¿Por qué OpenRouter?", orSign: "Darse de alta en OpenRouter", close: "Cerrar",
+    orInfoB: "<p>OpenRouter <b>no aparece en las guías de configuración de HCL</b>, que usan AWS Bedrock. Es una opción que estamos validando en estos laboratorios (IQ funciona con ella en CF238 y CF239), y su comportamiento es <b>similar al de AWS Bedrock</b>: un servicio en la nube que da acceso a muchos LLM a través de una única API, para que elijas el modelo que hay detrás de IQ.</p>\n<p><b>¿Por qué no Bedrock para una PoC?</b> Darse de alta en AWS Bedrock es complicado: cuenta de AWS, usuarios y políticas de IAM, solicitud de acceso a cada modelo, regiones… <b>OpenRouter</b> ofrece la misma funcionalidad con una interfaz práctica y cómoda: una cuenta, una API key, y puedes escoger y probar muchos modelos de IA, todos <b>facturados en un único sitio</b>. Por eso es muy apropiado para PoCs y laboratorios.</p>\n<p><b>IA soberana.</b> Además de los grandes modelos de los fabricantes actuales (Claude, GPT, Gemini…), OpenRouter ofrece <b>modelos de pesos abiertos</b> (Qwen, DeepSeek, Mistral, gpt-oss…) que después puedes <b>descargar y ejecutar en tu propio hardware</b>. Puedes probarlos antes con IQ, casi sin coste, y decidir luego si pasar a un modelo local para que tus datos no salgan nunca de tu infraestructura.</p>\n<p><b>Para empezar.</b> Si aún no tienes cuenta, <a href=\"https://openrouter.ai\" target=\"_blank\" rel=\"noopener\">date de alta en openrouter.ai</a>, crea una API key y compra crédito: <b>con unos 20 € basta para una PoC</b>. OpenRouter permite poner un <b>límite de gasto en cada key</b> y muestra cada petición con sus tokens y su coste en la página de <a href=\"https://openrouter.ai/activity\" target=\"_blank\" rel=\"noopener\">actividad</a>, así que siempre sabes cuánto llevas consumido.</p>",
     llmClaude: "Claude Sonnet 4.6 + Haiku 4.5 · recomendado para producción · ≈ 0,03–0,14 $ por pregunta",
     llmQwen: "Qwen 3.7 Plus + 3.8 Flash · PoC / laboratorio · ≈ 0,005–0,01 $ por pregunta",
     llmH: "IQ encadena varias llamadas al LLM por cada pregunta, y cada una lleva ~30.000 tokens de system prompt y definiciones de herramientas de HCL, así que sale caro incluso con prompt caching. Costes medidos en CF239 con la caché activada (Claude: ≈ 0,03 $ con la caché caliente, ≈ 0,14 $ la primera pregunta tras 5 minutos sin uso). <b>Claude</b> es el modelo que valida HCL y la <b>opción recomendada para producción</b>. Para una <b>PoC o un laboratorio</b>, <b>Qwen</b> es suficiente y entre 5 y 10 veces más barato: usa bien las herramientas de IQ, pero sabe menos de HCL DX, así que las respuestas a preguntas de tipo \"¿cómo hago…?\" pueden ser más genéricas. Puedes cambiarlo después: cambia <code>IQ_LLM</code> y reinstala LiteLLM; IQ no se toca.",
@@ -1606,6 +1619,10 @@ function init(){
   $("dlZip").addEventListener("click", () => { if (!ok) return; download("dx-compose-labs-config.zip", zip([{name: "env.sh", text: lastEnv, mode: 0o100644}, {name: "RUNBOOK.md", text: lastRun}])); showDone("B"); });
   $("dlDirect").addEventListener("click", () => { if (!ok) return; download("dx-compose-labs-install.zip", zip(lastDirect)); showDone("C"); });
   $("doneClose").addEventListener("click", () => $("done").close());
+  // Information dialogs: the button sits inside a <label>, so it must not toggle the checkbox
+  document.querySelectorAll("[data-info]").forEach(b => b.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); $(b.dataset.info).showModal(); }));
+  document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => $(b.dataset.close).close()));
+  document.querySelectorAll("dialog.dlg").forEach(d => d.addEventListener("click", e => { if (e.target === d) d.close(); }));
   $("dlEnv").addEventListener("click", () => { if (!ok) return; download("env.sh", new Blob([lastEnv], {type: "text/x-shellscript"})); showDone("A"); });
   let l = null;
   try { l = new URL(location.href).searchParams.get("lang"); } catch (e) {}
