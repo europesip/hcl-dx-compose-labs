@@ -6,7 +6,7 @@
 set -euo pipefail
 source "$(dirname "$0")/../common/lib.sh"
 require_cmd helm kubectl
-: "${ORBITA_RELEASE:=orbita}" "${ORBITA_CHART:=oci://ghcr.io/europesip/charts/hcl-dx-orbita}" "${ORBITA_CHART_VERSION:=2.3.0}"
+: "${ORBITA_RELEASE:=orbita}" "${ORBITA_CHART:=oci://ghcr.io/europesip/charts/hcl-dx-orbita}" "${ORBITA_CHART_VERSION:=3.1.0}"
 : "${DXCLIENT_IMAGE:=hclcr.io/dx-public/dxclient:v95_CF239_20261103-1404}"
 require_vars DX_NS SHARED_NS DX_HOST PG_HOST WPSADMIN_PASSWORD
 
@@ -30,6 +30,17 @@ apply_secret "$SHARED_NS" generic orbita-dx-ca --from-file=ca.crt="$CA"
 # Public chart and images: no registry login. The chart creates the database (a Job with the
 # PostgreSQL superuser), the API, its Ingress on /orbita-api of the DX host and, with the subchart
 # hcl-dx-scriptapp, the six Script Applications and their pages.
+# ÓRBITA's own AI assistant talks to the model through LiteLLM (Lab 3A or the external dependencies),
+# with the same model alias as IQ. Without LiteLLM the assistant button is hidden.
+: "${LITELLM_URL_INTERNAL:=http://${LITELLM_RELEASE:-litellm}.${SHARED_NS}.svc.cluster.local:4000}"
+if kubectl -n "$SHARED_NS" get secret litellm-env >/dev/null 2>&1; then
+  ASSISTANT=(--set assistant.backend=orbita --set assistant.litellm.url="$LITELLM_URL_INTERNAL")
+  info "AI assistant: ÓRBITA's own, through LiteLLM ($LITELLM_URL_INTERNAL)"
+else
+  ASSISTANT=(--set assistant.backend=none)
+  warn "No LiteLLM in $SHARED_NS (Lab 3A or external-deps/03-litellm.sh): ÓRBITA installs without the AI assistant"
+fi
+
 info "helm upgrade --install $ORBITA_RELEASE ($ORBITA_CHART $ORBITA_CHART_VERSION) in $SHARED_NS"
 helm upgrade --install "$ORBITA_RELEASE" "$ORBITA_CHART" --version "$ORBITA_CHART_VERSION" -n "$SHARED_NS" --timeout 15m \
   --set dx.host="$DX_HOST" --set dx.caSecret=orbita-dx-ca \
@@ -37,9 +48,9 @@ helm upgrade --install "$ORBITA_RELEASE" "$ORBITA_CHART" --version "$ORBITA_CHAR
   --set mcp.networkPolicy.integratorNamespace="$DX_NS" \
   --set scriptapps.dx.host="$DX_HOST" --set scriptapps.dx.credentialsSecret=orbita-dx --set scriptapps.dx.caSecret=orbita-dx-ca \
   --set scriptapps.dxclient.image="$DXCLIENT_IMAGE" --set scriptapps.dxclient.acceptLicense=true \
-  "$@" | sed -n '/^NOTES:/,$p'
+  "${ASSISTANT[@]}" "$@" | sed -n '/^NOTES:/,$p'
 kubectl -n "$SHARED_NS" rollout status deploy/"$ORBITA_RELEASE"-api --timeout=10m
 kubectl -n "$SHARED_NS" logs job/"$ORBITA_RELEASE"-scriptapps-push -c dxclient | grep -E "OK:|pages:" | sed 's/^/  /'
 echo
 echo "Sign in to https://$DX_HOST/wps/myportal/Home/mi-intranet as a demo user (e.g. macarena)."
-echo "Next (with Lab 3): ./02-orbita-iq.sh   ·   Check: ./99-verify.sh"
+echo "Optional (with Lab 3A): ./02-orbita-iq.sh adds ÓRBITA to the HCL DX IQ chat   ·   Check: ./99-verify.sh"

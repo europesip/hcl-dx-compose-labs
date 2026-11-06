@@ -264,7 +264,7 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
     <div class="labrow">
       <div class="labrow-h">Lab 5</div>
       <div class="choices">
-        <label class="choice" id="lab5W" data-i18n-title="l5T" title="An intranet application (Script Applications + microservice + PostgreSQL) integrated with HCL DX IQ, deployed with one Helm chart"><input type="checkbox" id="lab5"><span><b data-i18n="l5">Lab 5 · ÓRBITA, an advanced application</b> <span class="tag adv" data-i18n="adv">Advanced · optional</span><small><span data-i18n="l5h">Intranet suite integrated with HCL DX IQ, one Helm chart</span> <button type="button" class="info-btn" data-info="orbInfo" data-i18n="more">ⓘ What is this?</button></small><small class="needs hidden" data-i18n="l5Needs">Needs "PostgreSQL" in the external dependencies</small></span></label>
+        <label class="choice" id="lab5W" data-i18n-title="l5T" title="An intranet application (Script Applications + microservice + PostgreSQL) with its own AI assistant, deployed with one Helm chart"><input type="checkbox" id="lab5"><span><b data-i18n="l5">Lab 5 · ÓRBITA, an advanced application</b> <span class="tag adv" data-i18n="adv">Advanced · optional</span><small><span data-i18n="l5h">Intranet suite with its own AI assistant, one Helm chart</span> <button type="button" class="info-btn" data-info="orbInfo" data-i18n="more">ⓘ What is this?</button></small><small class="needs hidden" data-i18n="l5Needs">Needs "PostgreSQL" in the external dependencies</small></span></label>
       </div>
       <p class="hint" data-i18n-html="l5p">An example of an <b>advanced application</b>, typical of a company intranet, built on DX Compose and <b>integrated with HCL DX IQ</b>: employees clock in and out, ask for time off and submit expense reports; managers approve their team's requests; accounting pays; HR sees everybody's time records. It combines six <b>Script Applications</b>, a <b>microservice</b> (REST API, single sign-on with the DX session), <b>persistence</b> in PostgreSQL and an <b>MCP server</b>, so the IQ assistant answers and acts on it as the user asking («How many days of holiday do I have left?», «Approve Macarena's holidays»). Not needed for the installation of DX: it shows what you can build on it.</p>
     </div>
@@ -441,8 +441,8 @@ footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);paddin
 <ul><li><b>Script Applications</b>: six React apps pushed to WCM by a Helm chart (DXClient), each on its own page under <i>Home</i>.</li>
 <li><b>Microservice</b>: a REST API (Open Liberty) on the DX host. It asks DX who the user is with their own session: no shared keys or stored passwords.</li>
 <li><b>Persistence</b>: its own database in the PostgreSQL of the external dependencies, with schema migrations (Flyway).</li>
-<li><b>AI integration</b>: an MCP server with 26 tools. Registered in the IQ Integrator (with a patch, because of the same IQ bug as in Lab 3B), the IQ assistant answers and acts on ÓRBITA <b>as the user asking</b>, in English or Spanish.</li></ul>
-<p>The demo users are those of the Lab 2A OpenLDAP (macarena, andres, german, patricia…). Public chart and images, about 3 minutes. Guide: <a href="https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab5-orbita/GUIDE.md" target="_blank" rel="noopener">lab5-orbita/GUIDE.md</a> · source: <a href="https://github.com/europesip/orbita" target="_blank" rel="noopener">github.com/europesip/orbita</a>.</p></div>
+<li><b>AI</b>: its own assistant, through the LiteLLM of Lab 3A or the external dependencies, with 26 tools that answer and act <b>as the user asking</b>, in English or Spanish. Optionally, the same tools as an MCP server for HCL DX IQ (with a patch, because of the same IQ bug as in Lab 3B).</li></ul>
+<p>The demo users are those of the Lab 2A OpenLDAP (macarena, andres, german, patricia…), each with the language of their DX profile (andres: English). Public chart and images, about 3 minutes. Guide: <a href="https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab5-orbita/GUIDE.md" target="_blank" rel="noopener">lab5-orbita/GUIDE.md</a> · source: <a href="https://github.com/europesip/orbita" target="_blank" rel="noopener">github.com/europesip/orbita</a>.</p></div>
   <div class="df"><button type="button" class="btn primary" data-close="orbInfo" data-i18n="close">Close</button></div>
 </dialog>
 
@@ -538,13 +538,13 @@ const T = {
     l1bT: "Una Script Application de ejemplo (React) que un chart de Helm sube a WCM",
     optional: "Opcional",
     l5: "Lab 5 · ÓRBITA, una aplicación avanzada",
-    l5h: "Suite de intranet integrada con HCL DX IQ, un chart de Helm",
-    l5T: "Una aplicación de intranet (Script Applications + microservicio + PostgreSQL) integrada con HCL DX IQ, desplegada con un chart de Helm",
+    l5h: "Suite de intranet con su propio asistente de IA, un chart de Helm",
+    l5T: "Una aplicación de intranet (Script Applications + microservicio + PostgreSQL) con su propio asistente de IA, desplegada con un chart de Helm",
     adv: "Avanzado · opcional",
     l5Needs: "Necesita \"PostgreSQL\" en las dependencias externas",
     l5p: "Un ejemplo de <b>aplicación avanzada</b>, típica de la intranet de una empresa, construida sobre DX Compose e <b>integrada con HCL DX IQ</b>: los empleados fichan, piden vacaciones y presentan notas de gasto; los responsables aprueban las solicitudes de su equipo; Administración paga; RRHH ve el registro de jornada de toda la plantilla. Combina seis <b>Script Applications</b>, un <b>microservicio</b> (API REST, inicio de sesión único con la sesión de DX), <b>persistencia</b> en PostgreSQL y un <b>servidor MCP</b>, para que el asistente de IQ responda y actúe sobre ella como el usuario que pregunta («¿Cuántos días de vacaciones me quedan?», «Aprueba las vacaciones de Macarena»). No hace falta para la instalación de DX: muestra lo que puedes construir encima.",
     orbInfoT: "Lab 5 · ÓRBITA, una aplicación avanzada",
-    orbInfoB: "<p><b>Un lab avanzado</b>, que no hace falta para la instalación de DX Compose: muestra cómo es una aplicación real sobre DX Compose. <b>ÓRBITA</b> es una suite de intranet de EUROPESIP: <b>fichaje</b> (también desde un quiosco con PIN o tarjeta QR), <b>vacaciones y ausencias</b>, <b>gastos y viajes</b> (tickets leídos con OCR en el navegador), <b>aprobaciones</b> con conversación y avisos, y una página de inicio con el día de cada persona.</p>\n<ul><li><b>Script Applications</b>: seis apps React que un chart de Helm sube a WCM (DXClient), cada una en su página bajo <i>Home</i>.</li>\n<li><b>Microservicio</b>: una API REST (Open Liberty) en el host de DX. Pregunta a DX quién es el usuario con su propia sesión: sin claves compartidas ni contraseñas guardadas.</li>\n<li><b>Persistencia</b>: su propia base de datos en el PostgreSQL de las dependencias externas, con migraciones del esquema (Flyway).</li>\n<li><b>Integración con IA</b>: un servidor MCP con 26 herramientas. Registrado en el Integrator de IQ (con un parche, por el mismo bug de IQ que en el Lab 3B), el asistente de IQ responde y actúa en ÓRBITA <b>como el usuario que pregunta</b>, en español o en inglés.</li></ul>\n<p>Los usuarios de la demo son los del OpenLDAP del Lab 2A (macarena, andres, german, patricia…). Chart e imágenes públicos, unos 3 minutos. Guía: <a href=\"https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab5-orbita/GUIDE.es.md\" target=\"_blank\" rel=\"noopener\">lab5-orbita/GUIDE.es.md</a> · código: <a href=\"https://github.com/europesip/orbita\" target=\"_blank\" rel=\"noopener\">github.com/europesip/orbita</a>.</p>",
+    orbInfoB: "<p><b>Un lab avanzado</b>, que no hace falta para la instalación de DX Compose: muestra cómo es una aplicación real sobre DX Compose. <b>ÓRBITA</b> es una suite de intranet de EUROPESIP: <b>fichaje</b> (también desde un quiosco con PIN o tarjeta QR), <b>vacaciones y ausencias</b>, <b>gastos y viajes</b> (tickets leídos con OCR en el navegador), <b>aprobaciones</b> con conversación y avisos, y una página de inicio con el día de cada persona.</p>\n<ul><li><b>Script Applications</b>: seis apps React que un chart de Helm sube a WCM (DXClient), cada una en su página bajo <i>Home</i>.</li>\n<li><b>Microservicio</b>: una API REST (Open Liberty) en el host de DX. Pregunta a DX quién es el usuario con su propia sesión: sin claves compartidas ni contraseñas guardadas.</li>\n<li><b>Persistencia</b>: su propia base de datos en el PostgreSQL de las dependencias externas, con migraciones del esquema (Flyway).</li>\n<li><b>IA</b>: su propio asistente, a través del LiteLLM del Lab 3A o de las dependencias externas, con 26 herramientas que responden y actúan <b>como el usuario que pregunta</b>, en español o en inglés. Opcionalmente, las mismas herramientas como servidor MCP para HCL DX IQ (con un parche, por el mismo bug de IQ que en el Lab 3B).</li></ul>\n<p>Los usuarios de la demo son los del OpenLDAP del Lab 2A (macarena, andres, german, patricia…), cada uno con el idioma de su perfil de DX (andres: inglés). Chart e imágenes públicos, unos 3 minutos. Guía: <a href=\"https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab5-orbita/GUIDE.es.md\" target=\"_blank\" rel=\"noopener\">lab5-orbita/GUIDE.es.md</a> · código: <a href=\"https://github.com/europesip/orbita\" target=\"_blank\" rel=\"noopener\">github.com/europesip/orbita</a>.</p>",
     dxcLic: "He leído y acepto la licencia de <b>DXClient</b> de HCL, que usan el Lab 1B y el Lab 5 para subir sus Script Applications (<a href=\"https://github.com/europesip/hcl-dx-scriptapp-helm/blob/main/README.es.md#instalarlo-en-tu-clúster\" target=\"_blank\" rel=\"noopener\">cómo leerla</a>)",
     dirNeeds: "OpenLDAP necesita \"OpenLDAP\" en las dependencias externas",
     l3T: "El asistente de IA de DX, IQ",
@@ -730,7 +730,7 @@ function envLine(k, v, comment){
 function secretLine(k, v, hint){
   return v ? envLine(k, v) : `# export ${k}=""   # <<< ${hint}`;
 }
-const ORBITA_VERSION = "2.3.0";   // chart oci://ghcr.io/europesip/charts/hcl-dx-orbita (Lab 5)
+const ORBITA_VERSION = "3.1.0";   // chart oci://ghcr.io/europesip/charts/hcl-dx-orbita (Lab 5)
 const demoDeps = s => [s.deps.ldap && "openldap", s.deps.pg && "postgres", s.deps.llm && "litellm", s.deps.mcp && "mcp"].filter(Boolean).join(" ");
 const demoLabs = s => [s.lab1b && "1b", s.dir === "openldap" && "2a-openldap", s.dir === "ad" && "2a-ad", s.lab3 && "3a",
   s.lab3b && "3b", s.iqdb && "iqdb", s.lab4 && "4", s.lab5 && "5"].filter(Boolean).join(" ");
@@ -1086,11 +1086,12 @@ function buildRunbook(s){
   if (s.lab5) {
     h(`## ${r.lab5}`);
     o.push(`${r.guide}: [lab5-orbita/${G}](lab5-orbita/${G})`, "", t(
-      "An advanced, optional lab: ÓRBITA, an intranet application (time tracking, time off, expenses, approvals) with six Script Applications, a microservice, its PostgreSQL database and an MCP server for IQ, deployed with one public Helm chart.",
-      "Un lab avanzado y opcional: ÓRBITA, una aplicación de intranet (fichaje, vacaciones, gastos, aprobaciones) con seis Script Applications, un microservicio, su base de datos PostgreSQL y un servidor MCP para IQ, desplegada con un chart de Helm público."));
+      "An advanced, optional lab: ÓRBITA, an intranet application (time tracking, time off, expenses, approvals) with six Script Applications, a microservice, its PostgreSQL database, its own AI assistant and an MCP server for IQ, deployed with one public Helm chart.",
+      "Un lab avanzado y opcional: ÓRBITA, una aplicación de intranet (fichaje, vacaciones, gastos, aprobaciones) con seis Script Applications, un microservicio, su base de datos PostgreSQL, su propio asistente de IA y un servidor MCP para IQ, desplegada con un chart de Helm público."));
+    const orbAsis = (s.lab3 || s.deps.llm) ? `--set assistant.litellm.url=${s.LITELLM_URL}` : "--set assistant.backend=none";
     step(t("5-1 · Install ÓRBITA with its Helm chart (~3 min)", "5-1 · Instalar ÓRBITA con su chart de Helm (~3 min)"), "lab5-orbita/01-orbita-install.sh",
-      `helm upgrade --install orbita oci://ghcr.io/europesip/charts/hcl-dx-orbita --version ${ORBITA_VERSION} -n ${s.SHARED_NS} \\\n  --set dx.host=${s.DX_HOST} --set dx.caSecret=orbita-dx-ca \\\n  --set database.host=${s.PG_HOST} --set database.create.superuserSecret=dx-pg-superuser \\\n  --set scriptapps.dx.host=${s.DX_HOST} --set scriptapps.dx.credentialsSecret=orbita-dx --set scriptapps.dx.caSecret=orbita-dx-ca \\\n  --set scriptapps.dxclient.acceptLicense=true`);
-    if (s.lab3) step(t("5-2 · Register its MCP server in IQ (patch, HCL case CS1479102)", "5-2 · Registrar su servidor MCP en IQ (parche, caso CS1479102 de HCL)"), "lab5-orbita/02-orbita-iq.sh",
+      `helm upgrade --install orbita oci://ghcr.io/europesip/charts/hcl-dx-orbita --version ${ORBITA_VERSION} -n ${s.SHARED_NS} \\\n  --set dx.host=${s.DX_HOST} --set dx.caSecret=orbita-dx-ca \\\n  --set database.host=${s.PG_HOST} --set database.create.superuserSecret=dx-pg-superuser \\\n  --set scriptapps.dx.host=${s.DX_HOST} --set scriptapps.dx.credentialsSecret=orbita-dx --set scriptapps.dx.caSecret=orbita-dx-ca \\\n  --set scriptapps.dxclient.acceptLicense=true ${orbAsis}`);
+    if (s.lab3) step(t("5-2 · Optional: its MCP server in IQ (patch, HCL case CS1479102)", "5-2 · Opcional: su servidor MCP en IQ (parche, caso CS1479102 de HCL)"), "lab5-orbita/02-orbita-iq.sh",
       `LIST=$(kubectl -n ${s.DX_NS} get configmap ${s.IQ_RELEASE}-integrator -o jsonpath='{.data.dx\\.config\\.integrator\\.mcp_server_list}')\nkubectl -n ${s.DX_NS} patch configmap ${s.IQ_RELEASE}-integrator --type merge \\\n  -p "{\\"data\\":{\\"dx.config.integrator.mcp_server_list\\":\\"$LIST,http://orbita-api.${s.SHARED_NS}.svc.cluster.local:9081\\"}}"\nkubectl -n ${s.DX_NS} rollout restart deployment/${s.IQ_RELEASE}-integrator`);
     step(t("5 · Check", "5 · Comprobar"), "lab5-orbita/99-verify.sh", null);
     o.push("", t(`Sign in as a demo user (**macarena**, **andres**…) and open https://${s.DX_HOST}/wps/myportal/Home/mi-intranet.`, `Entra con un usuario de la demo (**macarena**, **andres**…) y abre https://${s.DX_HOST}/wps/myportal/Home/mi-intranet.`));
@@ -1639,9 +1640,10 @@ done`);
 
   // ---- Lab 5 (advanced): ÓRBITA, the last lab in both modes
   if (s.lab5) {
+    const orbAsis = (s.lab3 || s.deps.llm) ? `--set assistant.litellm.url=${s.LITELLM_URL} \\\n  ` : "--set assistant.backend=none \\\n  ";
     add(L5, "5-1", t("Install ÓRBITA with its Helm chart (~3 min)", "Instalar ÓRBITA con su chart de Helm (~3 min)"),
-      t("Intranet application: six Script Applications, a microservice, its PostgreSQL database and pages (public chart, github.com/europesip/orbita).",
-        "Aplicación de intranet: seis Script Applications, un microservicio, su base de datos PostgreSQL y las páginas (chart público, github.com/europesip/orbita)."),
+      t("Intranet application: six Script Applications, a microservice, its PostgreSQL database, its AI assistant and pages (public chart, github.com/europesip/orbita).",
+        "Aplicación de intranet: seis Script Applications, un microservicio, su base de datos PostgreSQL, su asistente de IA y las páginas (chart público, github.com/europesip/orbita)."),
 `kubectl apply -f 5-orbita/secrets.yaml
 kubectl -n ${ns} get secret dx-tls-cert -o jsonpath='{.data.tls\\.crt}' | base64 -d > 5-orbita/dx-ca.crt
 kubectl -n ${sh} create secret generic orbita-dx-ca --from-file=ca.crt=5-orbita/dx-ca.crt ${kapply}
@@ -1650,13 +1652,13 @@ helm upgrade --install orbita oci://ghcr.io/europesip/charts/hcl-dx-orbita --ver
   --set database.host=${s.PG_HOST} --set database.create.superuserSecret=dx-pg-superuser \\
   --set mcp.networkPolicy.integratorNamespace=${ns} \\
   --set scriptapps.dx.host=${H} --set scriptapps.dx.credentialsSecret=orbita-dx --set scriptapps.dx.caSecret=orbita-dx-ca \\
-  --set scriptapps.dxclient.acceptLicense=true      # you accepted the DXClient license in the wizard
+  ${orbAsis}--set scriptapps.dxclient.acceptLicense=true      # you accepted the DXClient license in the wizard
 kubectl -n ${sh} rollout status deploy/orbita-api --timeout=10m
 kubectl -n ${sh} logs job/orbita-scriptapps-push -c dxclient | grep -E "OK:|pages:"`,
       {manual: t(`Sign in as a demo user (macarena, andres...) and open https://${H}/wps/myportal/Home/mi-intranet.`,
                  `Entra con un usuario de la demo (macarena, andres...) y abre https://${H}/wps/myportal/Home/mi-intranet.`)});
     if (s.lab3) {
-      add(L5, "5-2", t("Register the ÓRBITA MCP server in IQ", "Registrar el servidor MCP de ÓRBITA en IQ"),
+      add(L5, "5-2", t("Optional: the ÓRBITA MCP server in IQ", "Opcional: el servidor MCP de ÓRBITA en IQ"),
         t("A patch of the Integrator MCP list (the documented variable has no effect, HCL case CS1479102), and a restart.",
           "Un parche de la lista de MCP del Integrator (la variable documentada no tiene efecto, caso CS1479102 de HCL), y un reinicio."),
 `URL=http://orbita-api.${sh}.svc.cluster.local:9081
