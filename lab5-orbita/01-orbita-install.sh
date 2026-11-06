@@ -6,7 +6,7 @@
 set -euo pipefail
 source "$(dirname "$0")/../common/lib.sh"
 require_cmd helm kubectl
-: "${ORBITA_RELEASE:=orbita}" "${ORBITA_CHART:=oci://ghcr.io/europesip/charts/hcl-dx-orbita}" "${ORBITA_CHART_VERSION:=2.2.1}"
+: "${ORBITA_RELEASE:=orbita}" "${ORBITA_CHART:=oci://ghcr.io/europesip/charts/hcl-dx-orbita}" "${ORBITA_CHART_VERSION:=2.3.0}"
 : "${DXCLIENT_IMAGE:=hclcr.io/dx-public/dxclient:v95_CF239_20261103-1404}"
 require_vars DX_NS SHARED_NS DX_HOST PG_HOST WPSADMIN_PASSWORD
 

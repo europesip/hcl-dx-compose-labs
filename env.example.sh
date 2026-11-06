@@ -105,7 +105,7 @@ export DXCLIENT_ACCEPT_LICENSE="${DXCLIENT_ACCEPT_LICENSE:-}"      # <<< Lab 1B 
 # Script Applications + microservice + PostgreSQL + MCP server for IQ, one public Helm chart.
 export ORBITA_RELEASE="${ORBITA_RELEASE:-orbita}"
 export ORBITA_CHART="${ORBITA_CHART:-oci://ghcr.io/europesip/charts/hcl-dx-orbita}"
-export ORBITA_CHART_VERSION="${ORBITA_CHART_VERSION:-2.2.1}"
+export ORBITA_CHART_VERSION="${ORBITA_CHART_VERSION:-2.3.0}"
 
 # --- Lab 3: IQ with OpenRouter ------------------------------------------------------------
 export OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}"        # <<< Lab 3: sk-or-v1-...

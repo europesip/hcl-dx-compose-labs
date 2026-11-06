@@ -50,7 +50,7 @@ Crea dos secrets en `dx-shared` (`orbita-dx`: el administrador de DX para DXClie
 certificado de DX) y ejecuta:
 
 ```bash
-helm upgrade --install orbita oci://ghcr.io/europesip/charts/hcl-dx-orbita --version 2.2.1 -n dx-shared \
+helm upgrade --install orbita oci://ghcr.io/europesip/charts/hcl-dx-orbita --version 2.3.0 -n dx-shared \
   --set dx.host=$DX_HOST --set dx.caSecret=orbita-dx-ca \
   --set database.host=$PG_HOST --set database.create.superuserSecret=dx-pg-superuser \
   --set scriptapps.dx.host=$DX_HOST --set scriptapps.dx.credentialsSecret=orbita-dx \

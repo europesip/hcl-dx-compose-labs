@@ -730,7 +730,7 @@ function envLine(k, v, comment){
 function secretLine(k, v, hint){
   return v ? envLine(k, v) : `# export ${k}=""   # <<< ${hint}`;
 }
-const ORBITA_VERSION = "2.2.1";   // chart oci://ghcr.io/europesip/charts/hcl-dx-orbita (Lab 5)
+const ORBITA_VERSION = "2.3.0";   // chart oci://ghcr.io/europesip/charts/hcl-dx-orbita (Lab 5)
 const demoDeps = s => [s.deps.ldap && "openldap", s.deps.pg && "postgres", s.deps.llm && "litellm", s.deps.mcp && "mcp"].filter(Boolean).join(" ");
 const demoLabs = s => [s.lab1b && "1b", s.dir === "openldap" && "2a-openldap", s.dir === "ad" && "2a-ad", s.lab3 && "3a",
   s.lab3b && "3b", s.iqdb && "iqdb", s.lab4 && "4", s.lab5 && "5"].filter(Boolean).join(" ");
