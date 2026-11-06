@@ -88,7 +88,7 @@ export IQ_DB_PASSWORD="${IQ_DB_PASSWORD:-EuropeS1P}"                # Lab 2B/3: 
 
 # --- Fast demo mode (common/demo-fast.sh) -------------------------------------------------
 # What it installs. Dependencies: openldap postgres litellm mcp
-# Labs (Lab 1 is always installed): 1b 2a-openldap | 2a-ad 3a 3b iqdb 4
+# Labs (Lab 1 is always installed): 1b 2a-openldap | 2a-ad 3a 3b iqdb 4 5 (Lab 5, ÓRBITA: needs postgres)
 export DEMO_DEPS="${DEMO_DEPS:-openldap litellm}"
 export DEMO_LABS="${DEMO_LABS:-2a-openldap 3a 4}"
 

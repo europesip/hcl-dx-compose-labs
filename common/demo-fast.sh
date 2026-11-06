@@ -26,6 +26,7 @@ phase() { printf '\n\033[1;35m### [%s] %s\033[0m\n' "$(date -u -d @$(( $(date +%
 has 3a && ! has litellm && die "Lab 3A needs LiteLLM in DEMO_DEPS"
 has 3b && ! { has mcp && has 3a; } && die "Lab 3B needs Lab 3A and mcp in DEMO_DEPS"
 has iqdb && ! { has postgres && has 3a; } && die "The IQ sessions appendix (iqdb) needs Lab 3A and postgres in DEMO_DEPS"
+has 5 && ! has postgres && die "Lab 5 (ÓRBITA) needs postgres in DEMO_DEPS"
 has 2a-openldap && ! has openldap && die "Lab 2A with OpenLDAP needs openldap in DEMO_DEPS"
 has 2a-openldap && has 2a-ad && die "Choose 2a-openldap or 2a-ad, not both"
 info "Dependencies: ${DEMO_DEPS:-none} · Labs: 1 ${DEMO_LABS:-}"
@@ -78,10 +79,17 @@ if has 1b; then
   "$R/lab1b-scriptapp/01-scriptapp-install.sh"
 fi
 
+if has 5; then
+  phase "7 · Lab 5 · ÓRBITA (advanced)"
+  "$R/lab5-orbita/01-orbita-install.sh"
+  has 3a && "$R/lab5-orbita/02-orbita-iq.sh"
+fi
+
 phase "Checks"
 "$R/lab1-dx-base/99-verify.sh" || true
 "$R/external-deps/99-verify.sh" || true
 has 3a && { "$R/lab3-iq-openrouter/99-verify.sh" || true; }
 has 1b && { "$R/lab1b-scriptapp/99-verify.sh" || true; }
+has 5 && { "$R/lab5-orbita/99-verify.sh" || true; }
 phase "Done in $(( ($(date +%s) - T0) / 60 )) min · https://${DX_HOST}/wps/portal"
 has 2a-openldap && echo "Manual step (Lab 2A step 4): give the Administrator role to the dxadmins group in the portal."
