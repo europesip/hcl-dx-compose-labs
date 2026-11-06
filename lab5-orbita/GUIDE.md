@@ -8,7 +8,7 @@
 
 **ÓRBITA** is an intranet suite by EUROPESIP: time tracking, time off, expenses and travel, approvals, a home page and
 a time clock kiosk. Source, chart and documentation: [github.com/europesip/orbita](https://github.com/europesip/orbita)
-(licence PolyForm Noncommercial 1.0.0). The application interface is in Spanish; the AI assistant works in English and Spanish.
+(free software licence AGPL-3.0). The application interface is in Spanish; the AI assistant works in English and Spanish.
 
 | Piece | What it shows | In ÓRBITA |
 |---|---|---|

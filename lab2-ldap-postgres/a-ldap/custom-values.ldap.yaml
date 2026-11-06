@@ -24,3 +24,15 @@ configuration:
       id: "dx_ldap"
       # Bind user (full DN) and password in a secret with keys bindUser/bindPassword
       customLdapSecret: "dx-ldap-bind"
+
+    # preferredLanguage (language of each user, in demo-users.ldif): the DX Compose user registry
+    # does not declare it, so DX would not read it from the LDAP. With this property the DX profile
+    # returns it (Script Applications such as ÓRBITA and Hello DX use it for their language).
+    # DX Compose > Adding custom attributes (wplc-add-property).
+    configOverrideFiles:
+      preferred-language.xml: |
+        <server description="DX Web Engine - preferredLanguage of the users">
+          <wplc-add-property>
+            <resource propertyName="preferredLanguage" dataType="String" entityTypes="PersonAccount" multiValued="false"/>
+          </wplc-add-property>
+        </server>

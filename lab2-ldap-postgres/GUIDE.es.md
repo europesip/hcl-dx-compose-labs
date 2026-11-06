@@ -65,14 +65,14 @@ Documentación de HCL:
  DX (dx-demo)                                 dx-shared
  Web Engine ── LDAP 389 ──► openldap.dx-shared.svc.cluster.local
    repositorio federado:                       dc=dxdemo,dc=com
-     o=defaultWIMFileBasedRealm (wpsadmin)       ou=users:  7 usuarios de demo
+     o=defaultWIMFileBasedRealm (wpsadmin)       ou=users:  8 usuarios de demo
      dc=dxdemo,dc=com           (LDAP)           ou=groups: dxadmins, dxauthors, dxmarketing
 ```
 
 | Grupo LDAP | Usuarios | Permisos en DX |
 |---|---|---|
 | `dxadmins` | andres, eduardo | **Administrador del portal** (paso 4) |
-| `dxauthors` | macarena, enrique, jordi | usuario autenticado |
+| `dxauthors` | macarena, enrique, jordi, justo | usuario autenticado |
 | `dxmarketing` | patricia, german | usuario autenticado |
 
 Todos con la contraseña **EuropeS1P** (`LDAP_USERS_PASSWORD`). `wpsadmin` (registro básico, grupo `wpsadmins`)
@@ -88,7 +88,7 @@ lab2-ldap-postgres/a-ldap/01-ldap-install.sh
 
 - Secret `openldap-admin` con la contraseña de `cn=admin,dc=dxdemo,dc=com` (`LDAP_ADMIN_PASSWORD`).
 - ConfigMap `openldap-demo-ldif` con [demo-users.ldif](a-ldap/demo-users.ldif): la raíz `dc=dxdemo,dc=com`,
-  los 7 usuarios y los 3 grupos de la tabla de arriba.
+  los 8 usuarios y los 3 grupos de la tabla de arriba. Todos tienen `preferredLanguage: es` (español), salvo `andres` y `justo`: `en` (inglés).
 - Chart comunitario `helm-openldap/openldap-stack-ha` 4.3.3 con
   [openldap-values.yaml](a-ldap/openldap-values.yaml): una réplica y un PVC de 1 GiB en la StorageClass `SC_RWO`.
 
@@ -139,6 +139,13 @@ un `<ldapRegistry>` (filtros `inetOrgPerson` para usuarios y `groupOfUniqueNames
 `<federatedRepository>` que une **el registro básico** (`o=defaultWIMFileBasedRealm`, donde vive
 `wpsadmin`) **y el LDAP**. Por eso wpsadmin sigue entrando y los usuarios del LDAP también. Para
 filtros o atributos distintos se usaría `configuration.webEngine.configOverrideFiles` con XML propio.
+
+**El idioma de los usuarios.** El registro de usuarios de DX Compose no declara `preferredLanguage`, así
+que DX no lo leería del LDAP. [custom-values.ldap.yaml](a-ldap/custom-values.ldap.yaml) lo añade con un
+`configOverrideFiles` (`<wplc-add-property>`, *Adding custom attributes* en la documentación de DX
+Compose). Así el perfil de DX devuelve el idioma de cada usuario, y Script Applications como Hello DX
+(Lab 1B) y ÓRBITA (Lab 5) muestran su interfaz en él. Para probar el inglés, cámbialo a un usuario:
+`preferredLanguage: en`.
 
 > **Variante sin registro básico.** Si todos los usuarios, incluido el administrador, están en el
 > LDAP: `security.webEngine.basicRegistry.enabled: false` y `webEngineUser` con el **DN completo**

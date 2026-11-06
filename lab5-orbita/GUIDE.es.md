@@ -8,7 +8,7 @@
 
 **ÓRBITA** es una suite de intranet de EUROPESIP: fichaje, vacaciones y ausencias, gastos y viajes, aprobaciones, una
 página de inicio y un quiosco de fichaje. Código, chart y documentación:
-[github.com/europesip/orbita](https://github.com/europesip/orbita) (licencia PolyForm Noncommercial 1.0.0).
+[github.com/europesip/orbita](https://github.com/europesip/orbita) (licencia libre AGPL-3.0).
 
 | Pieza | Qué muestra | En ÓRBITA |
 |---|---|---|

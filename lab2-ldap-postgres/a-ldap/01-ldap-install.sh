@@ -48,4 +48,16 @@ kubectl -n "$SHARED_NS" get svc "$LDAP_RELEASE"
 # start does not retry it (the PVC already has data). A restart here means something went wrong.
 restarts=$(kubectl -n "$SHARED_NS" get pod "${LDAP_RELEASE}-0" -o jsonpath='{.status.containerStatuses[0].restartCount}')
 [[ "$restarts" == 0 ]] || warn "${LDAP_RELEASE}-0 restarted $restarts time(s): check the LDIF load with ./02-ldap-test.sh"
+# preferredLanguage (Spanish) for the users that do not have it: the LDIF only gives it to an LDAP
+# created from scratch, and labs installed before this change keep their data (it never overwrites a
+# language the user already chose).
+kubectl -n "$SHARED_NS" wait --for=condition=Ready "pod/${LDAP_RELEASE}-0" --timeout=5m >/dev/null
+kubectl -n "$SHARED_NS" exec -i "${LDAP_RELEASE}-0" -- sh -c '
+  ldapsearch -x -LLL -H ldap://localhost:1389 -D cn=admin,dc=dxdemo,dc=com -w "$LDAP_ADMIN_PASSWORD" \
+    -b ou=users,dc=dxdemo,dc=com "(&(objectClass=inetOrgPerson)(!(preferredLanguage=*)))" dn \
+  | sed -n "s/^dn: //p" | while read -r dn; do
+      printf "dn: %s\nchangetype: modify\nadd: preferredLanguage\npreferredLanguage: es\n" "$dn" \
+        | ldapmodify -x -H ldap://localhost:1389 -D cn=admin,dc=dxdemo,dc=com -w "$LDAP_ADMIN_PASSWORD" >/dev/null \
+        && echo "  preferredLanguage: es -> $dn"
+    done' || warn "could not set preferredLanguage on the existing users"
 echo "Next: ./02-ldap-test.sh"
