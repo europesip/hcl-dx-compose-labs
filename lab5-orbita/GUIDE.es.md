@@ -50,7 +50,7 @@ Crea dos secrets en `dx-shared` (`orbita-dx`: el administrador de DX para DXClie
 certificado de DX) y ejecuta:
 
 ```bash
-helm upgrade --install orbita oci://ghcr.io/europesip/charts/hcl-dx-orbita --version 2.2.0 -n dx-shared \
+helm upgrade --install orbita oci://ghcr.io/europesip/charts/hcl-dx-orbita --version 2.2.1 -n dx-shared \
   --set dx.host=$DX_HOST --set dx.caSecret=orbita-dx-ca \
   --set database.host=$PG_HOST --set database.create.superuserSecret=dx-pg-superuser \
   --set scriptapps.dx.host=$DX_HOST --set scriptapps.dx.credentialsSecret=orbita-dx \
@@ -92,7 +92,7 @@ la variable documentada no tiene efecto y la lista está en el ConfigMap `dx-iq-
 Lab 3 vuelve a añadir ÓRBITA después de cada upgrade de IQ.
 
 Después, en el chat de IQ (el botón ✨ de DX, o «✨ Pregúntale a ÓRBITA» en cada aplicación de ÓRBITA), con un usuario
-de la demo:
+de la demo. **Se puede preguntar en español o en inglés**: el asistente responde en el idioma de la pregunta.
 
 - «¿Cuántos días de vacaciones me quedan?» · «Pídeme vacaciones del 9 al 11 de diciembre»
 - «¿He fichado hoy?» · «Ficha mi entrada en teletrabajo» · «¿Qué días de este mes no cerré el fichaje?»

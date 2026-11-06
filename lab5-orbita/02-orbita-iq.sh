@@ -32,4 +32,4 @@ kubectl -n "$DX_NS" rollout restart deployment/"$CM"
 kubectl -n "$DX_NS" rollout status deployment/"$CM" --timeout=300s
 sleep 15
 kubectl -n "$DX_NS" logs deploy/"$CM" | grep -oE "Fetched [0-9]+ tools from [^ ]+|Total tools: [0-9]+" | sort -u | sed 's/^/  /'
-echo "Ask in the IQ chat, as a demo user:  ¿Cuántos días de vacaciones me quedan?   (more: lab5-orbita/GUIDE.md)"
+echo "Ask in the IQ chat, as a demo user (English or Spanish):  How many days of holiday do I have left?   (more: lab5-orbita/GUIDE.md)"

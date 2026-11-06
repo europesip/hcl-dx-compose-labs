@@ -8,7 +8,7 @@
 
 **ÓRBITA** is an intranet suite by EUROPESIP: time tracking, time off, expenses and travel, approvals, a home page and
 a time clock kiosk. Source, chart and documentation: [github.com/europesip/orbita](https://github.com/europesip/orbita)
-(licence PolyForm Noncommercial 1.0.0). The application interface is in Spanish.
+(licence PolyForm Noncommercial 1.0.0). The application interface is in Spanish; the AI assistant works in English and Spanish.
 
 | Piece | What it shows | In ÓRBITA |
 |---|---|---|
@@ -50,7 +50,7 @@ It creates two secrets in `dx-shared` (`orbita-dx`: the DX administrator for DXC
 DX certificate) and runs:
 
 ```bash
-helm upgrade --install orbita oci://ghcr.io/europesip/charts/hcl-dx-orbita --version 2.2.0 -n dx-shared \
+helm upgrade --install orbita oci://ghcr.io/europesip/charts/hcl-dx-orbita --version 2.2.1 -n dx-shared \
   --set dx.host=$DX_HOST --set dx.caSecret=orbita-dx-ca \
   --set database.host=$PG_HOST --set database.create.superuserSecret=dx-pg-superuser \
   --set scriptapps.dx.host=$DX_HOST --set scriptapps.dx.credentialsSecret=orbita-dx \
@@ -90,15 +90,18 @@ restarts it. A patch is needed because of the same IQ bug as in Lab 3B (case CS1
 the documented variable has no effect and the list lives in the ConfigMap `dx-iq-integrator`. Lab 3
 `04-iq-install.sh` adds ÓRBITA back after every IQ upgrade.
 
-Then, in the IQ chat (the ✨ button of DX, or «✨ Pregúntale a ÓRBITA» in every ÓRBITA app), as a demo user:
+Then, in the IQ chat (the ✨ button of DX, or «✨ Pregúntale a ÓRBITA» in every ÓRBITA app), as a demo user. **Ask in
+English or in Spanish**: the assistant answers in the language of the question (ÓRBITA's data are in Spanish and the
+AI translates them).
 
-- «¿Cuántos días de vacaciones me quedan?» · «Pídeme vacaciones del 9 al 11 de diciembre»
-- «¿He fichado hoy?» · «Ficha mi entrada en teletrabajo» · «¿Qué días de este mes no cerré el fichaje?»
-- «¿Cuánto me deben de gastos?» · «Crea una nota "Visita a Sevilla" y añade una comida de ayer de 42,80 €»
-- As `andres`: «¿Qué tengo que aprobar?» · «¿Quién de mi equipo está trabajando ahora?» · «Aprueba las vacaciones de macarena»
+- «How many days of holiday do I have left?» · «Book me holidays from 9 to 11 December»
+- «Have I clocked in today?» · «Clock me in, working from home» · «Which days this month did I not clock out?»
+- «How much am I owed in expenses?» · «Create a report "Visit to Seville" and add a €42.80 lunch from yesterday»
+- As `andres`: «What do I have to approve?» · «Who in my team is working right now?» · «Approve macarena's holidays»
 
-More than 60 questions: [ai-questions.md](https://github.com/europesip/orbita/blob/main/docs/ai-questions.md). The
-tools act as the user asking (identified by their DX session); anything that changes data asks for confirmation first.
+More than 60 questions: [ai-questions.md](https://github.com/europesip/orbita/blob/main/docs/ai-questions.md) (in
+Spanish: [preguntas-ia.md](https://github.com/europesip/orbita/blob/main/docs/preguntas-ia.md)). The tools act as the
+user asking (identified by their DX session); anything that changes data asks for confirmation first.
 
 **Prompt size.** Every tool definition goes into every call to the model: the 26 ÓRBITA tools are about 4,700 tokens.
 To publish fewer, `--set 'mcp.tools.enabled={vacaciones,fichaje}'` or `--set mcp.tools.readOnly=true` in step 1, then
