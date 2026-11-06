@@ -26,10 +26,13 @@ helm upgrade --install "$IQ_RELEASE" "$IQ_CHART_TGZ" -n "$DX_NS" -f "$VALUES" "$
   --set-string configuration.dx.releaseName="$DX_RELEASE" \
   --set-string configuration.dx.externalHost="$DX_HOST"
 
-# Lab 3B: the chart regenerates the MCP Server list with only the HCL one. If the custom MCP exists
-# in the shared namespace, it is added back (see custom-mcp/03-iq-register.sh).
-if kubectl -n "$SHARED_NS" get svc europesip-mcp >/dev/null 2>&1; then
-  LIST="http://${IQ_RELEASE}-mcp-server:3000,http://europesip-mcp.${SHARED_NS}.svc.cluster.local:3000"
+# Lab 3B and Lab 5: the chart regenerates the MCP Server list with only the HCL one. The custom MCP
+# servers that exist in the shared namespace are added back (see custom-mcp/03-iq-register.sh and
+# lab5-orbita/02-orbita-iq.sh).
+LIST="http://${IQ_RELEASE}-mcp-server:3000"
+kubectl -n "$SHARED_NS" get svc europesip-mcp >/dev/null 2>&1 && LIST="$LIST,http://europesip-mcp.${SHARED_NS}.svc.cluster.local:3000"
+kubectl -n "$SHARED_NS" get svc "${ORBITA_RELEASE:-orbita}-api" >/dev/null 2>&1 && LIST="$LIST,http://${ORBITA_RELEASE:-orbita}-api.${SHARED_NS}.svc.cluster.local:9081"
+if [[ "$LIST" == *,* ]]; then
   kubectl -n "$DX_NS" patch configmap "${IQ_RELEASE}-integrator" --type merge \
     -p "{\"data\":{\"dx.config.integrator.mcp_server_list\":\"$LIST\"}}"
   info "MCP Servers: $LIST"

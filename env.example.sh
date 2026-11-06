@@ -99,7 +99,13 @@ export SCRIPTAPP_RELEASE="${SCRIPTAPP_RELEASE:-hello-dx}"
 export SCRIPTAPP_CHART="${SCRIPTAPP_CHART:-oci://ghcr.io/europesip/charts/hcl-dx-scriptapp}"
 export SCRIPTAPP_CHART_VERSION="${SCRIPTAPP_CHART_VERSION:-0.1.4}"
 export DXCLIENT_IMAGE="${DXCLIENT_IMAGE:-hclcr.io/dx-public/dxclient:v95_CF239_20261103-1404}"
-export DXCLIENT_ACCEPT_LICENSE="${DXCLIENT_ACCEPT_LICENSE:-}"      # <<< Lab 1B: yes
+export DXCLIENT_ACCEPT_LICENSE="${DXCLIENT_ACCEPT_LICENSE:-}"      # <<< Lab 1B and Lab 5: yes
+
+# --- Lab 5 (advanced, optional): ÓRBITA, github.com/europesip/orbita ----------------------
+# Script Applications + microservice + PostgreSQL + MCP server for IQ, one public Helm chart.
+export ORBITA_RELEASE="${ORBITA_RELEASE:-orbita}"
+export ORBITA_CHART="${ORBITA_CHART:-oci://ghcr.io/europesip/charts/hcl-dx-orbita}"
+export ORBITA_CHART_VERSION="${ORBITA_CHART_VERSION:-2.2.0}"
 
 # --- Lab 3: IQ with OpenRouter ------------------------------------------------------------
 export OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}"        # <<< Lab 3: sk-or-v1-...

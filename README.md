@@ -4,7 +4,8 @@
 
 Hands-on labs to **install HCL Digital Experience Compose step by step**, as a proof of concept
 (PoC). You start from an existing Kubernetes or OpenShift cluster, without DX, and build the platform
-in four labs, each one on top of the previous one.
+in four labs, each one on top of the previous one. An advanced Lab 5 then deploys a complete application
+on top of it (Script Applications, a microservice, persistence and AI).
 
 > **Where to start.** The ideal path is to **start with Lab 1**, on a Kubernetes or OpenShift
 > cluster that is **already installed** and meets the [base requirements](docs/requirements.md)
@@ -21,6 +22,7 @@ in four labs, each one on top of the previous one.
 | [Lab 3 · IQ with OpenRouter](lab3-iq-openrouter/GUIDE.md) | **3A**: the DX AI assistant (IQ) using LiteLLM as a proxy to OpenRouter (Claude, or Qwen for a cheaper PoC) instead of AWS Bedrock. **3B**: EUROPESIP custom MCP Server (services, support, labs and the figma&web-to-dx tool) | ~13 min (3A ~10 · 3B ~3) |
 | [Lab 4 · Search with OpenSearch](lab4-opensearch/GUIDE.md) | Search V2: OpenSearch + Search Middleware (`hcl-dx-search` 2.37.0), certificates and `adminDN`, crawling of WCM, portal and JCR, and search through the API | ~10 min |
 | | **Total run time** (Labs 1 to 4) | **~60 min** |
+| ★ [Lab 5 · ÓRBITA, an advanced application](lab5-orbita/GUIDE.md) *(advanced, optional)* | An intranet suite (time tracking, time off, expenses, approvals) deployed with **one Helm chart**: six **Script Applications**, a **microservice** (REST API, single sign-on with the DX session), **persistence** in PostgreSQL with Flyway and **AI integration** (MCP server with 26 tools for HCL DX IQ). Needs Lab 1, PostgreSQL and Lab 2A; Lab 3 for the assistant | ~3 min |
 
 > **Short on time? Fast demo.** With the external dependencies in place, `common/demo-fast.sh`
 > installs everything you chose in the fastest order: DX **once**, already connected to its
@@ -230,6 +232,7 @@ lab1-dx-base/              Lab 1
 lab2-ldap-postgres/        Lab 2 (a-ldap/ and b-postgres/; enterprise/ = Active Directory and Oracle)
 lab3-iq-openrouter/        Lab 3 (06-iq-chat-test.sh: ask IQ from the terminal; custom-mcp/ = 3B)
 lab4-opensearch/           Lab 4 (Search V2 with OpenSearch)
+lab5-orbita/               Lab 5, advanced (ÓRBITA: Script Applications + microservice + PostgreSQL + AI, one Helm chart)
 docs/                      requirements, Kubernetes vs OpenShift, troubleshooting, support data, cleanup
                            (and the configuration wizard, served by GitHub Pages)
 tools/                     maintenance (keeps the wizard in sync with the labs, see CONTRIBUTING.md)

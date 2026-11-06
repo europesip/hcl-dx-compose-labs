@@ -4,7 +4,8 @@
 
 Laboratorios prácticos para **instalar HCL Digital Experience Compose paso a paso**, a modo de
 prueba de concepto (PoC). Se parte de un clúster Kubernetes u OpenShift ya existente, sin DX, y se
-construye la plataforma en cuatro laboratorios, cada uno sobre el anterior.
+construye la plataforma en cuatro laboratorios, cada uno sobre el anterior. Un Lab 5 avanzado despliega
+después una aplicación completa encima (Script Applications, un microservicio, persistencia e IA).
 
 > **Por dónde empezar.** Lo ideal es **empezar por el Lab 1**, sobre un clúster Kubernetes u
 > OpenShift **ya instalado** que cumpla los [requisitos base](docs/requirements.es.md) (recursos,
@@ -21,6 +22,7 @@ construye la plataforma en cuatro laboratorios, cada uno sobre el anterior.
 | [Lab 3 · IQ con OpenRouter](lab3-iq-openrouter/GUIDE.es.md) | **3A**: asistente de IA de DX (IQ) usando LiteLLM como proxy hacia OpenRouter (Claude, o Qwen para una PoC más barata) en lugar de AWS Bedrock. **3B**: MCP Server propio de EUROPESIP (servicios, soporte, laboratorios y la herramienta figma&web-to-dx) | ~13 min (3A ~10 · 3B ~3) |
 | [Lab 4 · Búsqueda con OpenSearch](lab4-opensearch/GUIDE.es.md) | Search V2: OpenSearch + Search Middleware (`hcl-dx-search` 2.37.0), certificados y `adminDN`, rastreo de WCM, portal y JCR y búsqueda por API | ~10 min |
 | | **Total de ejecución** (Labs 1 a 4) | **~60 min** |
+| ★ [Lab 5 · ÓRBITA, una aplicación avanzada](lab5-orbita/GUIDE.es.md) *(avanzado, opcional)* | Una suite de intranet (fichaje, vacaciones, gastos, aprobaciones) desplegada con **un chart de Helm**: seis **Script Applications**, un **microservicio** (API REST, inicio de sesión único con la sesión de DX), **persistencia** en PostgreSQL con Flyway e **integración con IA** (servidor MCP con 26 herramientas para HCL DX IQ). Necesita el Lab 1, PostgreSQL y el Lab 2A; el Lab 3 para el asistente | ~3 min |
 
 > **¿Poco tiempo? Demo rápida.** Con las dependencias externas instaladas, `common/demo-fast.sh`
 > instala todo lo que elegiste en el orden más rápido: DX **una sola vez**, ya conectado a su
@@ -231,6 +233,7 @@ lab1-dx-base/              Lab 1
 lab2-ldap-postgres/        Lab 2 (a-ldap/ y b-postgres/; enterprise/ = Active Directory y Oracle)
 lab3-iq-openrouter/        Lab 3 (06-iq-chat-test.sh: pregunta a IQ desde la terminal; custom-mcp/ = 3B)
 lab4-opensearch/           Lab 4 (Search V2 con OpenSearch)
+lab5-orbita/               Lab 5, avanzado (ÓRBITA: Script Applications + microservicio + PostgreSQL + IA, un chart de Helm)
 docs/                      requisitos, Kubernetes vs OpenShift, problemas frecuentes, datos para soporte, limpieza
                            (y el asistente de configuración, servido por GitHub Pages)
 tools/                     mantenimiento (mantiene el asistente sincronizado con los labs, ver CONTRIBUTING.es.md)
