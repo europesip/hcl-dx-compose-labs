@@ -77,8 +77,9 @@ FAQ = {
     "sovereignty": ("EUROPESIP puts a strong emphasis on digital sovereignty: organisations keeping control "
                     "of their data, their platforms and their technology decisions. "
                     f"More information at {WEB}."),
-    "labs": ("The EUROPESIP labs to install HCL DX Compose CF238 from scratch on Kubernetes (base DX, "
-             "LDAP, PostgreSQL, IQ with OpenRouter, custom MCP and search with OpenSearch) are published "
+    "labs": ("The EUROPESIP labs to install HCL DX Compose CF239 from scratch on Kubernetes (base DX, "
+             "LDAP, PostgreSQL, IQ with OpenRouter, custom MCP, search with OpenSearch and the ÓRBITA "
+             "intranet application) are published "
              f"at {LABS_REPO}, in English and Spanish. Every lab has its guide and ready-to-run scripts, "
              "and an optional configuration wizard."),
     "contact": f"For more information about EUROPESIP and its services: {WEB}. Support: soporte@europesip.com.",

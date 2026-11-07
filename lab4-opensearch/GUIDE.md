@@ -22,11 +22,11 @@
 portal, and its REST API.
 
 HCL documentation:
-[Enabling Search V2 (DX Compose CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/manage/cfg_dx_compose/enable_search/) ·
-[Installing the Search V2 backend (CF238)](https://help.hcl-software.com/digital-experience/9.5/CF238/deployment/install/container/helm_deployment/preparation/optional_tasks/optional_install_new_search/)
+[Enabling Search V2 (DX Compose CF239)](https://help.hcl-software.com/digital-experience/dx-compose/CF239/deploy_dx/manage/cfg_dx_compose/enable_search/) ·
+[Installing the Search V2 backend (CF239)](https://help.hcl-software.com/digital-experience/9.5/CF239/deployment/install/container/helm_deployment/preparation/optional_tasks/optional_install_new_search/)
 
 > DX Compose does **not** have the DX Core Remote Search: search is always Search V2 on OpenSearch
-> ([Limitations](https://help.hcl-software.com/digital-experience/dx-compose/CF238/getting_started/product_overview/limitations/)).
+> ([Limitations](https://help.hcl-software.com/digital-experience/dx-compose/CF239/getting_started/product_overview/limitations/)).
 
 ```
  Browser ─► DX HAProxy ─► /dx/api/search, /dx/ui/search ─► dx-search-search-middleware-query
@@ -113,7 +113,7 @@ configuration:
 
 > **Corporate CA.** In a company, the three certificates are signed with its PKI (with the same CNs
 > and extensions) and the same secrets are created. The `adminDN` is that of the admin certificate
-> the company issues ([Using in-house CA or PKI for Search V2](https://help.hcl-software.com/digital-experience/9.5/CF238/deployment/install/container/helm_deployment/preparation/optional_tasks/optional_new_search_ca_certificates/)).
+> the company issues ([Using in-house CA or PKI for Search V2](https://help.hcl-software.com/digital-experience/9.5/CF239/deployment/install/container/helm_deployment/preparation/optional_tasks/optional_new_search_ca_certificates/)).
 
 ## Step 2 · Install the search backend
 

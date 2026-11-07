@@ -22,7 +22,7 @@ Las dos iteraciones son las mismas que en la rama demo; solo cambia contra qué 
 Se pueden combinar: AD + PostgreSQL, OpenLDAP + Oracle, AD + Oracle. `common/dx-helm.sh` elige la
 capa de cada iteración según los secrets que existan (y se para si hay dos ramas a la vez).
 
-| | Soporte HCL en CF238 |
+| | Soporte HCL en CF239 |
 |---|---|
 | Active Directory | Sí (LDAP soportado; `ldapType="Microsoft Active Directory"` de Open Liberty) |
 | Oracle | **Sí** para el Web Engine (19c y 21c, AL32UTF8/AL16UTF16). PostgreSQL, el de la demo, todavía no |
@@ -144,7 +144,7 @@ del AD (por su `sAMAccountName`) al grupo de administración del registro básic
 ## 2B-E · Transferencia de la base de datos a Oracle
 
 Documentación de HCL:
-[External database and database transfer (CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/manage/cfg_webengine/external_db_database_transfer/)
+[External database and database transfer (CF239)](https://help.hcl-software.com/digital-experience/dx-compose/CF239/deploy_dx/manage/cfg_webengine/external_db_database_transfer/)
 
 El procedimiento en DX es **idéntico** al de PostgreSQL (secrets de properties,
 `useExternalDatabase`, transferencia en el siguiente arranque). Cambian la preparación de la base

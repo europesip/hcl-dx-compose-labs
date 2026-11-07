@@ -2,7 +2,7 @@
 # Lab 2B · DX layer: Web Engine on the PostgreSQL in the shared namespace (transfer from Derby)
 # Added by common/dx-helm.sh as soon as the custom-credentials-webengine-dbdomain-secret exists.
 #
-# Documentation: DX Compose CF238 > Configuring an external database and database transfer.
+# Documentation: DX Compose CF239 > Configuring an external database and database transfer.
 # ⚠️ PostgreSQL is not yet supported by HCL for the Web Engine (see GUIDE, section 2B).
 # ------------------------------------------------------------------------------------------
 configuration:

@@ -21,7 +21,7 @@
 **Goal:** enable **IQ**, the DX AI assistant, using **Claude** through **OpenRouter** (instead of
 the AWS Bedrock of the HCL guides, see below), with a **LiteLLM** proxy in `dx-shared`.
 
-HCL documentation: [IQ installation (CF238)](https://help.hcl-software.com/digital-experience/9.5/CF238/build_sites/iq/installation/)
+HCL documentation: [IQ installation (CF239)](https://help.hcl-software.com/digital-experience/9.5/CF239/build_sites/iq/installation/)
 
 ```
  Browser ─► DX HAProxy ─► /dx/ui/iq, /dx/api/iq/v1 ─► dx-iq-integrator ─┬─► dx-iq-mcp-server ─► DX APIs
@@ -325,7 +325,7 @@ What it has to comply with for IQ to use it:
 lab3-iq-openrouter/custom-mcp/01-mcp-deploy.sh
 ```
 
-Deployment with the public image `ghcr.io/europesip/hcl-dx-iq-europesip-mcp:1.0.1` (the server and
+Deployment with the public image `ghcr.io/europesip/hcl-dx-iq-europesip-mcp:1.0.2` (the server and
 its dependencies, amd64 and arm64) + Service `europesip-mcp:3000`, in `dx-shared`
 ([europesip-mcp.yaml](custom-mcp/europesip-mcp.yaml)).
 

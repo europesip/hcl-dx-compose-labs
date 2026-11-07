@@ -25,7 +25,7 @@ Las diferencias están en **cómo se prepara el namespace, cómo se publica DX y
 ## El namespace en OpenShift
 
 HCL indica crear el namespace de DX con estas anotaciones
-([Preparing the namespace, CF238](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/install/kubernetes_deployment/preparation/mandatory_tasks/prepare_namespace/)):
+([Preparing the namespace, CF239](https://help.hcl-software.com/digital-experience/dx-compose/CF239/deploy_dx/install/kubernetes_deployment/preparation/mandatory_tasks/prepare_namespace/)):
 
 ```yaml
 apiVersion: v1

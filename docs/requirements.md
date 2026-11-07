@@ -31,7 +31,7 @@ ghcr.io, openrouter.ai, chart repositories):
 > everything on this page solved. It is a **PoC** environment, with simulated StorageClasses and
 > reduced resources, meant only to check the steps; it is not a reference for a real installation.
 
-- **Kubernetes 1.26 to 1.36** (CF238), CNCF certified, or **Red Hat OpenShift**. **x86-64** nodes.
+- **Kubernetes 1.26 to 1.36** (CF239), CNCF certified, or **Red Hat OpenShift**. **x86-64** nodes.
 - **Free resources** (requests measured with the values in this repository):
 
   | Iteration | CPU | Memory |

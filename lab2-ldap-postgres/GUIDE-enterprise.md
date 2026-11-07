@@ -23,7 +23,7 @@ They can be combined: AD + PostgreSQL, OpenLDAP + Oracle, AD + Oracle. `common/d
 chooses the layer of each iteration from the secrets that exist (and stops if two branches are
 present at the same time).
 
-| | HCL support in CF238 |
+| | HCL support in CF239 |
 |---|---|
 | Active Directory | Yes (LDAP supported; Open Liberty `ldapType="Microsoft Active Directory"`) |
 | Oracle | **Yes** for the Web Engine (19c and 21c, AL32UTF8/AL16UTF16). PostgreSQL, the demo one, not yet |
@@ -145,7 +145,7 @@ As an alternative, the same `basicRegistry` override described in the demo branc
 ## 2B-E · Database transfer to Oracle
 
 HCL documentation:
-[External database and database transfer (CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/manage/cfg_webengine/external_db_database_transfer/)
+[External database and database transfer (CF239)](https://help.hcl-software.com/digital-experience/dx-compose/CF239/deploy_dx/manage/cfg_webengine/external_db_database_transfer/)
 
 The DX procedure is **identical** to PostgreSQL (properties secrets, `useExternalDatabase`,
 transfer on the next start). What changes is the database preparation, done by the DBA, and the

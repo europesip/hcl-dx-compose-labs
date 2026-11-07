@@ -1,7 +1,7 @@
 # Lab 2B · PostgreSQL 18 for the DX Web Engine, managed by CloudNativePG, in the shared namespace.
 # Applied by 03-postgres-cluster.sh (replaces ${SHARED_NS}, ${PG_CLUSTER} and ${SC_RWO}).
 #
-# ⚠️ Support: in CF238 HCL documents DB2, Oracle and SQL Server for the Web Engine. PostgreSQL is
+# ⚠️ Support: in CF239 HCL documents DB2, Oracle and SQL Server for the Web Engine. PostgreSQL is
 # being validated by HCL (their tests work with PostgreSQL 18) but it is NOT SUPPORTED TODAY.
 # This lab is for learning the transfer process, not for production.
 #

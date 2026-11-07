@@ -59,7 +59,7 @@ cd hcl-dx-compose-labs && source ./env.sh
 ## 2A · Autenticación LDAP
 
 Documentación de HCL:
-[Configuring LDAP (CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/manage/cfg_webengine/ldap_configuration/)
+[Configuring LDAP (CF239)](https://help.hcl-software.com/digital-experience/dx-compose/CF239/deploy_dx/manage/cfg_webengine/ldap_configuration/)
 
 ```
  DX (dx-demo)                                 dx-shared
@@ -215,7 +215,7 @@ LDAP. El permiso queda en la base de datos de DX, así que en el Lab 2B viaja co
 
 > **LDAPS en producción:** `port: 636`, `sslEnabled: true` y la CA del LDAP en el truststore del
 > Web Engine (`configuration.webEngine.customTruststoreSecrets`). Ver
-> [Custom certificates (CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/manage/working_with_compose/custom_certificates/).
+> [Custom certificates (CF239)](https://help.hcl-software.com/digital-experience/dx-compose/CF239/deploy_dx/manage/working_with_compose/custom_certificates/).
 
 ---
 
@@ -230,10 +230,10 @@ LDAP. El permiso queda en la base de datos de DX, así que en el Lab 2B viaja co
 > existente ([rama empresarial](GUIDE-enterprise.es.md)).
 
 Documentación de HCL:
-[External database and database transfer (CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/manage/cfg_webengine/external_db_database_transfer/)
+[External database and database transfer (CF239)](https://help.hcl-software.com/digital-experience/dx-compose/CF239/deploy_dx/manage/cfg_webengine/external_db_database_transfer/)
 
-> ⚠️ **Soporte.** En CF238 HCL soporta para el Web Engine **DB2, Oracle y SQL Server**
-> ([Databases](https://help.hcl-software.com/digital-experience/9.5/CF238/get_started/system_requirements/kubernetes/databases/)).
+> ⚠️ **Soporte.** En CF239 HCL soporta para el Web Engine **DB2, Oracle y SQL Server**
+> ([Databases](https://help.hcl-software.com/digital-experience/9.5/CF239/get_started/system_requirements/kubernetes/databases/)).
 > PostgreSQL está en validación por HCL (sus pruebas funcionan con PostgreSQL 18) pero **hoy no
 > está soportado**. El procedimiento (secrets de propiedades, `useExternalDatabase`,
 > `dropDatabaseTables`) es el mismo para las BD soportadas, que es lo que se aprende aquí.

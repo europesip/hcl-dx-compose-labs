@@ -1,7 +1,7 @@
 # ------------------------------------------------------------------------------------------
 # Lab 4 · DX layer: Search V2 with OpenSearch
 # Added by common/dx-helm.sh as soon as the <SEARCH_RELEASE>-search-middleware-query service exists.
-# Documentation: DX Compose CF238 > Enabling Search V2.
+# Documentation: DX Compose CF239 > Enabling Search V2.
 # ------------------------------------------------------------------------------------------
 networking:
   # "query" service of the Search Middleware (<search release>-search-middleware-query), in the

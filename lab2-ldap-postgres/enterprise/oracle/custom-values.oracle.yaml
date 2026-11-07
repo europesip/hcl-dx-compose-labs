@@ -4,8 +4,8 @@
 # (TCPS connection). Without TLS it is not needed: the PostgreSQL layer is identical except for
 # the truststore.
 #
-# Oracle IS supported by HCL for the Web Engine in CF238 (19c and 21c, AL32UTF8/AL16UTF16).
-# Documentation: DX Compose CF238 > Configuring an external database and database transfer.
+# Oracle IS supported by HCL for the Web Engine in CF239 (19c and 21c, AL32UTF8/AL16UTF16).
+# Documentation: DX Compose CF239 > Configuring an external database and database transfer.
 # ------------------------------------------------------------------------------------------
 configuration:
   webEngine:

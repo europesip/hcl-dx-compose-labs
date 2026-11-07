@@ -6,7 +6,7 @@
 # Unlike the OpenLDAP branch (native configuration.webEngine.ldap block), here the configuration
 # is written by hand with configOverrideFiles: the native chart block generates OpenLDAP filters
 # (inetOrgPerson / groupOfUniqueNames) and AD needs its own (sAMAccountName, objectCategory,
-# memberOf). Documentation: DX Compose CF238 > "Configuration changes using overrides"
+# memberOf). Documentation: DX Compose CF239 > "Configuration changes using overrides"
 # (Configuring LDAP section).
 #
 # The AD data is NOT in this file: it arrives as environment variables from the dx-ad-bind secret

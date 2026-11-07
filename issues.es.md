@@ -7,12 +7,16 @@ Problemas encontrados al preparar esta PoC con HCL DX Compose CF238 (`hcl-dx-dep
 **Revisados de nuevo en CF239** (`hcl-dx-deployment` 2.50.0, `hcl-dx-iq` 1.0.3, `hcl-dx-search`
 2.37.0) con una instalación limpia de todos los labs el 2026-11-04: cada problema indica si sigue.
 
+**Documentación de CF239 revisada el 2026-11-07** (publicada después de la nueva prueba): ninguno de los
+problemas de abajo aparece como resuelto. El único cambio relacionado es que la memoria entre sesiones
+(RAG) ya está documentada y se puede activar, ver CS1479139.
+
 ## Problemas reportados a HCL Support
 
 | Case | Abierto | Problema | Estado |
 |---|---|---|---|
 | **CS1479102** | 2026-11-02 | IQ: la lista de servidores MCP configurada como dice la documentación se ignora | Abierto, HCL lo está reproduciendo. **Sigue en IQ 1.0.3** |
-| **CS1479139** | 2026-11-02 | IQ: el *system prompt* describe una memoria RAG activa aunque el RAG está desactivado | Abierto. **Cambia en parte en IQ 1.0.3**: la directiva es más suave, pero se sigue enviando con el RAG desactivado |
+| **CS1479139** | 2026-11-02 | IQ: el *system prompt* describe una memoria RAG activa aunque el RAG está desactivado | Abierto. **Cambia en parte en IQ 1.0.3**: la directiva es más suave, pero se sigue enviando con el RAG desactivado. **El RAG ya está documentado en CF239** (probado, ver abajo) |
 | **CS1479178** | 2026-11-02 | IQ: las peticiones al LLM no pueden usar *prompt caching*, así que cada llamada paga a precio completo un prefijo de ~30.000 tokens | Abierto. **Sigue en IQ 1.0.3** (prefijo de ~32.500 tokens) |
 
 ### CS1479102 · IQ ignora `MCP_SERVER_LIST`
@@ -54,6 +58,27 @@ Problemas encontrados al preparar esta PoC con HCL DX Compose CF238 (`hcl-dx-dep
   borrar su historial debe pedírselo a su administrador. Pero **se sigue enviando con el RAG
   desactivado**, y sigue afirmando "You have access to injected historical context from prior
   conversations" y que ese contexto es "authoritative". La petición de documentación sigue abierta.
+- **Documentación de CF239 (2026-11-07): la función de RAG ya está documentada** ("Configuring
+  cross-session memory"): `RAG_ENABLED=true` en `environment.pod.integrator`, PostgreSQL con
+  **pgvector**, dos alias de embeddings en LiteLLM (`iq-multilingual-embed` / `iq-embed`),
+  `EMBEDDING_DIMENSIONS` (1024), ajustes de troceado y recuperación, retención y borrado por usuario
+  con SQL (no se borra nada automáticamente). Responde a casi toda la petición de documentación; la
+  directiva enviada con el RAG desactivado sigue sin mencionarse.
+- **Probado en el clúster del lab (IQ 1.0.3, 2026-11-07)**, con `baai/bge-m3` a través de OpenRouter
+  (1024 dimensiones; Cohere v4, el modelo que valida HCL, no está en OpenRouter) y
+  `CREATE EXTENSION vector` en `iqdb` (la imagen `standard` de CNPG incluye pgvector 0.8.7). Resultados:
+  - Funciona: un dato contado en una conversación se respondió en otra nueva. Otro usuario (`andres`)
+    no lo obtuvo: la memoria es por usuario.
+  - El RAG arranca con la primera pregunta, no al iniciar (no hay líneas `[RAG]` hasta entonces).
+    Convirtió solo a `vector(1024)` la tabla `rag_chunks` que IQ 1.0.3 ya había creado con una columna
+    `text`. Los valores por defecto que registra (`topK=10, minSimilarity=0.35`) no son los
+    documentados (5 y 0).
+  - Cada pregunta llama además al modelo de embeddings (pocos tokens, muy barato).
+  - **Rompe el prompt caching cuando recupera memoria**: el contexto se inyecta en el *system prompt*,
+    así que el prefijo cambia. Medido: las preguntas sin memoria recuperada leyeron ~37.000 tokens de
+    la caché; la que recuperó memoria volvió a escribir todo el prefijo
+    (`cache_creation_input_tokens=37352`, `cache_read_input_tokens=0`), a 1,25× el precio de entrada.
+    Ver CS1479178.
 
 ### CS1479178 · Las peticiones de IQ no pueden usar *prompt caching*
 
@@ -96,6 +121,10 @@ Problemas encontrados al preparar esta PoC con HCL DX Compose CF238 (`hcl-dx-dep
   devolvieron todas `cache_read_input_tokens=0` y `cache_creation_input_tokens=0`. El prefijo ha
   crecido a **~32.500 tokens** (60 herramientas; *system prompt* de 18.912 caracteres en vez de
   14.068). Con el workaround, la segunda llamada leyó 32.157 tokens de la caché.
+- **Con el RAG activado (CF239, 2026-11-07)** el workaround solo ayuda cuando no se recupera memoria:
+  el contexto recuperado va en el *system prompt*, antes de la marca de caché, así que esas llamadas
+  vuelven a escribir todo el prefijo (~37.000 tokens con 86 herramientas). Colocar la memoria después
+  del prefijo fijo (por ejemplo, en un mensaje aparte) la mantendría cacheable.
 
 ## Problemas no reportados (sin case abierto)
 

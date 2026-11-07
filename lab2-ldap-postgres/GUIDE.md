@@ -58,7 +58,7 @@ cd hcl-dx-compose-labs && source ./env.sh
 ## 2A · LDAP authentication
 
 HCL documentation:
-[Configuring LDAP (CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/manage/cfg_webengine/ldap_configuration/)
+[Configuring LDAP (CF239)](https://help.hcl-software.com/digital-experience/dx-compose/CF239/deploy_dx/manage/cfg_webengine/ldap_configuration/)
 
 ```
  DX (dx-demo)                                 dx-shared
@@ -218,7 +218,7 @@ travels with the transfer.
 
 > **LDAPS in production:** `port: 636`, `sslEnabled: true` and the LDAP CA in the Web Engine
 > truststore (`configuration.webEngine.customTruststoreSecrets`). See
-> [Custom certificates (CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/manage/working_with_compose/custom_certificates/).
+> [Custom certificates (CF239)](https://help.hcl-software.com/digital-experience/dx-compose/CF239/deploy_dx/manage/working_with_compose/custom_certificates/).
 
 ---
 
@@ -233,10 +233,10 @@ travels with the transfer.
 > existing **Oracle** ([enterprise branch](GUIDE-enterprise.md)).
 
 HCL documentation:
-[External database and database transfer (CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/manage/cfg_webengine/external_db_database_transfer/)
+[External database and database transfer (CF239)](https://help.hcl-software.com/digital-experience/dx-compose/CF239/deploy_dx/manage/cfg_webengine/external_db_database_transfer/)
 
-> ⚠️ **Support.** In CF238 HCL supports **DB2, Oracle and SQL Server** for the Web Engine
-> ([Databases](https://help.hcl-software.com/digital-experience/9.5/CF238/get_started/system_requirements/kubernetes/databases/)).
+> ⚠️ **Support.** In CF239 HCL supports **DB2, Oracle and SQL Server** for the Web Engine
+> ([Databases](https://help.hcl-software.com/digital-experience/9.5/CF239/get_started/system_requirements/kubernetes/databases/)).
 > PostgreSQL is being validated by HCL (their tests work with PostgreSQL 18) but **it is not
 > supported today**. The procedure (properties secrets, `useExternalDatabase`,
 > `dropDatabaseTables`) is the same for the supported databases, which is what you learn here.

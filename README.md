@@ -47,7 +47,7 @@ on top of it (Script Applications, a microservice, persistence and AI).
 
 Versions: **HCL DX Compose 9.5 CF239**, charts `hcl-dx-deployment` **2.50.0**, `hcl-dx-iq`
 **1.0.3** and `hcl-dx-search` **2.37.0**. Official documentation:
-[Installing DX Compose (CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/install/kubernetes_deployment/install/).
+[Installing DX Compose (CF239)](https://help.hcl-software.com/digital-experience/dx-compose/CF239/deploy_dx/install/kubernetes_deployment/install/).
 
 ---
 
@@ -280,7 +280,7 @@ Summary (details in [docs/requirements.md](docs/requirements.md)):
   specialised services.
 - **Licensed material.** The HCL charts and images are not in this repository: every attendee
   downloads them with their own account. `charts/` and the `.tgz` files are in `.gitignore`.
-- **Web Engine on PostgreSQL (Lab 2B) is not supported by HCL yet** (in CF238 DB2, Oracle and SQL
+- **Web Engine on PostgreSQL (Lab 2B) is not supported by HCL yet** (in CF239 DB2, Oracle and SQL
   Server are; the CF239 documentation is not published yet). HCL is validating it; the lab is for
   learning the transfer process.
 - **OpenRouter is not validated by HCL** (LiteLLM is). The HCL guides use AWS Bedrock; Lab 3

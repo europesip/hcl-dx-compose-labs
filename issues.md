@@ -6,13 +6,16 @@ Issues found while preparing this PoC with HCL DX Compose CF238 (`hcl-dx-deploym
 `hcl-dx-iq` 1.0.2, `hcl-dx-search` 2.36.0), what happens and how the labs deal with them.
 **Re-checked on CF239** (`hcl-dx-deployment` 2.50.0, `hcl-dx-iq` 1.0.3, `hcl-dx-search` 2.37.0)
 with a clean installation of all the labs on 2026-11-04: each issue says whether it is still present.
+**CF239 documentation checked on 2026-11-07** (published after the re-check): none of the issues below
+appears as fixed. The only related change is that cross-session memory (RAG) is now documented and can
+be enabled, see CS1479139.
 
 ## Issues reported to HCL Support
 
 | Case | Opened | Issue | Status |
 |---|---|---|---|
 | **CS1479102** | 2026-11-02 | IQ: the MCP server list set as documented is ignored | Open, being reproduced by HCL. **Still present in IQ 1.0.3** |
-| **CS1479139** | 2026-11-02 | IQ: the system prompt describes an active RAG memory while RAG is disabled | Open. **Partly changed in IQ 1.0.3**: the directive is softer, but still sent with RAG disabled |
+| **CS1479139** | 2026-11-02 | IQ: the system prompt describes an active RAG memory while RAG is disabled | Open. **Partly changed in IQ 1.0.3**: the directive is softer, but still sent with RAG disabled. **RAG now documented in CF239** (tested, see below) |
 | **CS1479178** | 2026-11-02 | IQ: requests to the LLM cannot use prompt caching, so every call pays full price for a ~30,000-token prefix | Open. **Still present in IQ 1.0.3** (prefix now ~32,500 tokens) |
 
 ### CS1479102 · IQ ignores `MCP_SERVER_LIST`
@@ -53,6 +56,25 @@ with a clean installation of all the labs on 2026-11-04: each issue says whether
   that users who want their history deleted must ask their administrator. But it is **still sent
   with RAG disabled**, and still states "You have access to injected historical context from prior
   conversations" and that this context is "authoritative". The documentation request is still open.
+- **CF239 documentation (2026-11-07): the RAG feature is now documented** ("Configuring cross-session
+  memory"): `RAG_ENABLED=true` in `environment.pod.integrator`, PostgreSQL with **pgvector**, two
+  LiteLLM embedding aliases (`iq-multilingual-embed` / `iq-embed`), `EMBEDDING_DIMENSIONS` (1024),
+  chunking and retrieval settings, retention and per-user deletion with SQL (nothing is deleted
+  automatically). That answers most of the documentation request; the directive sent with RAG
+  disabled is still not mentioned.
+- **Tested on the lab cluster (IQ 1.0.3, 2026-11-07)**, with `baai/bge-m3` through OpenRouter (1024
+  dimensions; Cohere v4, the model HCL validates, is not on OpenRouter) and `CREATE EXTENSION vector`
+  in `iqdb` (the CNPG `standard` image includes pgvector 0.8.7). Results:
+  - It works: a fact told in one conversation was answered in a new one. Another user (`andres`) did
+    not get it: memory is per user.
+  - RAG starts on the first question, not at start-up (no `[RAG]` lines until then). It converted the
+    `rag_chunks` table that IQ 1.0.3 had already created with a `text` column to `vector(1024)` by
+    itself. The defaults it logs (`topK=10, minSimilarity=0.35`) are not the documented ones (5 and 0).
+  - Each question also calls the embedding model (a few tokens, very cheap).
+  - **It breaks prompt caching when memory is retrieved**: the context is injected into the system
+    prompt, so the prefix changes. Measured: questions without retrieved memory read ~37,000 tokens
+    from the cache; the one that retrieved memory wrote the whole prefix again (`cache_creation_input_tokens=37352`,
+    `cache_read_input_tokens=0`), at 1.25× the input price. See CS1479178.
 
 ### CS1479178 · IQ requests cannot use prompt caching
 
@@ -92,6 +114,10 @@ with a clean installation of all the labs on 2026-11-04: each issue says whether
   questions all returned `cache_read_input_tokens=0` and `cache_creation_input_tokens=0`. The prefix
   has grown to **~32,500 tokens** (60 tools; system prompt of 18,912 characters instead of 14,068).
   With the workaround, the second call read 32,157 tokens from the cache.
+- **With RAG enabled (CF239, 2026-11-07)** the workaround only helps when no memory is retrieved: the
+  retrieved context goes into the system prompt, before the cache mark, so those calls write the whole
+  prefix again (~37,000 tokens with 86 tools). Placing the memory after the fixed prefix (for example
+  in a separate message) would keep it cacheable.
 
 ## Issues not reported (no case opened)
 

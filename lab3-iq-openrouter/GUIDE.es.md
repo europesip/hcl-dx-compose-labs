@@ -22,7 +22,7 @@
 **OpenRouter** (en lugar del AWS Bedrock de las guías de HCL, ver más abajo), con un proxy
 **LiteLLM** en `dx-shared`.
 
-Documentación de HCL: [IQ installation (CF238)](https://help.hcl-software.com/digital-experience/9.5/CF238/build_sites/iq/installation/)
+Documentación de HCL: [IQ installation (CF239)](https://help.hcl-software.com/digital-experience/9.5/CF239/build_sites/iq/installation/)
 
 ```
  Navegador ─► HAProxy de DX ─► /dx/ui/iq, /dx/api/iq/v1 ─► dx-iq-integrator ─┬─► dx-iq-mcp-server ─► APIs de DX
@@ -326,7 +326,7 @@ Lo que tiene que cumplir para que IQ lo use:
 lab3-iq-openrouter/custom-mcp/01-mcp-deploy.sh
 ```
 
-Deployment con la imagen pública `ghcr.io/europesip/hcl-dx-iq-europesip-mcp:1.0.1` (el servidor y
+Deployment con la imagen pública `ghcr.io/europesip/hcl-dx-iq-europesip-mcp:1.0.2` (el servidor y
 sus dependencias, amd64 y arm64) + Service `europesip-mcp:3000`, en `dx-shared`
 ([europesip-mcp.yaml](custom-mcp/europesip-mcp.yaml)).
 

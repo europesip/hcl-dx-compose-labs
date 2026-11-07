@@ -1,7 +1,7 @@
 # OpenShift only (PLATFORM=openshift). Applied by common/01-namespaces.sh, which replaces the variables.
 # Annotations required by HCL for the DX namespace (UID range and groups that the restricted-v2 SCC
 # assigns to the pods; DX containers run with UID/GID 1000-1001).
-# Documentation: DX Compose CF238 > Preparation > Mandatory tasks > Preparing the namespace.
+# Documentation: DX Compose CF239 > Preparation > Mandatory tasks > Preparing the namespace.
 apiVersion: v1
 kind: Namespace
 metadata:

@@ -32,7 +32,7 @@ openrouter.ai, repositorios de charts):
 > simuladas y los recursos rebajados, pensado solo para comprobar los pasos; no sirve como
 > referencia de una instalación real.
 
-- **Kubernetes 1.26 a 1.36** (CF238), certificado CNCF, o **Red Hat OpenShift**. Nodos **x86-64**.
+- **Kubernetes 1.26 a 1.36** (CF239), certificado CNCF, o **Red Hat OpenShift**. Nodos **x86-64**.
 - **Recursos libres** (requests medidos con los values de este repositorio):
 
   | Iteración | CPU | Memoria |

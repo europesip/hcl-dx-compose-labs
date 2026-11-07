@@ -22,11 +22,11 @@ activar **Search V2** en DX Compose: el Search Center de Practitioner Studio, la
 DAM y portal, y su API REST.
 
 Documentación de HCL:
-[Enabling Search V2 (DX Compose CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/manage/cfg_dx_compose/enable_search/) ·
-[Installing the Search V2 backend (CF238)](https://help.hcl-software.com/digital-experience/9.5/CF238/deployment/install/container/helm_deployment/preparation/optional_tasks/optional_install_new_search/)
+[Enabling Search V2 (DX Compose CF239)](https://help.hcl-software.com/digital-experience/dx-compose/CF239/deploy_dx/manage/cfg_dx_compose/enable_search/) ·
+[Installing the Search V2 backend (CF239)](https://help.hcl-software.com/digital-experience/9.5/CF239/deployment/install/container/helm_deployment/preparation/optional_tasks/optional_install_new_search/)
 
 > En DX Compose **no** existe el Remote Search de DX Core: la búsqueda es siempre Search V2 sobre
-> OpenSearch ([Limitations](https://help.hcl-software.com/digital-experience/dx-compose/CF238/getting_started/product_overview/limitations/)).
+> OpenSearch ([Limitations](https://help.hcl-software.com/digital-experience/dx-compose/CF239/getting_started/product_overview/limitations/)).
 
 ```
  Navegador ─► HAProxy de DX ─► /dx/api/search, /dx/ui/search ─► dx-search-search-middleware-query
@@ -113,7 +113,7 @@ configuration:
 
 > **CA corporativa.** En una empresa, los tres certificados se firman con su PKI (con los mismos
 > CN y extensiones) y se crean los mismos secrets. El `adminDN` es el del certificado admin que
-> emita la empresa ([Using in-house CA or PKI for Search V2](https://help.hcl-software.com/digital-experience/9.5/CF238/deployment/install/container/helm_deployment/preparation/optional_tasks/optional_new_search_ca_certificates/)).
+> emita la empresa ([Using in-house CA or PKI for Search V2](https://help.hcl-software.com/digital-experience/9.5/CF239/deployment/install/container/helm_deployment/preparation/optional_tasks/optional_new_search_ca_certificates/)).
 
 ## Paso 2 · Instalar el backend de búsqueda
 

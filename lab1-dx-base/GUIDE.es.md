@@ -22,8 +22,8 @@ HCL y acceder al portal en `https://$DX_HOST/wps/portal`.
 > imágenes de HCL desde `hclcr.io`, que depende de la red.
 
 Documentación de HCL:
-[Installing DX Compose (CF238)](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/install/kubernetes_deployment/install/) ·
-[Preparation](https://help.hcl-software.com/digital-experience/dx-compose/CF238/deploy_dx/install/kubernetes_deployment/preparation/)
+[Installing DX Compose (CF239)](https://help.hcl-software.com/digital-experience/dx-compose/CF239/deploy_dx/install/kubernetes_deployment/install/) ·
+[Preparation](https://help.hcl-software.com/digital-experience/dx-compose/CF239/deploy_dx/install/kubernetes_deployment/preparation/)
 
 ```
  Paso 0  requisitos ──► Paso 1  namespaces ──► Paso 2  charts ──► Paso 3  secrets

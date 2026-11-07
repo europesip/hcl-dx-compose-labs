@@ -3,7 +3,7 @@
 # Added by common/dx-helm.sh as soon as the dx-ldap-bind secret exists (03-dx-upgrade.sh).
 #
 # It uses the NATIVE LDAP configuration of the chart (configuration.webEngine.ldap, type "other"),
-# documented in DX Compose CF238 > Configuring LDAP. The chart generates the Open Liberty
+# documented in DX Compose CF239 > Configuring LDAP. The chart generates the Open Liberty
 # <ldapRegistry> and <federatedRepository>; only special filters or attributes would need a
 # configOverrideFiles with your own XML (see enterprise/active-directory).
 #
