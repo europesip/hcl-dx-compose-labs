@@ -166,6 +166,16 @@ be enabled, see CS1479139.
 | XMLAccess and WebDAV are restricted to the basic-registry administration group (`DX_ADMIN_GROUP`) | Same override as above, if LDAP administrators need those tools | No (by design) |
 | The DX chart deploys its own OpenLDAP by default (`applications.openLdap: true`) | `openLdap: false` in the Lab 1 values; an external LDAP is used in Lab 2 | No |
 
+### LiteLLM with AWS Bedrock (CF239 documentation, "Deploying LiteLLM")
+
+Checked on 2026-11-07 with a Bedrock API key (`AWS_BEARER_TOKEN_BEDROCK`), as the documentation recommends.
+
+| Issue | What works | Case? |
+|---|---|---|
+| The model ID given for Sonnet 4.6, `us.anthropic.claude-sonnet-4-6-20250514-v1:0`, does not exist: Bedrock answers "The provided model identifier is invalid" (20250514 is the date of Claude Sonnet 4) | `us.anthropic.claude-sonnet-4-6` (no date). The Haiku 4.5 ID of the documentation, `us.anthropic.claude-haiku-4-5-20251001-v1:0`, is correct | Not yet |
+| The example sets no region (`aws_region_name`), and the `us.` inference profiles only work from US regions | `aws_region_name: us-east-1` in each model (or the `eu.` profiles with `eu-west-1`, which keep the data in the EU) | Not yet |
+| Anthropic models need the "use case details" form once per AWS account (not mentioned): until it is submitted, Bedrock answers "Model use case details have not been submitted for this account" | Submit it once in the Bedrock console or with `aws bedrock put-use-case-for-model-access` | No (AWS requirement) |
+
 ### Third-party components (not HCL)
 
 | Issue | Solution in the labs |
