@@ -14,7 +14,10 @@ source "$(dirname "$0")/../../common/lib.sh"
 require_vars DX_NS SHARED_NS IQ_RELEASE
 
 kubectl -n "$SHARED_NS" get svc europesip-mcp >/dev/null 2>&1 || die "europesip-mcp does not exist in $SHARED_NS: ./01-mcp-deploy.sh"
-LIST="http://${IQ_RELEASE}-mcp-server:3000,http://europesip-mcp.${SHARED_NS}.svc.cluster.local:3000"
+# First the HCL MCP Server as the chart wrote it (https:// with mcpServer.httpsEnabled), then ours (HTTP)
+HCL=$(kubectl -n "$DX_NS" get configmap "${IQ_RELEASE}-integrator" -o jsonpath='{.data.dx\.config\.integrator\.mcp_server_list}' | cut -d, -f1)
+[ -n "$HCL" ] || HCL="https://${IQ_RELEASE}-mcp-server:3000"
+LIST="$HCL,http://europesip-mcp.${SHARED_NS}.svc.cluster.local:3000"
 
 info "ConfigMap ${IQ_RELEASE}-integrator: mcp_server_list = $LIST"
 kubectl -n "$DX_NS" patch configmap "${IQ_RELEASE}-integrator" --type merge \

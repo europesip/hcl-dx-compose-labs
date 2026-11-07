@@ -350,14 +350,14 @@ value to extend it (the `MCP_SERVER_LIST` variable has no effect either: the Con
 it). The script patches that key and restarts the Integrator:
 
 ```
-http://dx-iq-mcp-server:3000,http://europesip-mcp.dx-shared.svc.cluster.local:3000
+https://dx-iq-mcp-server:3000,http://europesip-mcp.dx-shared.svc.cluster.local:3000
 ```
 
 In the Integrator log:
 
 ```
 Fetched 5 tools from http://europesip-mcp.dx-shared.svc.cluster.local:3000
-Fetched 55 tools from http://dx-iq-mcp-server:3000
+Fetched 55 tools from https://dx-iq-mcp-server:3000
 Total tools: 60
 ```
 

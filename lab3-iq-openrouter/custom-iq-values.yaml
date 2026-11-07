@@ -29,6 +29,11 @@ configuration:
     enabled: false
 
   mcpServer:
+    # HTTPS, as in the example values of the HCL documentation ("Deploying IQ services"): the MCP Server
+    # uses the HAProxy certificate of Lab 1 (dx-tls-cert), and the chart writes https://<IQ_RELEASE>-mcp-server:3000
+    # in the Integrator ConfigMap. Custom MCP servers (Lab 3B, ÓRBITA) can stay on HTTP.
+    httpsEnabled: true
+    tlsCertSecret: "dx-tls-cert"
     standaloneMode: false
     enableWcm: true
     # IQ 1.0.3 publishes valid tool names (no dots, see litellm-values.yaml). HCL still says to

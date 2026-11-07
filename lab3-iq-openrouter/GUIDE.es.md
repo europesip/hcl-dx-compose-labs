@@ -351,14 +351,14 @@ para ampliarla (la variable `MCP_SERVER_LIST` tampoco tiene efecto: el ConfigMap
 El script parchea esa clave y reinicia el Integrator:
 
 ```
-http://dx-iq-mcp-server:3000,http://europesip-mcp.dx-shared.svc.cluster.local:3000
+https://dx-iq-mcp-server:3000,http://europesip-mcp.dx-shared.svc.cluster.local:3000
 ```
 
 En el log del Integrator:
 
 ```
 Fetched 5 tools from http://europesip-mcp.dx-shared.svc.cluster.local:3000
-Fetched 55 tools from http://dx-iq-mcp-server:3000
+Fetched 55 tools from https://dx-iq-mcp-server:3000
 Total tools: 60
 ```
 
