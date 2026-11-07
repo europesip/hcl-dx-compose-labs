@@ -42,6 +42,7 @@ FILES = [
     "lab3-iq-openrouter/litellm-values.qwen.yaml",
     "lab3-iq-openrouter/custom-iq-values.yaml",
     "lab3-iq-openrouter/custom-iq-values.db-external.yaml",
+    "lab3-iq-openrouter/custom-iq-values.rag.yaml",
     "lab3-iq-openrouter/custom-values.iq.yaml",
     "lab3-iq-openrouter/iq-chat.py",
     "lab3-iq-openrouter/custom-mcp/europesip-mcp.yaml",

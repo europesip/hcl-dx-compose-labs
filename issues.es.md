@@ -69,10 +69,18 @@ problemas de abajo aparece como resuelto. El único cambio relacionado es que la
   `CREATE EXTENSION vector` en `iqdb` (la imagen `standard` de CNPG incluye pgvector 0.8.7). Resultados:
   - Funciona: un dato contado en una conversación se respondió en otra nueva. Otro usuario (`andres`)
     no lo obtuvo: la memoria es por usuario.
-  - El RAG arranca con la primera pregunta, no al iniciar (no hay líneas `[RAG]` hasta entonces).
-    Convirtió solo a `vector(1024)` la tabla `rag_chunks` que IQ 1.0.3 ya había creado con una columna
-    `text`. Los valores por defecto que registra (`topK=10, minSimilarity=0.35`) no son los
-    documentados (5 y 0).
+  - El RAG arranca con la primera pregunta, no al iniciar (no hay líneas `[RAG]` hasta entonces). Los
+    valores por defecto que registra (`topK=10, minSimilarity=0.35`) no son los de la página del RAG
+    (5 y 0); la página de variables de entorno dice 5 y 0,35.
+  - **Bug: la memoria se pierde en cada reinicio del Integrator.** Al arrancar, el Integrator crea o
+    "sincroniza" `rag_chunks` con `embedding` como `text`; con la primera pregunta el backend de
+    pgvector la convierte en `vector(1024)` (`[pgvector] embedding column converted from text to
+    vector(1024)`). Eso ocurre en **cada** arranque, y los *embeddings* guardados no lo sobreviven.
+    Medido: 26 fragmentos, 2 con *embedding* → tras un reinicio, 26 y **0** con *embedding* (columna de
+    tipo `text`) → tras una pregunta, otra vez `vector(1024)` solo con el fragmento nuevo. El texto de
+    las conversaciones sigue en la tabla, pero sin *embeddings* no se puede recuperar nunca. Así que la
+    memoria solo funciona hasta el siguiente `helm upgrade` o reinicio del pod. **Sin reportar todavía**:
+    merece un case nuevo.
   - Cada pregunta llama además al modelo de embeddings (pocos tokens, muy barato).
   - **Rompe el prompt caching cuando recupera memoria**: el contexto se inyecta en el *system prompt*,
     así que el prefijo cambia. Medido: las preguntas sin memoria recuperada leyeron ~37.000 tokens de

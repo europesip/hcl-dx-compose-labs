@@ -2,6 +2,8 @@
 # Lab 3 · Step 4 · Install or upgrade IQ (Integrator + MCP Server) in the DX namespace.
 # Usage:  ./04-iq-install.sh                                        (sessions in in-memory SQLite)
 #         ./04-iq-install.sh -f custom-iq-values.db-external.yaml   (appendix: sessions in PostgreSQL)
+#         ./04-iq-install.sh -f custom-iq-values.db-external.yaml -f custom-iq-values.rag.yaml
+#                                                                   (appendix: + cross-session memory, RAG)
 set -euo pipefail
 source "$(dirname "$0")/../common/lib.sh"
 require_cmd helm
@@ -15,14 +17,23 @@ helm -n "$DX_NS" status "$DX_RELEASE" >/dev/null 2>&1 || die "DX ($DX_RELEASE) i
 # The LiteLLM URL appears twice in custom-iq-values.yaml (litellm.liteLlmUrl and the
 # LITELLM_BASE_URL variable, inside a list that --set cannot address): a temporary copy gets the
 # value from env.sh.
-VALUES=$(mktemp --suffix=.yaml); trap 'rm -f "$VALUES"' EXIT
+VALUES=$(mktemp --suffix=.yaml); RAGV=$(mktemp --suffix=.yaml); trap 'rm -f "$VALUES" "$RAGV"' EXIT
 sed "s|http://litellm.dx-shared.svc.cluster.local:4000|${LITELLM_URL_INTERNAL}|g" custom-iq-values.yaml > "$VALUES"
 EXTRA=()
 [[ " $* " == *custom-iq-values.db-external.yaml* ]] && EXTRA+=(--set-string configuration.database.dbHost="$PG_HOST")
+# RAG (appendix): its list repeats LITELLM_BASE_URL, so it gets the same substitution
+ARGS=()
+for a in "$@"; do
+  if [[ "$a" == *custom-iq-values.rag.yaml ]]; then
+    [[ " $* " == *custom-iq-values.db-external.yaml* ]] || die "RAG needs PostgreSQL: add -f custom-iq-values.db-external.yaml (and run ./A1-iq-database.sh)"
+    sed "s|http://litellm.dx-shared.svc.cluster.local:4000|${LITELLM_URL_INTERNAL}|g" "$a" > "$RAGV"; a="$RAGV"
+  fi
+  ARGS+=("$a")
+done
 
 # Helm 4: after Lab 3B the MCP server list of the ConfigMap belongs to "kubectl patch" (see below), so the
 # upgrade needs --force-conflicts (empty with Helm 3, see common/lib.sh); the list is patched again below.
-helm upgrade --install "$IQ_RELEASE" "$IQ_CHART_TGZ" -n "$DX_NS" -f "$VALUES" "$@" "${EXTRA[@]}" $HELM_FORCE_CONFLICTS \
+helm upgrade --install "$IQ_RELEASE" "$IQ_CHART_TGZ" -n "$DX_NS" -f "$VALUES" "${ARGS[@]}" "${EXTRA[@]}" $HELM_FORCE_CONFLICTS \
   --set-string configuration.dx.releaseName="$DX_RELEASE" \
   --set-string configuration.dx.externalHost="$DX_HOST"
 

@@ -63,6 +63,21 @@ proxy_config:
         cache_control_injection_points:
           - location: message
             role: system
+    # Embeddings for IQ's cross-session memory (RAG, optional, see the GUIDE appendix). IQ calls a fixed
+    # alias: iq-multilingual-embed (USE_MULTILINGUAL_EMBEDDINGS=true, the default) or iq-embed. HCL
+    # validates Cohere embed v4, which is not on OpenRouter: BGE-M3 is multilingual and also returns
+    # 1024 dimensions (= EMBEDDING_DIMENSIONS in custom-iq-values.rag.yaml). They cost nothing while
+    # RAG is off: IQ only calls them with RAG_ENABLED=true.
+    - model_name: iq-multilingual-embed
+      litellm_params:
+        model: openai/baai/bge-m3
+        api_base: https://openrouter.ai/api/v1
+        api_key: os.environ/OPENROUTER_API_KEY
+    - model_name: iq-embed
+      litellm_params:
+        model: openai/baai/bge-m3
+        api_base: https://openrouter.ai/api/v1
+        api_key: os.environ/OPENROUTER_API_KEY
   litellm_settings:
     drop_params: true       # HCL: essential; drops parameters the provider does not accept
     json_logs: true

@@ -26,6 +26,7 @@ phase() { printf '\n\033[1;35m### [%s] %s\033[0m\n' "$(date -u -d @$(( $(date +%
 has 3a && ! has litellm && die "Lab 3A needs LiteLLM in DEMO_DEPS"
 has 3b && ! { has mcp && has 3a; } && die "Lab 3B needs Lab 3A and mcp in DEMO_DEPS"
 has iqdb && ! { has postgres && has 3a; } && die "The IQ sessions appendix (iqdb) needs Lab 3A and postgres in DEMO_DEPS"
+has iqrag && ! has iqdb && die "The IQ memory appendix (iqrag) needs iqdb in DEMO_LABS"
 has 5 && ! has postgres && die "Lab 5 (ÓRBITA) needs postgres in DEMO_DEPS"
 has 2a-openldap && ! has openldap && die "Lab 2A with OpenLDAP needs openldap in DEMO_DEPS"
 has 2a-openldap && has 2a-ad && die "Choose 2a-openldap or 2a-ad, not both"
@@ -62,6 +63,7 @@ if has 3a || has 4; then
     ( set -e
       IQF=()
       if has iqdb; then "$R/lab3-iq-openrouter/A1-iq-database.sh"; IQF=(-f custom-iq-values.db-external.yaml); fi
+      if has iqrag; then IQF+=(-f custom-iq-values.rag.yaml); fi
       "$R/lab3-iq-openrouter/04-iq-install.sh" "${IQF[@]}" ) > "$LOGS/iq.log" 2>&1 & pids+=("$!:iq")
   fi
   if has 4; then

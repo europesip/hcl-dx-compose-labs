@@ -471,6 +471,42 @@ lab3-iq-openrouter/04-iq-install.sh -f custom-iq-values.db-external.yaml
 The `dx_iq_db_user` role was already created by CNPG with the cluster (external dependencies or Lab 2B). IQ creates its tables when it
 starts: after opening a chat they appear in `iqdb`.
 
+## Appendix · Cross-session memory (RAG, new in CF239, optional)
+
+IQ can remember what each user said in **previous conversations**: it stores chunks of them, with
+their embeddings, in PostgreSQL (**pgvector**) and adds the relevant ones to the prompt of new
+questions. HCL: [Configuring cross-session memory](https://help.hcl-software.com/digital-experience/9.5/CF239/build_sites/iq/installation/enable-rag/).
+It needs the previous appendix (sessions in PostgreSQL).
+
+```bash
+lab3-iq-openrouter/A1-iq-database.sh            # also creates the pgvector extension in iqdb
+lab3-iq-openrouter/04-iq-install.sh -f custom-iq-values.db-external.yaml -f custom-iq-values.rag.yaml
+```
+
+| Piece | In the lab |
+|---|---|
+| Embedding model | The aliases IQ calls, `iq-multilingual-embed` and `iq-embed`, are already in `litellm-values.yaml` (they cost nothing while RAG is off). HCL validates Cohere embed v4, which is not on OpenRouter: the lab uses **BGE-M3** (`baai/bge-m3`, multilingual, 1024 dimensions, ~$0.01 per million tokens) |
+| pgvector | Included in the CNPG `standard` image; `A1-iq-database.sh` runs `CREATE EXTENSION vector` in `iqdb` |
+| IQ | `RAG_ENABLED=true` and `EMBEDDING_DIMENSIONS=1024` in `custom-iq-values.rag.yaml` |
+
+**Try it:** in one chat, tell IQ something about you ("my project code name is PELICANO-42"); open a
+**new** chat and ask for it. Another user does not get it: the memory is per user. In the Integrator
+log: `[RAG] INITIALIZED: active backend=pgvector` (on the first question, not at start-up).
+
+> ⚠️ **IQ 1.0.3: the memory does not survive an Integrator restart.** When the Integrator starts, it
+> turns the `embedding` column back into `text` and the stored embeddings are lost (on the first
+> question it converts it to `vector` again). Measured: 26 chunks, 2 with embedding → after a
+> restart, 0. So it remembers between conversations, but not after `04-iq-install.sh`, a
+> `helm upgrade` or a pod restart. Details in [issues.md](../issues.md).
+
+> 💰 **Cost.** Each question also calls the embedding model (very cheap). But the retrieved memory is
+> added to the system prompt, so the calls that retrieve memory cannot read the cached prefix and
+> write it again (~37,000 tokens, at 1.25× the input price). See CS1479178 in [issues.md](../issues.md).
+
+There is no automatic retention: the memory stays until it is deleted with SQL (by date, user or
+session, see the HCL page), for example to answer a right-to-erasure request. To switch it off, run
+`04-iq-install.sh` again without `-f custom-iq-values.rag.yaml`.
+
 ## Cost and choice of model
 
 The OpenRouter account pays. IQ chains several LLM calls for each question (choose the tool, read

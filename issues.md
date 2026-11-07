@@ -67,9 +67,17 @@ be enabled, see CS1479139.
   in `iqdb` (the CNPG `standard` image includes pgvector 0.8.7). Results:
   - It works: a fact told in one conversation was answered in a new one. Another user (`andres`) did
     not get it: memory is per user.
-  - RAG starts on the first question, not at start-up (no `[RAG]` lines until then). It converted the
-    `rag_chunks` table that IQ 1.0.3 had already created with a `text` column to `vector(1024)` by
-    itself. The defaults it logs (`topK=10, minSimilarity=0.35`) are not the documented ones (5 and 0).
+  - RAG starts on the first question, not at start-up (no `[RAG]` lines until then). The defaults it
+    logs (`topK=10, minSimilarity=0.35`) are not the ones of the RAG page (5 and 0); the environment
+    variables page says 5 and 0.35.
+  - **Bug: the memory is lost on every Integrator restart.** At start-up the Integrator creates or
+    "synchronises" `rag_chunks` with `embedding` as `text`; on the first question the pgvector backend
+    converts it to `vector(1024)` (`[pgvector] embedding column converted from text to vector(1024)`).
+    That happens on **every** start, and the stored embeddings do not survive it. Measured: 26 chunks,
+    2 with embedding → after a restart, 26 and **0** with embedding (column type `text`) → after one
+    question, `vector(1024)` again with only the new chunk. The text of past conversations stays in
+    the table, but without embeddings it can never be retrieved. So the memory only works until the
+    next `helm upgrade` or pod restart. **Not reported yet**: worth a new case.
   - Each question also calls the embedding model (a few tokens, very cheap).
   - **It breaks prompt caching when memory is retrieved**: the context is injected into the system
     prompt, so the prefix changes. Measured: questions without retrieved memory read ~37,000 tokens

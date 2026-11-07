@@ -32,3 +32,14 @@ proxy_config:
         cache_control_injection_points:
           - location: message
             role: system
+    # Same embedding aliases as litellm-values.yaml (Helm replaces the whole list)
+    - model_name: iq-multilingual-embed
+      litellm_params:
+        model: openai/baai/bge-m3
+        api_base: https://openrouter.ai/api/v1
+        api_key: os.environ/OPENROUTER_API_KEY
+    - model_name: iq-embed
+      litellm_params:
+        model: openai/baai/bge-m3
+        api_base: https://openrouter.ai/api/v1
+        api_key: os.environ/OPENROUTER_API_KEY
