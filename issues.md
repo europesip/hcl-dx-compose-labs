@@ -6,9 +6,62 @@ Issues found while preparing this PoC with HCL DX Compose CF238 (`hcl-dx-deploym
 `hcl-dx-iq` 1.0.2, `hcl-dx-search` 2.36.0), what happens and how the labs deal with them.
 **Re-checked on CF239** (`hcl-dx-deployment` 2.50.0, `hcl-dx-iq` 1.0.3, `hcl-dx-search` 2.37.0)
 with a clean installation of all the labs on 2026-11-04: each issue says whether it is still present.
-**CF239 documentation checked on 2026-11-07** (published after the re-check): none of the issues below
+**CF239 documentation checked on 2026-11-07** (published after the re-check; full review in the next section): none of the issues below
 appears as fixed. The only related change is that cross-session memory (RAG) is now documented and can
 be enabled, see CS1479139.
+
+## CF239 documentation review: where the labs deviate and why (2026-11-07)
+
+The labs follow the HCL documentation as closely as possible. This section lists every place where they
+do something different, because following the page as written fails or is not possible, with the test
+that shows it. Checked against the CF239 pages as published on 2026-11-07, with the charts of CF239
+(`hcl-dx-deployment` 2.50.0, `hcl-dx-iq` 1.0.3, `hcl-dx-search` 2.37.0) and `litellm-helm` 1.106.5.
+The LiteLLM page was followed literally (Quick start) in a separate namespace with a Bedrock API key.
+
+### "Deploying LiteLLM" (IQ > Installation, page dated 2026-10-14)
+
+| # | The documentation says | What happens (tested) | What the labs do |
+|---|---|---|---|
+| L1 | `helm repo add litellm https://ghcr.io/berriai/litellm-helm`, then install `litellm/litellm` | `helm repo add` fails: *"not a valid chart repository … index.yaml: 404 Not Found"* (ghcr.io is an OCI registry, not a classic Helm repository). The install then fails: *"repo litellm not found"* | `helm upgrade --install litellm oci://ghcr.io/berriai/litellm-helm --version 1.106.5` (no repository needed; version pinned) |
+| L2 | Sonnet 4.6 model ID `bedrock/us.anthropic.claude-sonnet-4-6-20250514-v1:0` | With the values of the page as they are: *"BedrockException - The provided model identifier is invalid"* (20250514 is the date of Claude Sonnet 4). Haiku 4.5 works | `us.anthropic.claude-sonnet-4-6` (no date) |
+| L3 | No `aws_region_name` in the models | The `us.` inference profiles only exist in US regions: called from `eu-west-1` they give *"The provided model identifier is invalid"*. Without a region, LiteLLM uses its own default region, which is not under your control | `aws_region_name` set in each model (`us-east-1` as the page implies, or the `eu.` profiles with `eu-west-1` to keep the data in the EU) |
+| L4 | Image `ghcr.io/berriai/litellm:main-latest` (Quick start); `ghcr.io/berriai/litellm-database:1.45.0` (Production) | `main-latest` exists but is a floating tag (it changes with every LiteLLM build, so two installations are never the same). `litellm-database:1.45.0` **does not exist** (HTTP 404 in ghcr.io; the tag is `main-v1.45.0`, a 2024 release), so the Production values cannot pull the image | Image pinned to `1.106.5`, the `appVersion` of the chart version used |
+| L5 | Check the pods with `kubectl get pods -l app=litellm` and `kubectl wait … -l app=litellm` | The chart labels the pods `app.kubernetes.io/name=litellm`: *"No resources found"* and *"error: no matching resources found"*, although LiteLLM is running | `kubectl rollout status deployment/litellm` (or `-l app.kubernetes.io/name=litellm`) |
+| L6 | Production example: probes with `enabled:` and `httpGet:` | Those keys do not exist in the chart (it uses `livenessProbe.path`, etc.): they are ignored. It works by chance, because the chart defaults have the same paths | Chart default probes (no change needed) |
+| L7 | "By default, LiteLLM requests 100m CPU and 512Mi Memory" | The chart (1.106.5) sets no resources by default, and the Quick start values set none either | Requests and limits set explicitly (the values of the Production example: 100m/512Mi, 1 CPU/2Gi) |
+| L8 | Create `litellm-masterkey` **and** a `litellm-env` with the same `PROXY_MASTER_KEY` ("to reduce the number of secrets, combine… into a single litellm-env secret"), but the values point `masterkeySecretName` to `litellm-masterkey` | Works only while both secrets hold the same key; if they diverge, the one from `masterkeySecretName` wins | A single `litellm-env` secret, also used as `masterkeySecretName`, as the text recommends |
+| L9 | Production example: an Ingress with host `litellm.dxns.svc.cluster.local` | An Ingress host is an external name; IQ reaches LiteLLM through its Service, never through that Ingress | No Ingress (IQ uses `http://litellm.<namespace>.svc.cluster.local:4000`) |
+| L10 | Nothing about prompt caching | Every IQ call pays full price for a ~32,500-token prefix (CS1479178) | `cache_control_injection_points` on the system message |
+| L11 | LiteLLM in the DX namespace | Works | LiteLLM in `dx-shared`, with the other third-party tools (only HCL software in `dx-demo`); the URL in the IQ values changes accordingly. A design choice, not an error |
+| L12 | Bedrock prerequisites: only "valid credentials" | Also needed, and not mentioned: the Anthropic use case form (once per account), an AWS Marketplace subscription to the model with a valid payment method, and, on the first call, a principal allowed to `aws-marketplace:Subscribe`/`ViewSubscriptions` (an IAM user limited to `bedrock:InvokeModel`, as a Bedrock API key normally is, gets *"Model access is denied…"*) | Documented in the installer; the lab uses OpenRouter or Claude directly |
+
+### "Deploying IQ services", "Preparing LiteLLM access" and "IQ environment variables"
+
+| # | The documentation says | What happens (tested) | What the labs do |
+|---|---|---|---|
+| I1 | The LiteLLM URL in `configuration.litellm.liteLlmUrl` | Not enough. Re-tested today: with exactly that (removing only `LITELLM_BASE_URL`), IQ answers *"The LLM service is temporarily unavailable"* (`LLM_ERROR_SERVICE_UNAVAILABLE`) and LiteLLM receives no request; with it back, IQ answers again | `LITELLM_BASE_URL` (undocumented) in `environment.pod.integrator`, same URL |
+| I2 | "Deploying IQ services" sets `LITELLM_API_KEY` and `LITELLM_URL` in `environment.pod.integrator` | Contradicts the other two pages (key in the `iq-litellm-api-secret` secret, URL in `liteLlmUrl`). Rendering the chart with the values of the page: both variables appear **twice** in the Integrator, and the chart's own definitions (secret and ConfigMap) come last and win | Secret `iq-litellm-api-secret` + `liteLlmUrl`, as in "Preparing LiteLLM access" and "IQ environment variables" |
+| I3 | `LITELLM_URL`: "A valid HTTPS URL" | The LiteLLM page gives `http://litellm.<ns>.svc.cluster.local:4000` as the endpoint, and HTTP works inside the cluster | `http://…:4000` (in-cluster Service) |
+| I4 | `MCP_SERVER_LIST` must be set, because the default points to `dx-ai-mcp-server`; a wrong value causes CrashLoopBackOff. The example uses `https://`, the warning `http://` | Chart 1.0.3 already writes the right URL in its ConfigMap (`<release>-mcp-server:3000`, `https` or `http` from `mcpServer.httpsEnabled`), and that is the list the Integrator uses; the environment variable is ignored (CS1479102) | `MCP_SERVER_LIST` not set |
+| I5 | Example values with `mcpServer.httpsEnabled: true` and `tlsCertSecret: dx-tls-cert` | **Works** (tested today: the Integrator connects to `https://dx-iq-mcp-server:3000` and IQ uses the MCP tools) | The labs used the chart default (HTTP). **To be aligned with the documentation** |
+| I6 | Chart from a URL (`https://<repository>/<chart>.tgz`, Artifactory) | DX Compose customers get it from HCL Harbor | `helm pull oci://hclcr.io/dx/hcl-dx-iq --version 1.0.3` |
+| — | (observation, not a deviation) | The Integrator logs that `NODE_TLS_REJECT_UNAUTHORIZED=0` is set (it comes from the image, not from the chart): certificate verification is disabled for all its outgoing TLS connections | Nothing (product behaviour); worth raising with HCL |
+
+### Search V2 ("Installing the Search V2 backend", page dated 2026-08-27, unchanged)
+
+| # | The documentation says | What happens (checked in chart 2.37.0) | What the labs do |
+|---|---|---|---|
+| S1 | Nothing about enabling the File Processor (only its image and the allowed file types); "Validating the setup" lists a `dx-search-file-processor` pod | `applications.fileProcessor: false` by default, but the Search Middleware ConfigMap always sets `fileprocessor_host: <release>-file-processor` (no condition), so the middleware keeps looking for it ("Could not connect to file processor" every 3 seconds) | `applications.fileProcessor: true` |
+| S2 | Nothing about `configuration.automatedSetup.haproxyProtocol` | Empty by default: the chart then picks `https` only if the DX HAProxy Service is `LoadBalancer`, `http` otherwise. With DX behind an Ingress or a Route (`ClusterIP`, SSL still on) it uses `http`, and the HAProxy Service only exposes 443 (checked in the lab: `ClusterIP haproxy:443`), so the crawlers index 0 documents | `haproxyProtocol: https` |
+
+### DX Compose (installation, LDAP, external database)
+
+| # | The documentation says | What happens | What the labs do |
+|---|---|---|---|
+| D1 | Supported external databases: Derby, DB2, Oracle ("Limitations") | PostgreSQL is not supported yet for the Web Engine (HCL is validating it) | Lab 3 / stage 3 is presented as a learning exercise with the early-release table script from HCL, and `standard_conforming_strings = off` (see "HCL is aware" below) |
+| D2 | The LDAP page explains `ldap.type: other` | The chart deploys its own OpenLDAP by default (`applications.openLdap: true`) | `openLdap: false`; an external OpenLDAP is used |
+| D3 | `helm install` without `--wait` (Helm 3 style) | With Helm 4, `--wait` aborts the installation while DAM waits for its database | `--wait=legacy` with Helm 4 |
+| D4 | Sample file `values-samples/webEngine/webEngine-sample.yaml` | The folder in chart 2.50.0 is `value-samples/` | Not used (minor typo) |
 
 ## Issues reported to HCL Support
 
