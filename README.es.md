@@ -194,6 +194,12 @@ referencia de los labs) y te facilita las cosas de una de estas dos maneras:
 La [página de presentación](https://europesip.github.io/hcl-dx-compose-labs/about.html?lang=es#opciones)
 compara las tres opciones lado a lado.
 
+**La opción C como pod en tu clúster:** el [Instalador de HCL DX Compose](https://github.com/europesip/hcl-dx-compose-installer/blob/main/README.es.md)
+es la opción C con una interfaz paso a paso (React, inglés y español), servida por un contenedor que
+puedes ejecutar con Docker o instalar con su chart de Helm. Genera la misma carpeta `dx-install/` (el
+motor de generación se extrae de este asistente) y además una guía en Word con los comandos, los
+valores clave de cada fichero YAML y los propios ficheros. Todo se sigue generando en el navegador.
+
 > ⚠️ **El asistente está en desarrollo (WIP) y debe tratarse como algo experimental.** Hoy la vía
 > recomendada es la **Forma 1, a mano**. Es una opción simplificada y específica de estos labs;
 > EUROPESIP tiene otro asistente desarrollado internamente, con funciones avanzadas y más opciones
