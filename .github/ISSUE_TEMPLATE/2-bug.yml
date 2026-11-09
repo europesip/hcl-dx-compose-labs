@@ -1,0 +1,67 @@
+name: "🐞 Bug"
+description: Something does not behave as it should.
+title: "[Bug] "
+projects: ["europesip/4"]
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting it. **Never paste credentials, keys, tokens or licence data**: replace them with `***`.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: "The labs version or commit, and the DX Compose CF (for example v2.1, CF239)."
+    validations: {required: true}
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where does it fail?
+      options:
+        - "Lab 0 · PoC on WSL"
+        - "Lab 1 · DX base / Script Applications"
+        - "Lab 2 · LDAP and PostgreSQL"
+        - "Lab 3 · IQ, LiteLLM and MCP"
+        - "Lab 4 · Search"
+        - "Lab 5 · ÓRBITA"
+        - "Webinar"
+        - "Common scripts and tools"
+    validations: {required: true}
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1.
+        2.
+        3.
+    validations: {required: true}
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations: {required: true}
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+    validations: {required: true}
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: "The output of the failing command, without secrets."
+      render: shell
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: "RKE2 1.33 (or WSL + k3s), DX Compose CF239"
+  - type: textarea
+    id: done
+    attributes:
+      label: How do we know it is fixed?
+      description: The check that must pass after the fix (it becomes the acceptance criterion).
+      value: |
+        - [ ]

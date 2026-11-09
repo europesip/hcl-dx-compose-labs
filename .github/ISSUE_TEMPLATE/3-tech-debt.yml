@@ -1,0 +1,48 @@
+name: "🧱 Tech debt"
+description: A shortcut taken on purpose (or found later) that should be paid back before it becomes a bug.
+title: "[Tech debt] "
+projects: ["europesip/4"]
+labels: ["tech-debt"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What the shortcut is, in one paragraph.
+    validations: {required: true}
+  - type: textarea
+    id: current
+    attributes:
+      label: Current situation (checked in the code)
+      description: Files and behaviour involved, and why it was done this way.
+    validations: {required: true}
+  - type: textarea
+    id: risk
+    attributes:
+      label: Risk if it is not fixed
+    validations: {required: true}
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+    validations: {required: true}
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      value: |
+        - [ ]
+    validations: {required: true}
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      multiple: true
+      options:
+        - "Lab 0 and Lab 1 (PoC on WSL, DX base, Script Applications)"
+        - "Lab 2 (LDAP and PostgreSQL)"
+        - "Lab 3 (IQ, LiteLLM, MCP)"
+        - "Lab 4 and Lab 5 (Search, ÓRBITA)"
+        - "Common scripts, tools, charts and webinar"
+        - "Documentation"
+    validations: {required: true}
