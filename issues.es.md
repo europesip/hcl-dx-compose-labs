@@ -64,6 +64,24 @@ página de LiteLLM se siguió al pie de la letra (Quick start) en un namespace a
 | D3 | `helm install` sin `--wait` (estilo Helm 3) | Con Helm 4, `--wait` aborta la instalación mientras DAM espera a su base de datos | `--wait=legacy` con Helm 4 |
 | D4 | Fichero de ejemplo `values-samples/webEngine/webEngine-sample.yaml` | En el chart 2.50.0 la carpeta es `value-samples/` | No se usa (errata menor) |
 
+### SSL a la base de datos externa, LDAPS y login LDAP (probado el 2026-11-10)
+
+Probado en una instalación limpia (`hcl-dx-deployment` 2.50.0) con un PostgreSQL 18 (CloudNativePG) que solo admite SSL
+(`hostnossl all all all reject`) y un OpenLDAP que exige TLS, cada certificado de servidor firmado por su propia CA raíz
+corporativa y las dos CAs subidas con `configuration.webEngine.customTruststoreSecrets`. Comunicado a HCL por correo (sin case todavía).
+
+| # | Qué probamos | Qué pasa (probado) | Qué hacen los labs |
+|---|---|---|---|
+| S1 | `DbUrl` con dos parámetros: `?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory` | Funciona en ejecución, pero **la transferencia de base de datos falla** en el primer dominio: `SAXParseException: Element type "database" must be followed by either attribute specifications, ">" or "/>"` en `templates/db/postgresql/release/dbt_release.xml`. La URL se escribe en ese XML sin escapar el `&`, así que no se puede usar un segundo parámetro (certificado de cliente, timeouts, `ApplicationName`...) | Un solo parámetro: `?sslmode=verify-full` |
+| S2 | `DbUrl` con `?sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory` | El Web Engine no llega a arrancar (CrashLoopBackOff): las herramientas que corren antes de Liberty (`initStatusTable.sh`, `getLibertyStatus.sh`) usan el truststore por defecto del JDK, no las CAs de `customTruststoreSecrets`: `PKIX path building failed` y después `Error extracting DB_TRANSFER_DONE status` | No se usa |
+| S3 | `DbUrl` con `?sslrootcert=<CA montada desde el secret del truststore>` | Funciona (transferencia de 465 tablas, TLS 1.3) pero el certificado **no se valida**: con la CA equivocada también conecta (el driver se queda en `sslmode=prefer`) | No se usa |
+| S4 | `DbUrl` con `?sslmode=verify-full` | **Funciona y valida**: transferencia, herramientas previas al arranque y ejecución por TLS 1.3. Sin la CA de la base de datos en `customTruststoreSecrets`: `PKIX path building failed`; con la IP del servicio en vez del nombre del certificado: `The hostname … could not be verified by hostnameverifier PgjdbcHostnameVerifier` | La forma que usan los labs y el webinar |
+| S5 | Una transferencia fallida y después un `helm upgrade` corregido | El pod del Web Engine no llega a estar listo y el StatefulSet no lo sustituye (`currentRevision ≠ updateRevision`) | Borrar el pod a mano después de corregir los values |
+| S6 | IQ (`hcl-dx-iq` 1.0.3) con `configuration.database.dbTlsEnabled: true` | El valor llega al ConfigMap (`dx.config.integrator.db_tls_enabled: "true"`) pero el Integrator sigue conectando sin SSL, y un servidor que exige SSL lo rechaza (`no encryption`) | Excepción en `pg_hba` solo para la base de datos de IQ (`host iqdb dx_iq_db_user all scram-sha-256`) |
+| S7 | Login con el email (`andres@europesip.com`) | El bloque LDAP nativo fija `userFilter="(&(uid=%v)(objectclass=inetOrgPerson))"` (`_web-engine-ldap-config.tpl`) y ningún valor lo cambia | `configOverrideFiles` que amplía `ldapRegistry id="ldap"` con `<loginProperty name="uid"/>` y `<loginProperty name="mail"/>` (en forma de elemento: en forma de texto da `CWWKG0075E`), y reinicio del Web Engine |
+| S8 | LDAPS (`port: 636`, `sslEnabled: true`) sin la CA del directorio | `CWPKI0823E SSL HANDSHAKE FAILURE` / `PKIX path building failed`: nadie puede entrar | La CA del directorio en `customTruststoreSecrets` |
+| S9 | *Configuring LDAP* (configuration changes using overrides) | El ejemplo de AD con SSL usa `sslRef="customSSLConfig"`, que la página nunca define (se genera al usar `customTruststoreSecrets`); el login por email con `loginProperty` no está documentado; a los dos ejemplos de AD les falta un paréntesis de cierre: `userFilter="(&(sAMAccountName=%v)(objectcategory=user)"` | Comentarios de documentación enviados a HCL |
+
 ## Problemas reportados a HCL Support
 
 | Case | Abierto | Problema | Estado |
