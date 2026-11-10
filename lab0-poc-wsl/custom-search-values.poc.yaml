@@ -1,9 +1,0 @@
-# Lab 0 · PoC layer for search (hcl-dx-search): reduced requests for a single node.
-# Added by lab4-opensearch/02-search-install.sh when DX_POC=1. Limits are unchanged.
-resources:
-  openSearchManager:
-    requests: { cpu: "500m", memory: "1536Mi" }       # default 1000m / 2048Mi (JVM -Xmx1024M)
-  fileProcessor:
-    requests: { cpu: "250m", memory: "512Mi" }        # default 1000m / 2048Mi
-  searchMiddlewareQuery:
-    requests: { cpu: "250m", memory: "512Mi" }        # default 500m / 768Mi

@@ -1,7 +1,5 @@
 # Known issues found while building the labs
 
-**English** · [Español](issues.es.md)
-
 Issues found while preparing this PoC with HCL DX Compose CF238 (`hcl-dx-deployment` 2.49.0,
 `hcl-dx-iq` 1.0.2, `hcl-dx-search` 2.36.0), what happens and how the labs deal with them.
 **Re-checked on CF239** (`hcl-dx-deployment` 2.50.0, `hcl-dx-iq` 1.0.3, `hcl-dx-search` 2.37.0)
@@ -62,6 +60,24 @@ The LiteLLM page was followed literally (Quick start) in a separate namespace wi
 | D2 | The LDAP page explains `ldap.type: other` | The chart deploys its own OpenLDAP by default (`applications.openLdap: true`) | `openLdap: false`; an external OpenLDAP is used |
 | D3 | `helm install` without `--wait` (Helm 3 style) | With Helm 4, `--wait` aborts the installation while DAM waits for its database | `--wait=legacy` with Helm 4 |
 | D4 | Sample file `values-samples/webEngine/webEngine-sample.yaml` | The folder in chart 2.50.0 is `value-samples/` | Not used (minor typo) |
+
+### SSL to the external database, LDAPS and LDAP sign-in (tested 2026-11-10)
+
+Tested on a fresh installation (`hcl-dx-deployment` 2.50.0) with PostgreSQL 18 (CloudNativePG) that only accepts SSL
+(`hostnossl all all all reject`) and an OpenLDAP that requires TLS, each server certificate signed by its own corporate
+root CA, both CAs uploaded with `configuration.webEngine.customTruststoreSecrets`. Reported to HCL by e-mail (no case yet).
+
+| # | What we tried | What happens (tested) | What the labs do |
+|---|---|---|---|
+| S1 | `DbUrl` with two parameters: `?sslmode=verify-full&sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory` | Works at runtime, but the **database transfer fails** on the first domain: `SAXParseException: Element type "database" must be followed by either attribute specifications, ">" or "/>"` in `templates/db/postgresql/release/dbt_release.xml`. The URL is written into that XML file without escaping `&`, so no second parameter can be used (client certificate, timeouts, `ApplicationName`...) | One parameter only: `?sslmode=verify-full` |
+| S2 | `DbUrl` with `?sslfactory=org.postgresql.ssl.DefaultJavaSSLFactory` | The Web Engine never starts (CrashLoopBackOff): the tools that run before Liberty (`initStatusTable.sh`, `getLibertyStatus.sh`) use the default JDK truststore, not the CAs of `customTruststoreSecrets`: `PKIX path building failed`, then `Error extracting DB_TRANSFER_DONE status` | Not used |
+| S3 | `DbUrl` with `?sslrootcert=<CA mounted from the truststore secret>` | Works (transfer of 465 tables, TLS 1.3) but the certificate is **not validated**: with the wrong CA it still connects (the driver stays on `sslmode=prefer`) | Not used |
+| S4 | `DbUrl` with `?sslmode=verify-full` | **Works and validates**: transfer, pre-start tools and runtime over TLS 1.3. Without the database CA in `customTruststoreSecrets`: `PKIX path building failed`; with the service IP instead of the certificate host name: `The hostname … could not be verified by hostnameverifier PgjdbcHostnameVerifier` | The form used by the labs and the webinar |
+| S5 | A database transfer that failed, then a corrected `helm upgrade` | The Web Engine pod never becomes ready and the StatefulSet does not replace it (`currentRevision ≠ updateRevision`) | Delete the pod by hand after fixing the values |
+| S6 | IQ (`hcl-dx-iq` 1.0.3) with `configuration.database.dbTlsEnabled: true` | The value reaches the ConfigMap (`dx.config.integrator.db_tls_enabled: "true"`) but the Integrator still connects without SSL, and a server that requires SSL rejects it (`no encryption`) | `pg_hba` exception for the IQ database only (`host iqdb dx_iq_db_user all scram-sha-256`) |
+| S7 | Sign in with the e-mail (`andres@europesip.com`) | The native LDAP block hard-codes `userFilter="(&(uid=%v)(objectclass=inetOrgPerson))"` (`_web-engine-ldap-config.tpl`) and no value changes it | `configOverrideFiles` extending `ldapRegistry id="ldap"` with `<loginProperty name="uid"/>` and `<loginProperty name="mail"/>` (the element form: the text form gives `CWWKG0075E`), plus a Web Engine restart |
+| S8 | LDAPS (`port: 636`, `sslEnabled: true`) without the directory CA | `CWPKI0823E SSL HANDSHAKE FAILURE` / `PKIX path building failed`: nobody can sign in | The directory CA in `customTruststoreSecrets` |
+| S9 | *Configuring LDAP* (configuration changes using overrides) | The AD SSL sample uses `sslRef="customSSLConfig"`, never defined on the page (it is generated when `customTruststoreSecrets` is set); e-mail login with `loginProperty` is not documented; both AD samples miss a closing parenthesis: `userFilter="(&(sAMAccountName=%v)(objectcategory=user)"` | Documentation feedback sent to HCL |
 
 ## Issues reported to HCL Support
 
