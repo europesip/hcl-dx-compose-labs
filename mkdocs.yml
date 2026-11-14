@@ -1,0 +1,41 @@
+# TechDocs of the HCL DX Compose labs: the docs/ folder, shown in the EUROPESIP Internal Developer Portal (Backstage)
+# through the annotation backstage.io/techdocs-ref of the catalog. Build locally (same as Backstage):
+#   pip install mkdocs-techdocs-core==1.7.1 && mkdocs serve
+site_name: HCL DX Compose from scratch on Kubernetes (CF239)
+site_description: Hands-on labs by EUROPESIP to install HCL Digital Experience Compose step by step, as a proof of concept
+repo_url: https://github.com/europesip/hcl-dx-compose-labs
+edit_uri: edit/main/docs/
+docs_dir: docs
+
+plugins:
+  - techdocs-core
+
+# docs/ is also the GitHub Pages root of the configuration wizard (index.html, about.html, .nojekyll): those files are
+# left out of the site, so the index.html of TechDocs comes from index.md. docs/specs/ (one spec per issue) is kept in
+# the repository but left out of the site too
+exclude_docs: |
+  specs/
+  *.html
+
+nav:
+  - Overview: index.md
+  - Requirements: requirements.md
+  - Kubernetes vs OpenShift: kubernetes-vs-openshift.md
+  - Troubleshooting: troubleshooting.md
+  - Data for HCL Support: support.md
+  - Starting from scratch: cleanup.md
+  - How we work: workflow.md
+  - Español:
+      - Introducción: index.es.md
+      - Requisitos: requirements.es.md
+      - Kubernetes frente a OpenShift: kubernetes-vs-openshift.es.md
+      - Problemas frecuentes: troubleshooting.es.md
+      - Datos para HCL Support: support.es.md
+      - Empezar de cero: cleanup.es.md
+      - Cómo trabajamos: workflow.es.md
+
+# Heading anchors as GitHub makes them (accents kept: #por-qué-openrouter-y-no-aws-bedrock), so the same links work on
+# GitHub and here
+markdown_extensions:
+  - toc:
+      slugify: !!python/object/apply:pymdownx.slugs.slugify {kwds: {case: lower}}

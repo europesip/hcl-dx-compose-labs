@@ -27,7 +27,7 @@ ghcr.io, openrouter.ai, chart repositories):
 ## 2. Cluster
 
 > **Only if you cannot access any Kubernetes environment**, local or in the cloud: [Lab 0 · PoC
-> on your PC](../lab0-poc-wsl/GUIDE.md) builds a single-node cluster (k3s) in a WSL2 distro with
+> on your PC](https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab0-poc-wsl/GUIDE.md) builds a single-node cluster (k3s) in a WSL2 distro with
 > everything on this page solved. It is a **PoC** environment, with simulated StorageClasses and
 > reduced resources, meant only to check the steps; it is not a reference for a real installation.
 
@@ -54,7 +54,7 @@ DX needs one **RWO** StorageClass and one **RWX** StorageClass:
 | `dx-deploy-rwx` | ReadWriteMany | DAM binaries, shared between pods |
 
 Creating them is the administrator's job (NFS, Longhorn, ODF, Ceph, cloud disks...). On the
-reference lab cluster they are Longhorn: [common/storageclasses-longhorn.yaml](../common/storageclasses-longhorn.yaml).
+reference lab cluster they are Longhorn: [common/storageclasses-longhorn.yaml](https://github.com/europesip/hcl-dx-compose-labs/blob/main/common/storageclasses-longhorn.yaml).
 If yours have other names, just set them in `env.sh` (`SC_RWO` and `SC_RWX`, or in the
 configuration wizard): the scripts pass them to every chart.
 
@@ -91,7 +91,7 @@ https://hclcr.io (*User Profile → CLI secret*). They go in `env.sh` (`HCL_HARB
 ## 6. Lab 2B: external Web Engine database
 
 In the labs we deploy PostgreSQL ourselves in `dx-shared` with CloudNativePG and its preparation is
-part of Lab 2B itself ([GUIDE.md](../lab2-ldap-postgres/GUIDE.md), step 3), so **there is nothing
+part of Lab 2B itself ([GUIDE.md](https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab2-ldap-postgres/GUIDE.md), step 3), so **there is nothing
 to prepare beforehand**.
 
 At a real customer, however, the database usually already exists and is managed by a DBA, who must
@@ -99,8 +99,8 @@ have it ready **before** the transfer, just like the StorageClass or the DNS:
 
 | Database | What the DBA must have ready | Reference |
 |---|---|---|
-| PostgreSQL | `dx_core` database (UTF8), `dxuser` user, JCR tablespaces, `max_prepared_transactions > 0`, and run `setup-postgres-dx.sql` (schemas, roles, grants, parameters) | [GUIDE.md · 2B step 3](../lab2-ldap-postgres/GUIDE.md) |
-| Oracle 19c/21c | PDB in AL32UTF8, and run `setup-oracle-dx.sql` (users, schemas, roles, tablespaces) | [GUIDE-enterprise.md · ORA-1](../lab2-ldap-postgres/GUIDE-enterprise.md) |
+| PostgreSQL | `dx_core` database (UTF8), `dxuser` user, JCR tablespaces, `max_prepared_transactions > 0`, and run `setup-postgres-dx.sql` (schemas, roles, grants, parameters) | [GUIDE.md · 2B step 3](https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab2-ldap-postgres/GUIDE.md) |
+| Oracle 19c/21c | PDB in AL32UTF8, and run `setup-oracle-dx.sql` (users, schemas, roles, tablespaces) | [GUIDE-enterprise.md · ORA-1](https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab2-ldap-postgres/GUIDE-enterprise.md) |
 
 In both cases **the tables are not created by hand**: the Web Engine creates them during the
 transfer from Derby.
@@ -109,5 +109,5 @@ transfer from Derby.
 
 An API key from https://openrouter.ai (`sk-or-v1-...`) with credit. With prompt caching enabled, a
 typical IQ conversation with Claude Sonnet costs cents. The HCL guides use AWS Bedrock;
-[Lab 3](../lab3-iq-openrouter/GUIDE.md#why-openrouter-and-not-aws-bedrock) explains why these labs
+[Lab 3](https://github.com/europesip/hcl-dx-compose-labs/blob/main/lab3-iq-openrouter/GUIDE.md#why-openrouter-and-not-aws-bedrock) explains why these labs
 use OpenRouter (no AWS account needed).
